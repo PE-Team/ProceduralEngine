@@ -38,7 +38,7 @@ public class Color {
 	
 	public Color(Vec4f vec){
 		this.r = vec.x;
-		this.g = vec.g;
+		this.g = vec.y;
 		this.b = vec.z;
 		this.a = vec.w;
 	}
