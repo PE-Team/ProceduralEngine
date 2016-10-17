@@ -98,8 +98,44 @@ public class Mat3f {
 		return this;
 	}
 	
-	// For 2D rotations
-	//public Vec3f rotate(float rotation, float )
+	// For 2D transformations
+	// Order = translate * rotate * scale
+	
+	public Mat3f translate(Vec2f delta){
+		Mat3f translation = new Mat3f();
+		translation.s02 = delta.x;
+		translation.s12 = delta.y;
+		return Mat3f.mul(this, translation);
+	}
+	
+	public Mat3f rotate(float theta){
+		Mat3f rotation = new Mat3f();
+		float cos = (float) Math.cos(Math.toRadians(theta));
+		rotation.s00 = cos;
+		rotation.s01 = (float) Math.sin(Math.toRadians(theta));
+		rotation.s10 = (float) -Math.sin(Math.toRadians(theta));
+		rotation.s11 = cos;
+		return Mat3f.mul(this, rotation);
+	}
+	
+	public Mat3f scale(Vec2f delta){
+		Mat3f scale = new Mat3f();
+		scale.s00 = delta.x;
+		scale.s11 = delta.y;
+		return Mat3f.mul(this, scale);
+	}
+	
+	public Mat3f transform(Vec2f translation, float rotation, Vec2f scale){
+		float cos = (float) Math.cos(Math.toRadians(rotation));
+		float sin = (float) Math.sin(Math.toRadians(rotation));
+		return new Mat3f(
+				scale.x*cos,	scale.y*sin,	translation.x,
+				-scale.x*sin,	scale.y*cos,	translation.y,
+				0,				0,				1
+				);
+	}
+	
+	// End of 2D transformation matrices
 	
 	public Mat3f transpose(){
 		return new Mat3f(
