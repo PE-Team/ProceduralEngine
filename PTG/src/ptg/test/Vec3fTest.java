@@ -8,7 +8,7 @@ public class Vec3fTest extends Test{
 		super(Vec3f.class);
 	}
 	
-	public void testAdd0(){
+	public void testAdd(){
 		paramClasses.add(Vec3f.class);
 		paramClasses.add(Vec3f.class);
 		TestUnit testAdd = new TestUnit(this.testedClass,"add",paramClasses);

@@ -30,6 +30,13 @@ public abstract class Test {
 		}
 	}
 	
+	/*
+	 * In the future this needs to invoke a .toString() method
+	 * for the class. If it doesn't exist and it is part of this
+	 * project, it must be created. If it is part of a library, 
+	 * then the method for parsing in will reside in this class
+	 * under the name of parse(Object name)
+	 */
 	public static String parse(Object result) {
 		// Parse NULL
 		if(result.equals(null)) return "NULL OBJECT";
