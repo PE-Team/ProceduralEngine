@@ -1,5 +1,6 @@
 package ptg.util.converters;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -97,6 +98,11 @@ public class StringToOperationConverter {
 		
 		//System.out.println(listToString(split) + " -After inserting all the parameters");
 		
+		//Remove the last part of the list if it doesn't include anything
+		if(split.get(split.size()-1) == ""){
+			split.remove(split.size()-1);
+		}
+		
 		// Replace all variables with their numerical values
 		for(int i = 0; i < split.size(); i++){
 			
@@ -126,14 +132,13 @@ public class StringToOperationConverter {
 		//System.out.println(listToString(split) + " -After inserting all variables");
 		
 		// Continue to do operations until they are all finished
-		boolean operationFound = false;
+		boolean operationFound = true;
 		List<String> currentOperation = new ArrayList<String>();
 		int operationOffset = 0;
 		int leftOffset = -1;
 		int rightOffset = -1;
 		int chars = 0;
 		do{
-			operationFound = false;
 			operationOffset = 0;
 			//Remove unwanted characters
 			leftOffset = -1;
@@ -259,78 +264,79 @@ public class StringToOperationConverter {
 			
 			//System.out.println(listToString(currentOperation) + " -After cutting down to one operation.");
 			
+			// Do the operation needed
+			Class<?> operationClass = null;
+			String classMethod = null;
 			try{
 				//Exponential
-				if(currentOperation.get(1).equals("^")){
-					operationFound = true;
-					double var1 = Double.parseDouble(currentOperation.get(0));
-					double var2 = Double.parseDouble(currentOperation.get(2));
-					double total = Math.pow(var1, var2);
-					split.set(operationOffset, Double.toString(total));
-					split.remove(operationOffset+1);
-					split.remove(operationOffset+1);
-					//System.out.println(listToString(split) + " -After one operation.");
-					continue;
-				}
+				if(doOperation(currentOperation, "^", operationOffset, split, operationClass, classMethod)) continue;
 				
 				//Multiplication
-				if(currentOperation.get(1).equals("*")){
-					operationFound = true;
-					double var1 = Double.parseDouble(currentOperation.get(0));
-					double var2 = Double.parseDouble(currentOperation.get(2));
-					double total = var1*var2;
-					split.set(operationOffset, Double.toString(total));
-					split.remove(operationOffset+1);
-					split.remove(operationOffset+1);
-					//System.out.println(listToString(split) + " -After one operation.");
-					continue;
-				}
+				if(doOperation(currentOperation, "*", operationOffset, split, operationClass, classMethod)) continue;
 				
 				//Division
-				if(currentOperation.get(1).equals("/")){
-					operationFound = true;
-					double var1 = Double.parseDouble(currentOperation.get(0));
-					double var2 = Double.parseDouble(currentOperation.get(2));
-					double total = var1/var2;
-					split.set(operationOffset, Double.toString(total));
-					split.remove(operationOffset+1);
-					split.remove(operationOffset+1);
-					//System.out.println(listToString(split) + " -After one operation.");
-					continue;
-				}
+				if(doOperation(currentOperation, "/", operationOffset, split, operationClass, classMethod)) continue;
 				
 				//Addition
-				if(currentOperation.get(1).equals("+")){
-					operationFound = true;
-					double var1 = Double.parseDouble(currentOperation.get(0));
-					double var2 = Double.parseDouble(currentOperation.get(2));
-					double total = var1+var2;
-					split.set(operationOffset, Double.toString(total));
-					split.remove(operationOffset+1);
-					split.remove(operationOffset+1);
-					//System.out.println(listToString(split) + " -After one operation.");
-					continue;
-				}
+				if(doOperation(currentOperation, "+", operationOffset, split, operationClass, classMethod)) continue;
 				
 				//Subtraction
-				if(currentOperation.get(1).equals("-")){
-					operationFound = true;
-					double var1 = Double.parseDouble(currentOperation.get(0));
-					double var2 = Double.parseDouble(currentOperation.get(2));
-					double total = var1-var2;
-					split.set(operationOffset, Double.toString(total));
-					split.remove(operationOffset+1);
-					split.remove(operationOffset+1);
-					//System.out.println(listToString(split) + " -After one operation.");
-					continue;
-				}
+				if(doOperation(currentOperation, "-", operationOffset, split, operationClass, classMethod)) continue;
 				
+				operationFound = false;
 				//System.out.println("No operations done");
-			}catch(Exception e){}
+			}catch(Exception e){operationFound = false;}
 			
 		}while(operationFound);
 		
 		return listToString(split);
+	}
+	
+	private static boolean doOperation(List<String> operationString, String operation, int listOffset, List<String> operationList, Class<?> operationClass, String classMethod){
+		if((!operationString.get(1).equals(operation) && operationString.size() == 3) || 
+		   (!operationString.get(0).equals(operation) && operationString.size() == 4) ||
+		   (operationString.size() != 4 && operationString.size() != 3)) return false;
+		
+		double total = 0;
+		double var1 = 0;
+		double var2 = 0;
+		
+		try{
+			var1 = Double.parseDouble(operationString.get(0));
+		}catch(Exception e){}
+		var2 = Double.parseDouble(operationString.get(2));
+		
+		
+		switch(operationString.get(1)){
+		case"^":
+			total = Math.pow(var1, var2);
+			break;
+		case"*":
+			total = var1*var2;
+			break;
+		case"/":
+			total = var1/var2;
+			break;
+		case"+":
+			total = var1+var2;
+			break;
+		case"-":
+			total = var1-var2;
+			break;
+		default:
+			try{
+				Method operationMethod = operationClass.getMethod(classMethod, Double.class);
+				Object o = new Object();
+				total = (double) operationMethod.invoke(o, var1, var2);
+			}catch(Exception e1){
+				System.out.println("No such operation: " + operationClass.getSimpleName() + "." + classMethod + "(double var)");
+			}
+			break;
+		}
+		operationList.set(listOffset, Double.toString(total));
+		operationList.remove(listOffset+1);
+		operationList.remove(listOffset+1);
+		return true;
 	}
 	
 	private static String listToString(List<String> list){
