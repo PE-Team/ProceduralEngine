@@ -5,7 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
-import ptg.engine.main.PTG;
+import ptg.util.Util;
 
 public class StringToOperationConverter {
 
@@ -21,7 +21,7 @@ public class StringToOperationConverter {
 	 *  	  
 	 */
 	
-	private static List<Object> parameters = new ArrayList<Object>();
+	private static List<String> parameters = new ArrayList<String>();
 	private static String operationString;
 	private static String outputString;
 	private static boolean continuePrompting = true;
@@ -51,21 +51,14 @@ public class StringToOperationConverter {
 		// Split the operationString by special characters to make the next step easier
 		for(int i = 0; i < operationString.length(); i++){
 			switch(operationString.charAt(i)){
-				case'<':case'@':
+				case'@':
 					if(split.get(pointer) != ""){
 						pointer++;
 						split.add("");
 					}
 					split.set(pointer, split.get(pointer) + operationString.charAt(i));
 					break;
-				case'>':
-					split.set(pointer, split.get(pointer) + operationString.charAt(i));
-					if(split.get(pointer) != ""){
-						pointer++;
-						split.add("");
-					};
-					break;
-				case'+':case'-':case'*':case'/':case'^':case'%':case'(':case')':
+				case'+':case'-':case'*':case'/':case'^':case'%':case'(':case')':case'<':case'>':
 					if(split.get(pointer) != ""){
 						pointer++;
 						split.add("");
@@ -75,7 +68,7 @@ public class StringToOperationConverter {
 					split.add("");
 					break;
 				case'0':case'1':case'2':case'3':case'4':case'5':case '6':case'7':case'8':case'9':case'.':
-					if((i>0 && (isNumber(operationString.charAt(i-1)) || operationString.charAt(i-1) == '.')) || 
+					if((i>0 && (Util.isNumber(operationString.charAt(i-1)) || operationString.charAt(i-1) == '.')) || 
 					   (i>1 && operationString.charAt(i-1) == 'p' && operationString.charAt(i-2) == '@')){
 						split.set(pointer, split.get(pointer) + operationString.charAt(i));
 					}else{
@@ -87,7 +80,7 @@ public class StringToOperationConverter {
 					}
 					break;
 				default:
-					if(i>0 && isNumber(operationString.charAt(i-1))){
+					if(i>0 && Util.isNumber(operationString.charAt(i-1))){
 						pointer++;
 						split.add("");
 					}
@@ -96,7 +89,7 @@ public class StringToOperationConverter {
 			}
 		}
 		
-		//System.out.println(listToString(split) + " -After inserting all the parameters");
+		//System.out.println(Util.listToString(split) + " -After inserting all the parameters");
 		
 		//Remove the last part of the list if it doesn't include anything
 		if(split.get(split.size()-1) == ""){
@@ -107,7 +100,7 @@ public class StringToOperationConverter {
 		for(int i = 0; i < split.size(); i++){
 			
 			// Replace all @p[number] with its respective parameter
-			if(split.get(i).length() > 2 && split.get(i).charAt(0) == '@' && split.get(i).charAt(1) == 'p' && isNumber(split.get(i).charAt(2))){
+			if(split.get(i).length() > 2 && split.get(i).charAt(0) == '@' && split.get(i).charAt(1) == 'p' && Util.isNumber(split.get(i).charAt(2))){
 				String integer = "";
 				int paramIndex = 0;
 				for(int j = 2; j < split.get(i).length(); j++){
@@ -116,11 +109,11 @@ public class StringToOperationConverter {
 				if(integer != ""){
 					paramIndex = Integer.parseInt(integer);
 				}else{
-					System.err.println("PARAMETER INDEX INCOMPLETE");
+					//System.err.println("PARAMETER INDEX INCOMPLETE");
 					System.exit(2);
 				}
 				
-				split.set(i, (String) parameters.get(paramIndex));
+				split.set(i, parameters.get(paramIndex));
 			}
 			
 			// Replace all <[letters]> with its respective value
@@ -129,7 +122,7 @@ public class StringToOperationConverter {
 			}
 		}
 		
-		//System.out.println(listToString(split) + " -After inserting all variables");
+		//System.out.println(Util.listToString(split) + " -After inserting all variables");
 		
 		// Continue to do operations until they are all finished
 		boolean operationFound = true;
@@ -137,31 +130,33 @@ public class StringToOperationConverter {
 		int operationOffset = 0;
 		int leftOffset = -1;
 		int rightOffset = -1;
-		int chars = 0;
 		do{
+			//System.out.println(split.toString());
+			
 			operationOffset = 0;
 			//Remove unwanted characters
 			leftOffset = -1;
 			rightOffset = -1;
 			for(int i = 0; i < split.size(); i++){
 				// Parentheses
-				if(existsChar(split.get(i),'(')){
+				if(Util.existsChar(split.get(i),'(')){
 					leftOffset = i;
 				}
-				if(existsChar(split.get(i),')') && leftOffset >=0){
+				if(Util.existsChar(split.get(i),')') && leftOffset >=0){
 					rightOffset = i;
 				}
 				if(rightOffset - leftOffset <= 2 && leftOffset >= 0 && rightOffset >= leftOffset){
 					split.remove(leftOffset);
 					split.remove(rightOffset-1);
-					//System.out.println(listToString(split) + " -After cutting down parentheses.");
-					break;
+					leftOffset = -1;
+					rightOffset = -1;
+					//System.out.println(Util.listToString(split) + " -After cutting down parentheses.");
 				}
 			}
 			
-			cloneList(currentOperation, split);
+			Util.cloneList(currentOperation, split);
 			
-			// Get a list which has exactly one operation in it but also is of the hightest priority
+			// Get a list which has exactly one operation in it but also is of the highest priority
 		
 			//PEMDAS
 			//Parentheses, Exponents, Multiplication, Division, Addition, Subtraction
@@ -171,98 +166,56 @@ public class StringToOperationConverter {
 			leftOffset = -1;
 			rightOffset = -1;
 			for(int j = 0; j < currentOperation.size(); j++){
-				if(existsChar(currentOperation.get(j),'(')){
+				if(Util.existsChar(currentOperation.get(j),'(')){
 					leftOffset = j;
 				}
-				if(existsChar(currentOperation.get(j),')') && leftOffset >=0){
+				if(Util.existsChar(currentOperation.get(j),')') && leftOffset >=0){
 					rightOffset = j;
 				}
 				if(rightOffset - leftOffset >= 3 && leftOffset >= 0 && rightOffset >= leftOffset){
 					pointer = 0;
-					int length = currentOperation.size();
 					operationOffset += leftOffset+1;
-					shrinkList(currentOperation, operationOffset, rightOffset-1);
-					//System.out.println(listToString(currentOperation) + " -After cutting down outside parts.");
+					Util.shrinkList(currentOperation, operationOffset, rightOffset-1);
+					//System.out.println(Util.listToString(currentOperation) + " -After cutting down outside parts.");
+					break;
+				}
+			}
+			
+			// Custom Functions
+			leftOffset = -1;
+			rightOffset = -1;
+			for(int j = 0; j < currentOperation.size(); j++){
+				if(Util.existsChar(currentOperation.get(j),'<')){
+					leftOffset = j;
+				}
+				if(Util.existsChar(currentOperation.get(j),'>') && leftOffset >=0){
+					rightOffset = j;
+				}
+				if(rightOffset - leftOffset >= 2 && leftOffset >= 0 && rightOffset >= leftOffset && Util.isNumber(currentOperation.get(j+1))){
+					pointer = 0;
+					operationOffset += leftOffset;
+					Util.shrinkList(currentOperation, operationOffset, rightOffset+1);
+					//System.out.println(Util.listToString(currentOperation) + " -After cutting down outside parts.");
 					break;
 				}
 			}
 			
 			// Exponentials
-			leftOffset = -1;
-			rightOffset = -1;
-			chars = currentOperation.size();
-			for(int j = 0; j < chars; j++){
-				if(existsChar(currentOperation.get(j),'^') && j>0){
-					leftOffset = j-1;
-					rightOffset = j+1;
-					operationOffset += leftOffset;
-					shrinkList(currentOperation, leftOffset, rightOffset);
-					//System.out.println(listToString(currentOperation) + " -After cutting down outside parts.");
-					break;
-				}
-			}
+			operationOffset += reduceOperations(currentOperation, '^');
 			
 			// Multiplication
-			leftOffset = -1;
-			rightOffset = -1;
-			chars = currentOperation.size();
-			for(int j = 0; j < chars; j++){
-				if(existsChar(currentOperation.get(j),'*') && j>0){
-					leftOffset = j-1;
-					rightOffset = j+1;
-					operationOffset += leftOffset;
-					shrinkList(currentOperation, leftOffset, rightOffset);
-					//System.out.println(listToString(currentOperation) + " -After cutting down outside parts.");
-					break;
-				}
-			}
+			operationOffset += reduceOperations(currentOperation, '*');
 			
 			// Division
-			leftOffset = -1;
-			rightOffset = -1;
-			chars = currentOperation.size();
-			for(int j = 0; j < chars; j++){
-				if(existsChar(currentOperation.get(j),'/') && j>0){
-					leftOffset = j-1;
-					rightOffset = j+1;
-					operationOffset += leftOffset;
-					shrinkList(currentOperation, leftOffset, rightOffset);
-					//System.out.println(listToString(currentOperation) + " -After cutting down outside parts.");
-					break;
-				}
-			}
+			operationOffset += reduceOperations(currentOperation, '/');
 			
 			// Addition
-			leftOffset = -1;
-			rightOffset = -1;
-			chars = currentOperation.size();
-			for(int j = 0; j < chars; j++){
-				if(existsChar(currentOperation.get(j),'+') && j>0){
-					leftOffset = j-1;
-					rightOffset = j+1;
-					operationOffset += leftOffset;
-					shrinkList(currentOperation, leftOffset, rightOffset);
-					//System.out.println(listToString(currentOperation) + " -After cutting down outside parts.");
-					break;
-				}
-			}
+			operationOffset += reduceOperations(currentOperation, '+');
 			
 			// Subtraction
-			leftOffset = -1;
-			rightOffset = -1;
-			chars = currentOperation.size();
-			for(int j = 0; j < chars; j++){
-				if(existsChar(currentOperation.get(j),'-') && j>0){
-					leftOffset = j-1;
-					rightOffset = j+1;
-					operationOffset += leftOffset;
-					shrinkList(currentOperation, leftOffset, rightOffset);
-					//System.out.println(listToString(currentOperation) + " -After cutting down outside parts.");
-					break;
-				}
-			}
+			operationOffset += reduceOperations(currentOperation, '-');
 			
-			//System.out.println(listToString(currentOperation) + " -After cutting down to one operation.");
+			//System.out.println(Util.listToString(currentOperation) + " -After cutting down to one operation.");
 			
 			// Do the operation needed
 			Class<?> operationClass = null;
@@ -283,19 +236,55 @@ public class StringToOperationConverter {
 				//Subtraction
 				if(doOperation(currentOperation, "-", operationOffset, split, operationClass, classMethod)) continue;
 				
+				//Cosine
+				if(doOperation(currentOperation, "cos", operationOffset, split, Math.class, "cos")) continue;
+
+				//Sine
+				if(doOperation(currentOperation, "sin", operationOffset, split, Math.class, "sin")) continue;
+				
+				//Tangent
+				if(doOperation(currentOperation, "tan", operationOffset, split, Math.class, "tan")) continue;
+				
+				//Inverse Cosine / ArcCosine
+				if(doOperation(currentOperation, "acos", operationOffset, split, Math.class, "acos")) continue;
+				
+				//Inverse Sine / ArcSine
+				if(doOperation(currentOperation, "asin", operationOffset, split, Math.class, "asin")) continue;
+				
+				//Inverse Tangent / ArcTangent
+				if(doOperation(currentOperation, "atan", operationOffset, split, Math.class, "atan")) continue;
+				
 				operationFound = false;
 				//System.out.println("No operations done");
 			}catch(Exception e){operationFound = false;}
 			
 		}while(operationFound);
 		
-		return listToString(split);
+		return Util.listToString(split);
+	}
+
+	private static int reduceOperations(List<String> currentOperation, char operation) {
+		int leftOffset = -1;
+		int rightOffset = -1;
+		int operationOffset = 0;
+		int chars = currentOperation.size();
+		for(int j = 0; j < chars; j++){
+			if(Util.existsChar(currentOperation.get(j),operation) && j>0){
+				leftOffset = j-1;
+				rightOffset = j+1;
+				operationOffset += leftOffset;
+				Util.shrinkList(currentOperation, leftOffset, rightOffset);
+				//System.out.println(Util.listToString(currentOperation) + " -After cutting down outside parts.");
+				break;
+			}
+		}
+		return operationOffset;
 	}
 	
 	private static boolean doOperation(List<String> operationString, String operation, int listOffset, List<String> operationList, Class<?> operationClass, String classMethod){
-		if((!operationString.get(1).equals(operation) && operationString.size() == 3) || 
-		   (!operationString.get(0).equals(operation) && operationString.size() == 4) ||
-		   (operationString.size() != 4 && operationString.size() != 3)) return false;
+		int length = operationString.size();
+		if((!operationString.get(1).equals(operation)) ||
+		   (length != 4 && length != 3)) return false;
 		
 		double total = 0;
 		double var1 = 0;
@@ -303,8 +292,10 @@ public class StringToOperationConverter {
 		
 		try{
 			var1 = Double.parseDouble(operationString.get(0));
-		}catch(Exception e){}
-		var2 = Double.parseDouble(operationString.get(2));
+			var2 = Double.parseDouble(operationString.get(2));
+		}catch(Exception e){
+			var1 = Double.parseDouble(operationString.get(3));
+		}
 		
 		
 		switch(operationString.get(1)){
@@ -325,80 +316,27 @@ public class StringToOperationConverter {
 			break;
 		default:
 			try{
-				Method operationMethod = operationClass.getMethod(classMethod, Double.class);
+				Method operationMethod = operationClass.getMethod(classMethod, double.class);
 				Object o = new Object();
-				total = (double) operationMethod.invoke(o, var1, var2);
-			}catch(Exception e1){
-				System.out.println("No such operation: " + operationClass.getSimpleName() + "." + classMethod + "(double var)");
+				total = (double) operationMethod.invoke(o, var1);
+			}catch(Exception e){
+				e.printStackTrace();
+				System.out.println("No such operation: " + operationClass.getName() + "." + classMethod + "(double var)");
 			}
 			break;
 		}
 		operationList.set(listOffset, Double.toString(total));
 		operationList.remove(listOffset+1);
 		operationList.remove(listOffset+1);
+		if(length == 4) operationList.remove(listOffset+1);
 		return true;
-	}
-	
-	private static String listToString(List<String> list){
-		String result = "";
-		for(int i = 0; i < list.size(); i++){
-			result+=list.get(i);
-		}
-		return result;
-	}
-	
-	private static List shrinkList(List list, int min, int max){
-		int size = list.size();
-		for(int i = 0; i < size-max-1; i++){
-			list.remove(max+1);
-		}
-		for(int i = 0; i < min; i++){
-			list.remove(0);
-		}
-		return list;
-	}
-	
-	private static List cloneList(List list1, List list2){
-		list1.clear();
-		for(int i = 0; i < list2.size(); i++){
-			list1.add(list2.get(i));
-		}
-		return list1;
-	}
-	
-	private static boolean existsChar(String string, char character){
-		for(int i = 0; i < string.length(); i++){
-			if(string.charAt(i) == character) return true;
-		}
-		return false;
-	}
-	
-	private static boolean isNumber(String string){
-		boolean decimal = false;
-		for(int i = 0; i < string.length(); i++){
-			if(!isNumber(string.charAt(i)) && (string.charAt(i) != '.' || decimal)){
-				return false;
-			}else if(string.charAt(i) == '.'){
-				decimal = true;
-			}
-		}
-		return true;
-	}
-	
-	private static boolean isNumber(char character){
-		for(int i = 0; i < PTG.CHARSET_NUMBERS.length; i++){
-			if(PTG.CHARSET_NUMBERS[i] == character){
-				return true;
-			}
-		}
-		return false;
 	}
 	
 	public static void setOperationString(String string){
 		operationString = string;
 	}
 	
-	public static void setParameters(Object... params){
+	public static void setParameters(String... params){
 		for(int i = 0; i < params.length; i++){
 			parameters.add(params[i]);
 		}
