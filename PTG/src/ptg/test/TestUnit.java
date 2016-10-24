@@ -30,7 +30,6 @@ public class TestUnit {
 	}
 	
 	public void run(){
-		runTestCase(new Vec3f(), new Vec3f());
 	}
 	
 	public void run(Object obj){
@@ -48,7 +47,8 @@ public class TestUnit {
 			System.err.println("DID NOT WORK");
 		}
 		input = Test.parse(result);
-		if(!input.equals(expected)) System.out.println("input: " + input + ", expected: " + expected);
+		if(!input.equals(expected)) System.out.println("FAILED: input: " + input + ", expected: " + expected);
+		if(input.equals(expected)) System.out.println("SUCCESS: input: " + input + ", expected: " + expected);
 	}
 	
 	public void setExpectedCalculation(String string){

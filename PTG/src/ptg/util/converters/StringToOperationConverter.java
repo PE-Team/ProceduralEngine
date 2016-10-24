@@ -246,13 +246,13 @@ public class StringToOperationConverter {
 				if(doOperation(currentOperation, "tan", operationOffset, split, Math.class, "tan")) continue;
 				
 				//Inverse Cosine / ArcCosine
-				if(doOperation(currentOperation, "acos", operationOffset, split, Math.class, "acos")) continue;
+				if(doOperation(currentOperation, "arccos", operationOffset, split, Math.class, "acos")) continue;
 				
 				//Inverse Sine / ArcSine
-				if(doOperation(currentOperation, "asin", operationOffset, split, Math.class, "asin")) continue;
+				if(doOperation(currentOperation, "arcsin", operationOffset, split, Math.class, "asin")) continue;
 				
 				//Inverse Tangent / ArcTangent
-				if(doOperation(currentOperation, "atan", operationOffset, split, Math.class, "atan")) continue;
+				if(doOperation(currentOperation, "arctan", operationOffset, split, Math.class, "atan")) continue;
 				
 				operationFound = false;
 				//System.out.println("No operations done");

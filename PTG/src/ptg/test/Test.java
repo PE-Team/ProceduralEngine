@@ -41,14 +41,16 @@ public abstract class Test {
 		// Parse NULL
 		if(result.equals(null)) return "NULL OBJECT";
 		// Parse Vec3f
-		if(result.getClass() == Vec3f.class) return parseVec3f(result);
+		try{
+			Method toString = result.getClass().getMethod("toString", null);
+			return (String) toString.invoke(result, null);
+		}catch(Exception e){
+			// The parse method for Objects contained in other libraries go here
+			
+			// If there is not parse method made or the toString() method does not exist, this occurs
+			System.err.println("NO SUCH METHOD toString() IN " + result.getClass().getSimpleName() + " WITH PARAM: NULL");
+		}
 		
-		
-		return null;
-	}
-	
-	public static String parseVec3f(Object result){
-		Vec3f resultVec = (Vec3f) result;
 		
 		return null;
 	}
