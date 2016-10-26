@@ -1,5 +1,6 @@
 package ptg.util;
 
+import java.lang.reflect.Method;
 import java.util.List;
 
 import ptg.engine.main.PTG;
@@ -59,6 +60,16 @@ public class Util {
 			if(string.charAt(i) == character) return true;
 		}
 		return false;
+	}
+
+	public static Method getMethod(Class<?> testedClass, String name, List<Class<?>> paramClasses){
+		try {
+			return testedClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[0]));
+		} catch (Exception e) {
+			System.err.println("NO SUCH METHOD FOUND");
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 }

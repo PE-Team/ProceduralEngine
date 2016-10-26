@@ -1,9 +1,11 @@
-package ptg.test;
+package ptg.test.main;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import ptg.engine.main.PTG;
+import ptg.test.testUnits.DemoTest;
+import ptg.test.testUnits.Vec3fTest;
 
 public class TestRunner {
 	
@@ -16,7 +18,7 @@ public class TestRunner {
 	
 	public static void initialize(){
 		
-		tests.add(new Vec3fTest());
+		tests.add(new DemoTest());
 	}
 	
 	public static void runTests(){

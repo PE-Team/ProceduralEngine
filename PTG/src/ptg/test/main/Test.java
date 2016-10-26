@@ -1,4 +1,4 @@
-package ptg.test;
+package ptg.test.main;
 
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -52,16 +52,6 @@ public abstract class Test {
 		}
 		
 		
-		return null;
-	}
-	
-	public static Method getMethod(Class<?> testedClass, String name, List<Class<?>> paramClasses){
-		try {
-			return testedClass.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[0]));
-		} catch (Exception e) {
-			System.err.println("NO SUCH METHOD FOUND");
-			e.printStackTrace();
-		}
 		return null;
 	}
 	

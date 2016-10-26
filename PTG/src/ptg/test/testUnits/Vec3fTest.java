@@ -1,5 +1,7 @@
-package ptg.test;
+package ptg.test.testUnits;
 
+import ptg.test.main.Test;
+import ptg.test.main.TestUnit;
 import ptg.util.maths.Vec3f;
 
 public class Vec3fTest extends Test{
@@ -12,7 +14,7 @@ public class Vec3fTest extends Test{
 		paramClasses.add(Vec3f.class);
 		paramClasses.add(Vec3f.class);
 		TestUnit testAdd = new TestUnit(this.testedClass,"add",paramClasses);
-		testAdd.setExpectedCalculation("{@p1,@p2,@p3}");
+		testAdd.setExpectedCalculation("{@p0+@p3,@p1+@p4,@p2+@p5}");
 		//testAdd.run();
 	}
 	

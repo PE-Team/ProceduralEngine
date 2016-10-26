@@ -21,20 +21,23 @@ public class StringToOperationConverter {
 	 *  	  
 	 */
 	
-	private static List<String> parameters = new ArrayList<String>();
-	private static String operationString;
+	private List<String> parameters = new ArrayList<String>();
+	private String operationString;
 	private static String outputString;
-	private static boolean continuePrompting = true;
+	private boolean continuePrompting = true;
 	private static Scanner scanner;
 	
 	public static void main(String... args){
 		scanner = new Scanner(System.in);
-		promptOperationString();
-		promptParameters();
+		StringToOperationConverter operation = new StringToOperationConverter();
+		operation.promptOperationString();
+		operation.promptParameters();
 		scanner.close();
-		outputString = operateOnString();
+		outputString = operation.operateOnString();
 		System.out.println(outputString + " -Final output");
 	}
+	
+	public StringToOperationConverter(){}
 	
 	//{<pi>,1+@p0,{@p1*@p2,49/50}}
 	//param0 = 4, param1 = 7, param2 = 31
@@ -43,7 +46,7 @@ public class StringToOperationConverter {
 	
 	//(1+2)+3
 	//6
-	public static String operateOnString(){
+	public String operateOnString(){
 		List<String> split = new ArrayList<String>();
 		split.add("");
 		int pointer = 0;
@@ -332,28 +335,28 @@ public class StringToOperationConverter {
 		return true;
 	}
 	
-	public static void setOperationString(String string){
-		operationString = string;
+	public void setOperationString(String string){
+		this.operationString = string;
 	}
 	
-	public static void setParameters(String... params){
+	public void setParameters(String... params){
 		for(int i = 0; i < params.length; i++){
-			parameters.add(params[i]);
+			this.parameters.add(params[i]);
 		}
 	}
 	
-	private static void promptOperationString(){
+	private void promptOperationString(){
 		System.out.println("Operation: ");
 		operationString = scanner.next();
 	}
 	
-	private static void promptParameters(){
+	private void promptParameters(){
 		while(continuePrompting){
 			promptParameter();
 		}
 	}
 	
-	private static void promptParameter(){
+	private void promptParameter(){
 		System.out.println("Is there another parameter (y/n): ");
 		String answer = scanner.next();
 		if(answer.equals("y")){
