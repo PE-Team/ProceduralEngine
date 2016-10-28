@@ -3,10 +3,6 @@ package ptg.test.testCases;
 import ptg.test.main.TestCase;
 
 public class FloatTestCase extends TestCase{
-
-	public FloatTestCase(){
-		super();
-	}
 	
 	public float testZero(){
 		return 0;

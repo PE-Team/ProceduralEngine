@@ -125,7 +125,17 @@ public class StringToOperationConverter {
 			}
 		}
 		
-		//System.out.println(Util.listToString(split) + " -After inserting all variables");
+		// Combine negatives with their respective numbers
+		for(int i = 0; i < split.size(); i++){
+			if(i + 1 >= split.size()) continue;
+			if(Util.existsChar(split.get(i), '-') && Util.isNumber(split.get(i+1)) && (i == 0 || !Util.isNumber(split.get(i-1)))){
+				String newString = split.get(i) + split.get(i+1);
+				split.set(i, newString);
+				split.remove(i+1);
+			}
+		}
+		
+		//System.out.println(split.toString() + " -After inserting all variables");
 		
 		// Continue to do operations until they are all finished
 		boolean operationFound = true;
@@ -221,23 +231,21 @@ public class StringToOperationConverter {
 			//System.out.println(Util.listToString(currentOperation) + " -After cutting down to one operation.");
 			
 			// Do the operation needed
-			Class<?> operationClass = null;
-			String classMethod = null;
 			try{
 				//Exponential
-				if(doOperation(currentOperation, "^", operationOffset, split, operationClass, classMethod)) continue;
+				if(doOperation(currentOperation, "^", operationOffset, split, null, null)) continue;
 				
 				//Multiplication
-				if(doOperation(currentOperation, "*", operationOffset, split, operationClass, classMethod)) continue;
+				if(doOperation(currentOperation, "*", operationOffset, split, null, null)) continue;
 				
 				//Division
-				if(doOperation(currentOperation, "/", operationOffset, split, operationClass, classMethod)) continue;
+				if(doOperation(currentOperation, "/", operationOffset, split, null, null)) continue;
 				
 				//Addition
-				if(doOperation(currentOperation, "+", operationOffset, split, operationClass, classMethod)) continue;
+				if(doOperation(currentOperation, "+", operationOffset, split, null, null)) continue;
 				
 				//Subtraction
-				if(doOperation(currentOperation, "-", operationOffset, split, operationClass, classMethod)) continue;
+				if(doOperation(currentOperation, "-", operationOffset, split, null, null)) continue;
 				
 				//Cosine
 				if(doOperation(currentOperation, "cos", operationOffset, split, Math.class, "cos")) continue;
@@ -272,7 +280,7 @@ public class StringToOperationConverter {
 		int operationOffset = 0;
 		int chars = currentOperation.size();
 		for(int j = 0; j < chars; j++){
-			if(Util.existsChar(currentOperation.get(j),operation) && j>0){
+			if(Util.existsChar(currentOperation.get(j),operation) && j>0 && !Util.isNumber(currentOperation.get(j))){
 				leftOffset = j-1;
 				rightOffset = j+1;
 				operationOffset += leftOffset;
