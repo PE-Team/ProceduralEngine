@@ -32,6 +32,10 @@ public class StringToIntConverter {
 	public static void setCharset(char[] chars) {
 		charset = chars;
 	}
+	
+	public static String cutString(String string, int maxLength){
+		return string.length() <= maxLength ? string : string.substring(0,maxLength);
+	}
 
 	public static int stringToInt(String string) {
 		int numb = -1;

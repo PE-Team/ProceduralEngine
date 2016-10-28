@@ -1,4 +1,4 @@
-package ptg.util.data;
+package ptg.util;
 
 public class Data {
 

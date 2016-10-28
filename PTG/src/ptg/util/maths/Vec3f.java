@@ -60,4 +60,8 @@ public class Vec3f {
 	public float length(){
 		return (float) Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
 	}
+	
+	public String toString(){
+		return "{" + this.x + "," + this.y + "," + this.z + "}";
+	}
 }
