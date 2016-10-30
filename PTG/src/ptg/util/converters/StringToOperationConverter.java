@@ -120,8 +120,10 @@ public class StringToOperationConverter {
 			}
 			
 			// Replace all <[letters]> with its respective value
-			if(split.get(i).charAt(0) == '<' && split.get(i).charAt(split.get(i).length() - 1) == '>'){
-				if(split.get(i).equals("<pi>")) split.set(i, Double.toString(Math.PI));
+			if(i+2 < split.size() && split.get(i).equals("<") && split.get(i+2).equals(">")){
+				if(split.get(i+1).equals("pi")) split.set(i, Double.toString(Math.PI));
+				split.remove(i+1);
+				split.remove(i+1);
 			}
 		}
 		
