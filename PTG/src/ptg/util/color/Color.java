@@ -8,6 +8,12 @@ public class Color {
 
 	public float r,g,b,a;
 	
+	public static final Color BLACK = new Color(0,0,0);
+	public static final Color RED = new Color(255,0,0);
+	public static final Color ORANGE = new Color(255, 165, 0);
+	public static final Color BLUE = new Color(0,0,255);
+	public static final Color GREEN = new Color(0,255,0);
+	
 	public Color(float r, float g, float b){
 		this.r = r;
 		this.g = g;
@@ -63,5 +69,10 @@ public class Color {
 		this.g = 255-g;
 		this.b = 255-b;
 		return this;
+	}
+	
+	public java.awt.Color getJColor(){
+		this.toDecimal();
+		return new java.awt.Color(this.r, this.g, this.b, this.a);
 	}
 }
