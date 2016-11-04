@@ -5,6 +5,7 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.Window;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import javax.swing.JFrame;
@@ -12,8 +13,17 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.JTextPane;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.DefaultStyledDocument;
+import javax.swing.text.SimpleAttributeSet;
+import javax.swing.text.Style;
+import javax.swing.text.StyleConstants;
+import javax.swing.text.StyledDocument;
 
+import ptg.util.Timer;
 import ptg.util.color.Color;
+import ptg.util.Util;
 
 public class Console {
 	
@@ -24,13 +34,16 @@ public class Console {
 	
 	private JFrame consoleFrame;
 	private JPanel consolePanel;
-	private JTextArea consoleOutput;
+	private JTextPane consoleOutputPane;
+	private StyledDocument consoleOutput;
 	private Font consoleFont;
 	private JScrollPane consoleOutputScrollbar;
 	
+	private SimpleAttributeSet logText, errText, warnText, sucText;
+	
 	private double ratioWidth, ratioHeight;
 	
-	public int pointer;
+	public int linePointer;
 
 	public Console(){
 		this.logFileName = "defaultConsoleLogFile.log";
@@ -40,17 +53,51 @@ public class Console {
 	
 	public static void main(String...args){
 		Console console = new Console().start();
-		console.log("This is Black");
-		console.setTextColor(Color.RED).log("This is a failure");
-		console.setTextColor(Color.ORANGE).log("This is a warning");
-		console.setTextColor(Color.GREEN).log("This is a success");
+		Timer timer = new Timer();
+		
+		console.logln("Well hello");
+		timer.setWaitTime(200).start();
+		console.warnln("I will be leaving soon");
+		timer.setWaitTime(200).start();
+		console.errln("Very, VERY soon");
+		timer.setWaitTime(200).start();
+		console.logln("Bye bye!");
+		timer.setWaitTime(50).start();
+		console.clearln(3);
+	}
+	
+	private void initAttribs(){
+		Object fontForground = StyleConstants.CharacterConstants.Foreground;
+		Object fontSize = StyleConstants.CharacterConstants.FontSize;
+		Object fontFamily = StyleConstants.CharacterConstants.FontFamily;
+		
+		int defaultTextSize = mulRatio(36, ratioHeight);
+		String defaultFontFamily = "Verdana";
+		
+		logText = new SimpleAttributeSet();
+		logText.addAttribute(fontForground, textColor.getJColor());
+		logText.addAttribute(fontSize, defaultTextSize);
+		logText.addAttribute(fontFamily, defaultFontFamily);
+		
+		errText = new SimpleAttributeSet();
+		errText.addAttribute(fontForground, Color.RED.getJColor());
+		errText.addAttribute(fontSize, defaultTextSize);
+		errText.addAttribute(fontFamily, defaultFontFamily);
+		
+		warnText = new SimpleAttributeSet();
+		warnText.addAttribute(fontForground, Color.ORANGE.getJColor());
+		warnText.addAttribute(fontSize, defaultTextSize);
+		warnText.addAttribute(fontFamily, defaultFontFamily);
+		
+		sucText = new SimpleAttributeSet();
+		sucText.addAttribute(fontForground, Color.GREEN.getJColor());
+		sucText.addAttribute(fontSize, defaultTextSize);
+		sucText.addAttribute(fontFamily, defaultFontFamily);
 	}
 	
 	private void createWindow(){
 		ratioWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth()/3000;
 		ratioHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2000;
-		
-		consoleFont = new Font("Verdana", Font.PLAIN, mulRatio(36, ratioHeight));
 		
 		consoleFrame = new JFrame("Console");
 		consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -63,12 +110,14 @@ public class Console {
 		consolePanel = new JPanel();
 		
 		// CONSOLE OUTPUT AREA
-		consoleOutput = new JTextArea();
-		consoleOutput.setFont(consoleFont);
-		consoleOutput.setForeground(textColor.getJColor());
+		consoleOutputPane = new JTextPane();
+		
+		consoleOutput = consoleOutputPane.getStyledDocument();
+		
+		initAttribs();
 		
 		// SCROLLBAR
-		consoleOutputScrollbar = new JScrollPane(consoleOutput);
+		consoleOutputScrollbar = new JScrollPane(consoleOutputPane);
 		consoleOutputScrollbar.getVerticalScrollBar().setPreferredSize(new Dimension(mulRatio(30,ratioWidth),0));
 		
 		consoleFrame.add(consolePanel);
@@ -100,12 +149,12 @@ public class Console {
 		
 	}
 	
-	public Console overrideln(){
-		overrideln(pointer);
+	public Console overrideln(String msg){
+		overrideln(linePointer, msg);
 		return this;
 	}
 	
-	public Console overrideln(int lineNumber){
+	public Console overrideln(int lineNumber, String msg){
 		
 		return this;
 	}
@@ -116,7 +165,9 @@ public class Console {
 	}
 	
 	public Console overrideChars(int start, int end){
-		
+		for(int i = start; i < end; i++){
+			overrideChar(i);
+		}
 		return this;
 	}
 	
@@ -130,12 +181,32 @@ public class Console {
 	}
 	
 	public Console clear(){
-		
+		//TODO logs all of the console to the logFile
+		try {
+			consoleOutput.remove(0, consoleOutput.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 		return this;
 	}
 	
-	public Console clear(int lineNumber){
-		
+	public Console clear(int indexStart, int indexEnd){
+		try {
+			consoleOutput.remove(indexStart, indexEnd-indexStart);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	public Console clearln(){
+		clearln(linePointer);
+		return this;
+	}
+	
+	public Console clearln(int lineNumber){
+		int[] lineIndeces = Util.getNewLineIndeces(getText());
+		clear(lineIndeces[lineNumber-2], lineIndeces[lineNumber-1]);
 		return this;
 	}
 	
@@ -150,13 +221,68 @@ public class Console {
 		return this;
 	}
 	
+	public String getText(){
+		try {
+			return consoleOutput.getText(0, consoleOutput.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
 	public Console log(String msg){
-		consoleOutput.append(msg);
+		try {
+			consoleOutput.insertString(consoleOutput.getLength(), msg, logText);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 		return this;
 	}
 	
 	public Console logln(String msg){
 		log(msg + "\n");
+		return this;
+	}
+	
+	public Console err(String msg){
+		try {
+			consoleOutput.insertString(consoleOutput.getLength(), msg, errText);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	public Console errln(String msg){
+		err(msg + "\n");
+		return this;
+	}
+	
+	public Console warn(String msg){
+		try {
+			consoleOutput.insertString(consoleOutput.getLength(), msg, warnText);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	public Console warnln(String msg){
+		warn(msg + "\n");
+		return this;
+	}
+	
+	public Console logSuccess(String msg){
+		try {
+			consoleOutput.insertString(consoleOutput.getLength(), msg, sucText);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return this;
+	}
+	
+	public Console logSuccessln(String msg){
+		logSuccess(msg + "\n");
 		return this;
 	}
 	
@@ -172,7 +298,7 @@ public class Console {
 	
 	public Console setTextColor(Color color){
 		textColor = color;
-		consoleOutput.setForeground(textColor.getJColor());
+		logText.addAttribute(StyleConstants.CharacterConstants.Foreground, textColor.getJColor());
 		return this;
 	}
 }

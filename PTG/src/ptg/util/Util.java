@@ -32,6 +32,22 @@ public class Util {
 		}
 		return false;
 	}
+	
+	public static int[] getNewLineIndeces(String string){
+		int[] result = new int[0];
+		int[] old = result;
+		for(int i = 0 ; i < string.length(); i++){
+			if(string.charAt(i) == '\n'){
+				old = result;
+				result = new int[old.length+1];
+				for(int j = 0; j < old.length; j++){
+					result[j] = old[j];
+				}
+				result[old.length] = i;
+			}
+		}
+		return result;
+	}
 
 	public static List cloneList(List list1, List list2){
 		list1.clear();
