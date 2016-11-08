@@ -41,4 +41,8 @@ public class ConsoleQueue {
 	public int length(){
 		return this.length;
 	}
+	
+	public SimpleAttributeSet getAttrib(){
+		return this.attrib;
+	}
 }

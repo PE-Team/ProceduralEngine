@@ -61,9 +61,11 @@ public class Console_d {
 		console.setWriteToFile(true);
 		console.setLogFilePath();
 		
+		
 		Timer timer = new Timer(200);
 		
 		console.log("Well hello");
+		/*
 		timer.start();
 		console.warn("I will be leaving soon");
 		timer.start();
@@ -112,6 +114,7 @@ public class Console_d {
 		console.showLineNumbers(true);
 		timer.start();
 		console.showLineNumbers(false);
+		*/
 	}
 	
 	private void addLineNumbers(){
@@ -162,8 +165,6 @@ public class Console_d {
 			RandomAccessFile tempLog = new RandomAccessFile(logFilePath.toFile(), "rws");
 			tempLog.setLength(0);
 			tempLog.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -184,7 +185,7 @@ public class Console_d {
 		ratioWidth = Toolkit.getDefaultToolkit().getScreenSize().getWidth()/3000;
 		ratioHeight = Toolkit.getDefaultToolkit().getScreenSize().getHeight()/2000;
 		
-		consoleFrame = new JFrame("Console");
+		consoleFrame = new JFrame("Console_d");
 		consoleFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
 		int width = mulRatio(1500, ratioWidth);
@@ -200,7 +201,7 @@ public class Console_d {
 		consoleOutput = consoleOutputPane.getStyledDocument();
 		
 		initAttribs();
-		consoleOutput.setCharacterAttributes(0, consoleOutput.getLength()+1, logText, false);
+		consoleOutputPane.setCharacterAttributes(logText, false);
 		
 		// SCROLLBAR
 		consoleOutputScrollbar = new JScrollPane(consoleOutputPane);
