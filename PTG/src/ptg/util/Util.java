@@ -8,6 +8,14 @@ import java.util.List;
 import ptg.engine.main.PTG;
 
 public class Util {
+	
+	public static String addSpaces(String msg, int stringLength){
+		String result = "";
+		for(int i = 0; i < stringLength - msg.length(); i++){
+			result += " ";
+		}
+		return result + msg;
+	}
 
 	public static boolean isNumber(String string){
 		boolean decimal = false;
@@ -45,6 +53,42 @@ public class Util {
 				}
 				result[old.length] = i;
 			}
+		}
+		return result;
+	}
+	
+	public static int[] add(int[] array, int addend){
+		for(int i = 0; i < array.length; i++){
+			array[i] += addend;
+		}
+		return array;
+	}
+	
+	public static int[] copy(int[] array, int start, int end){
+		if(array.length == 0) return array;
+		int[] result = new int[end-start+1];
+		for(int i = 0; i < result.length; i++){
+			result[i] = array[i+start];
+		}
+		return result;
+	}
+	
+	public static int[] append(int[] array, int numb){
+		int[] result = new int[array.length + 1];
+		for(int i = 0; i < array.length; i++){
+			result[i] = array[i];
+		}
+		result[result.length-1] = numb;
+		return result;
+	}
+	
+	public static int[] append(int[] array1, int[] array2){
+		int[] result = new int[array1.length+array2.length];
+		for(int i = 0; i < array1.length; i++){
+			result[i] = array1[i];
+		}
+		for(int i = 0; i < array2.length; i++){
+			result[i+array1.length] = array2[i];
 		}
 		return result;
 	}
