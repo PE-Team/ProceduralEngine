@@ -3,7 +3,6 @@ package ptg.util.console;
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
@@ -13,13 +12,13 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.swing.AbstractAction;
-import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
+import javax.swing.ScrollPaneConstants;
 import javax.swing.border.Border;
 import javax.swing.text.AttributeSet;
 import javax.swing.text.BadLocationException;
@@ -44,6 +43,7 @@ public class Console implements Runnable{
 	private String logFileName;
 	private long lineMax;
 	
+	private boolean scrollLock;
 	private boolean showLineNumbers, lineNumbersOn;
 	private int lineNumberCount;
 	private Color textColor;
@@ -67,6 +67,7 @@ public class Console implements Runnable{
 	private StyledDocument consoleLineNumber;
 	
 	private JScrollPane consoleOutputScrollbar;
+	private JScrollPane consoleInputScrollbar;
 	
 	private SimpleAttributeSet logText, errText, warnText, sucText, logTextDefault;
 
@@ -76,17 +77,19 @@ public class Console implements Runnable{
 	
 	public static void main(String...args){
 		Console console = new Console();
-		Timer timer = new Timer(500);
+		Timer timer = new Timer(20);
 		console.start();
 		
-		console.log("A Normal Log");
-		console.logSuccess("A Success");
-		console.warn("A Warning");
-		console.err("An error");
+		Util.getClassesByName("Color");
 		
-		timer.start();
-		console.setCanWriteToFile(true);
-		console.clear();
+		//TODO write code that is executed by the console
+		/*
+		console.log("\t0% Finished");
+		for(int i = 1; i <= 100; i++){
+			console.overrideln(1, "\t" + i + "% Finished");
+			timer.start();
+		}
+		*/
 	}
 	
 	public Console(){
@@ -97,6 +100,7 @@ public class Console implements Runnable{
 		this.canWriteToFile = false;
 		this.finalLogFileOffset = 0;
 		this.showLineNumbers = true;
+		this.scrollLock = false;
 		this.consoleThread = new Thread(this);
 	}
 	
@@ -105,11 +109,21 @@ public class Console implements Runnable{
 			running = true;
 			createWindow();
 			clearLogFile();
+			initConsoleCommands();
 			show();
 			
 			consoleThread.start();
 		}
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		return this;
+	}
+	
+	private void initConsoleCommands(){
+		ConsoleInputInterpreter.initConsoleInputInterpreter(this);
 	}
 	
 	public void run() {
@@ -117,6 +131,8 @@ public class Console implements Runnable{
 		long lastUpdate = System.nanoTime();
 		
 		long updates = 0;
+
+		consoleInputPane.requestFocus();
 		
 		while(running){
 			delta = System.nanoTime() - lastUpdate;
@@ -142,6 +158,15 @@ public class Console implements Runnable{
 		executeQueues();
 		updateNewLineIndeces();
 		updateLineNumbers();
+		updateScroll();
+	}
+	
+	private void updateScroll(){
+		JScrollBar verticalOutputBar = consoleOutputScrollbar.getVerticalScrollBar();
+		
+		if(!scrollLock){
+			verticalOutputBar.setValue(verticalOutputBar.getMaximum());
+		}
 	}
 	
 	private void initializeUpdateQueues(){
@@ -157,11 +182,11 @@ public class Console implements Runnable{
 	
 	// START OF THE QUEUE METHODS
 	
-	private synchronized void queue(int offset, String msg, SimpleAttributeSet attrib, int length, boolean isRemoval){
+	private synchronized void queue(int offset, boolean isLineNumber, String msg, SimpleAttributeSet attrib, int length, boolean isRemoval){
 		if(isRemoval){
-			queues.add(new ConsoleQueue(offset, length));
+			queues.add(new ConsoleQueue(offset, isLineNumber, length));
 		}else{
-			queues.add(new ConsoleQueue(offset, msg, attrib));
+			queues.add(new ConsoleQueue(offset, isLineNumber, msg, attrib));
 		}
 	}
 
@@ -205,9 +230,9 @@ public class Console implements Runnable{
 	private void executeQueues(){
 		for(ConsoleQueue queue:updateQueues){
 			if(queue.isRemoval()){
-				removeString(queue.getOffset(), queue.length());
+				removeString(queue.getOffset(), queue.isOffsetAsLineNumber(), queue.length());
 			}else{
-				insertString(queue.getOffset(), queue.getMessage(), queue.getAttrib());
+				insertString(queue.getOffset(), queue.isOffsetAsLineNumber(), queue.getMessage(), queue.getAttrib());
 			}
 		}
 		queues.clear();
@@ -229,6 +254,8 @@ public class Console implements Runnable{
 			lineNumberCount = 0;
 		}
 		
+		int boxWidth = (int) Math.log10(lineIndeces.length+1) + 1;
+		setLineNumberBoxWidth(boxWidth);
 		lineNumbersOn = showLineNumbers;
 	}
 	
@@ -239,11 +266,7 @@ public class Console implements Runnable{
 	
 	private void addLineNumbers(){
 		try {
-			int boxWidth = (int) Math.log10(lineIndeces.length+1) + 1;
 			if(lineIndeces.length + 1 > lineNumberCount){
-				// Resize the lineNumberPane width
-				setLineNumberBoxWidth(boxWidth);
-				
 				for(int i = lineNumberCount; i < lineIndeces.length + 1; i++){
 					consoleLineNumber.insertString(consoleLineNumber.getLength(),(i+1) + "\n", logTextDefault);
 				}
@@ -251,8 +274,6 @@ public class Console implements Runnable{
 				// Remove some of the line numbers
 				int start = getLineNumberCharCount(lineIndeces.length+1);
 				consoleLineNumber.remove(start-1, consoleLineNumber.getLength() - start);
-				// Resize the lineNumberPane width
-				setLineNumberBoxWidth(boxWidth);
 			}
 		} catch (BadLocationException e){
 			e.printStackTrace();
@@ -302,8 +323,6 @@ public class Console implements Runnable{
 		// CONSOLE OUTPUT AREA
 		consoleOutputPane = new JTextPane();
 		consoleOutputPane.setEditable(false);
-		JPanel notTextWrapPanel = new JPanel( new BorderLayout() );
-		notTextWrapPanel.add(consoleOutputPane);
 		
 		// CONSOLE LINE NUMBER PANE
 		consoleLineNumberPane = new JTextPane();
@@ -333,40 +352,47 @@ public class Console implements Runnable{
 		consoleInputPane.setCharacterAttributes(logText, false);
 		
 		// SCROLLBAR
-		consoleOutputScrollbar = new JScrollPane(notTextWrapPanel);
+		JPanel noTextWrapPanel = new JPanel(new BorderLayout());
+		
+		noTextWrapPanel.add(consoleLineNumberPane, BorderLayout.WEST);
+		noTextWrapPanel.add(consoleOutputPane, BorderLayout.CENTER);
+		Border lineNumberBorder = BorderFactory.createMatteBorder(0, 0, 0, 3, new Color(200,200,200).getJColor());
+		Border outputBorder = BorderFactory.createMatteBorder(0, 5, textHeight/2, 0, Color.WHITE.getJColor());
+		consoleOutputPane.setBorder(outputBorder);
+		consoleLineNumberPane.setBorder(lineNumberBorder);
+		
+		
+		consoleOutputScrollbar = new JScrollPane(noTextWrapPanel);
 		consoleOutputScrollbar.getVerticalScrollBar().setPreferredSize(new Dimension(mulRatio(30,ratioWidth),0));
+		consoleOutputScrollbar.getVerticalScrollBar().setUnitIncrement(textHeight/2);
 		consoleOutputScrollbar.getHorizontalScrollBar().setPreferredSize(new Dimension(0,mulRatio(30,ratioWidth)));
+		consoleOutputScrollbar.getHorizontalScrollBar().setUnitIncrement(textWidth/2);
+		
+		consoleInputScrollbar = new JScrollPane(consoleInputPane);
+		consoleInputScrollbar.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
 		
 		consolePanel.add(consoleOutputScrollbar, BorderLayout.CENTER);
-		consolePanel.add(consoleLineNumberPane, BorderLayout.WEST);
+		//consolePanel.add(consoleLineNumberScrollbar, BorderLayout.WEST);
 		consolePanel.add(consoleHeaderPane, BorderLayout.NORTH);
-		consolePanel.add(consoleInputPane, BorderLayout.SOUTH);
+		consolePanel.add(consoleInputScrollbar, BorderLayout.SOUTH);
 		consoleFrame.setContentPane(consolePanel);
 		consoleFrame.setLocationByPlatform(true);
 	}
 	
 	private void initActionHandlers(){
+		Console thisConsole = this;
+		
 		inputAction = new KeyListener(){
+			public void keyPressed(KeyEvent e) {}
 
-			@Override
-			public void keyPressed(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void keyReleased(KeyEvent e) {
+				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					new ConsoleInputInterpreter(thisConsole);
+				}
 			}
 
-			@Override
-			public void keyReleased(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-
-			@Override
-			public void keyTyped(KeyEvent arg0) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-		}
+			public void keyTyped(KeyEvent e) {}
+		};
 	}
 	
 	private void initAttribs(){
@@ -449,7 +475,34 @@ public class Console implements Runnable{
 		return this;
 	}
 	
+	public synchronized Console setScrollLock(boolean scrollLock){
+		this.scrollLock = scrollLock;
+		return this;
+	}
+	
 	// END OF THE METHODS WHICH SET VARIABLES
+	
+	// START OF THE METHODS WHICH GET VARIABLES
+	
+	public String getText(){
+		try {
+			return consoleOutput.getText(0, consoleOutput.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	public String getInputText(){
+		try {
+			return consoleInput.getText(0, consoleInput.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	// END OF THE METHODS WHICH GET VARIABLES
 	
 	// START OF THE OUTPUT METHODS
 	
@@ -478,9 +531,17 @@ public class Console implements Runnable{
 		return this;
 	}
 	
-	private void removeString(int indexStart, int length){
+	private void removeString(int indexStart, boolean isLineNumber, int length){
 		try {
 			if(length == -1) length = consoleOutput.getLength();
+			
+			if(isLineNumber){
+				int min = indexStart-2 < 0 ? 0 : lineIndeces[indexStart-2]+1;
+				int max = indexStart > lineIndeces.length ? getText().length() : lineIndeces[indexStart-1];
+				indexStart = min;
+				length = max - min;
+			}
+			
 			consoleOutput.remove(indexStart, length);
 			lineIndeces = Util.getNewLineIndeces(getText());
 		} catch (BadLocationException e) {
@@ -488,23 +549,17 @@ public class Console implements Runnable{
 		}
 	}
 	
-	private void insertString(int offset, String msg, AttributeSet attrib){
+	private void insertString(int offset, boolean isLineNumber, String msg, AttributeSet attrib){
 		try {
 			if(offset == -1) offset = consoleOutput.getLength();
+			
+			if(isLineNumber) offset = offset-2 < 0 ? 0 : lineIndeces[offset-2]+1;
+			
 			consoleOutput.insertString(offset, msg, attrib);
 			lineIndeces = Util.getNewLineIndeces(getText());
 		} catch (BadLocationException e) {
 			e.printStackTrace();
 		}
-	}
-	
-	public String getText(){
-		try {
-			return consoleOutput.getText(0, consoleOutput.getLength());
-		} catch (BadLocationException e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	public synchronized Console clear(){
@@ -515,7 +570,7 @@ public class Console implements Runnable{
 	}
 	
 	public Console clear(int indexStart, int indexEnd){
-		queue(indexStart, null, null, indexEnd - indexStart, true);
+		queue(indexStart, false, null, null, indexEnd - indexStart, true);
 		return this;
 	}
 	
@@ -531,9 +586,7 @@ public class Console implements Runnable{
 	}
 	
 	public Console clearln(int lineNumber){
-		int min = lineNumber-2 < 0 ? 0 : lineIndeces[lineNumber-2]+1;
-		int max = lineNumber > lineIndeces.length ? getText().length() : lineIndeces[lineNumber-1];
-		clear(min, max);
+		queue(lineNumber, true, null, null, -1, true);
 		return this;
 	}
 	
@@ -550,66 +603,74 @@ public class Console implements Runnable{
 	}
 	
 	public Console clearNoWrite(){
-		queue(0, null, null, -1, true);
+		queue(0, false, null, null, -1, true);
+		return this;
+	}
+	
+	public synchronized Console clearInput(){
+		try {
+			consoleInput.remove(0, consoleInput.getLength());
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 		return this;
 	}
 	
 	public Console log(Object msg){
-		queue(-1, msg.toString() + "\n", logText, -1, false);
+		queue(-1, false, msg.toString() + "\n", logText, -1, false);
 		return this;
 	}
 	
 	public Console logln(Object msg){
-		queue(-1, msg.toString(), logText, -1, false);
+		queue(-1, false, msg.toString(), logText, -1, false);
 		return this;
 	}
 	
 	public Console logSuccess(Object msg){
-		queue(-1, msg.toString() + "\n", sucText, -1, false);
+		queue(-1, false, msg.toString() + "\n", sucText, -1, false);
 		return this;
 	}
 	
 	public Console logSuccessln(Object msg){
-		queue(-1, msg.toString(), sucText, -1, false);
+		queue(-1, false, msg.toString(), sucText, -1, false);
 		return this;
 	}
 	
 	public Console warn(Object msg){
-		queue(-1, msg.toString() + "\n", warnText, -1, false);
+		queue(-1, false, msg.toString() + "\n", warnText, -1, false);
 		return this;
 	}
 	
 	public Console warnln(Object msg){
-		queue(-1, msg.toString(), warnText, -1, false);
+		queue(-1, false, msg.toString(), warnText, -1, false);
 		return this;
 	}
 	
 	public Console err(Object msg){
-		queue(-1, msg.toString() + "\n", errText, -1, false);
+		queue(-1, false, msg.toString() + "\n", errText, -1, false);
 		return this;
 	}
 	
 	public Console errln(Object msg){
-		queue(-1, msg.toString(), errText, -1, false);
+		queue(-1, false, msg.toString(), errText, -1, false);
 		return this;
 	}
 	
 	public Console overrideChar(int index, Object msg){
 		clear(index, index);
-		queue(index, msg.toString(), logText, -1, false);
+		queue(index, false, msg.toString(), logText, -1, false);
 		return this;
 	}
 	
 	public Console overrideChars(int start, int end, Object msg){
 		clear(start, end);
-		queue(start, msg.toString(), logText, -1, false);
+		queue(start, false, msg.toString(), logText, -1, false);
 		return this;
 	}
 	
 	public Console overrideln(int lineNumber, Object msg){
-		int min = lineNumber-2 < 0 ? 0 : lineIndeces[lineNumber-2]+1;
-		int max = lineNumber > lineIndeces.length ? getText().length() : lineIndeces[lineNumber-1];
-		overrideChars(min, max, msg);
+		clearln(lineNumber);
+		queue(lineNumber, true, msg.toString(), logText, -1, false);
 		return this;
 	}
 	

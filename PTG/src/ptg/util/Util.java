@@ -1,5 +1,6 @@
 package ptg.util;
 
+import java.io.File;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
@@ -8,6 +9,13 @@ import java.util.List;
 import ptg.engine.main.PTG;
 
 public class Util {
+	
+	public static boolean isInStringArray(String str, String[] array){
+		for(int i = 0; i < array.length; i++){
+			if(str.equals(array[i])) return true;
+		}
+		return false;
+	}
 	
 	public static String addSpaces(String msg, int stringLength){
 		String result = "";
@@ -167,6 +175,44 @@ public class Util {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	
+	private static final String[] DIRECTORIES_TO_IGNORE = {".git"};
+	
+	public static List<Class<?>> getClassesByName(String className){
+		className += ".class";
+		
+		List<Class<?>> possibleClasses = new ArrayList<Class<?>>();
+		
+		File baseDir = new File(".\\bin\\");
+		File[] baseDirFiles = baseDir.listFiles();
+		List<File> dirList = arrayToList(baseDirFiles);
+		List<String> possibleClassPaths = new ArrayList<String>();
+		
+		while(dirList.size() > 0){
+			int iterations = dirList.size();
+			for(int f = 0; f < iterations; f++){
+				File file = dirList.get(0);
+				
+				if(file.isDirectory()){
+					File[] currentDir = file.listFiles();
+					dirList.addAll(arrayToList(currentDir));
+				}else if(file.isFile() && file.getName().equals(className)){
+					possibleClassPaths.add(file.getPath());
+				}
+				dirList.remove(0);
+			}
+		}
+		
+		System.out.println(possibleClassPaths.toString());
+		try {
+			System.out.println(Class.forName("ptg.util.color.Color").getName());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		return possibleClasses;
 	}
 
 }
