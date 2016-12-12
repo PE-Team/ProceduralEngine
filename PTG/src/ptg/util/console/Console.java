@@ -77,19 +77,19 @@ public class Console implements Runnable{
 	
 	public static void main(String...args){
 		Console console = new Console();
-		Timer timer = new Timer(20);
-		console.start();
+		Timer timer = new Timer(2000);
+		//console.start();
+		console.setCanWriteToFile(true);
 		
-		Util.getClassesByName("Color");
+		List<Class<?>> classes = Util.getClassesByName("Vec3f");
+		System.out.println(classes.toString());
 		
-		//TODO write code that is executed by the console
-		/*
-		console.log("\t0% Finished");
-		for(int i = 1; i <= 100; i++){
-			console.overrideln(1, "\t" + i + "% Finished");
-			timer.start();
-		}
-		*/
+		Util.parseConstructor("new Vec3f(new Vec2f(1.0, Vec5f(4.0,5,6,7,8)), Vec1f(3.0))");
+		
+		console.log("Normal");
+		console.logSuccess("Success");
+		console.warn("Warning");
+		console.err("Error");
 	}
 	
 	public Console(){
@@ -621,8 +621,18 @@ public class Console implements Runnable{
 		return this;
 	}
 	
+	public Console log(){
+		queue(-1, false, "\n", logText, -1, false);
+		return this;
+	}
+	
 	public Console logln(Object msg){
 		queue(-1, false, msg.toString(), logText, -1, false);
+		return this;
+	}
+	
+	public Console logln(){
+		queue(-1, false, "", logText, -1, false);
 		return this;
 	}
 	
@@ -631,8 +641,18 @@ public class Console implements Runnable{
 		return this;
 	}
 	
+	public Console logSuccess(){
+		queue(-1, false, "\n", sucText, -1, false);
+		return this;
+	}
+	
 	public Console logSuccessln(Object msg){
 		queue(-1, false, msg.toString(), sucText, -1, false);
+		return this;
+	}
+	
+	public Console logSuccessln(){
+		queue(-1, false, "", sucText, -1, false);
 		return this;
 	}
 	
@@ -641,8 +661,18 @@ public class Console implements Runnable{
 		return this;
 	}
 	
+	public Console warn(){
+		queue(-1, false, "\n", warnText, -1, false);
+		return this;
+	}
+	
 	public Console warnln(Object msg){
 		queue(-1, false, msg.toString(), warnText, -1, false);
+		return this;
+	}
+	
+	public Console warnln(){
+		queue(-1, false, "", warnText, -1, false);
 		return this;
 	}
 	
@@ -651,8 +681,18 @@ public class Console implements Runnable{
 		return this;
 	}
 	
+	public Console err(){
+		queue(-1, false, "\n", errText, -1, false);
+		return this;
+	}
+	
 	public Console errln(Object msg){
 		queue(-1, false, msg.toString(), errText, -1, false);
+		return this;
+	}
+	
+	public Console errln(){
+		queue(-1, false, "", errText, -1, false);
 		return this;
 	}
 	

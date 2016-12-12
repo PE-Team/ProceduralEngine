@@ -26,7 +26,7 @@ public class StringToIntConverter {
 	}
 
 	private static void setCharset() {
-		charset = PTG.CHARSET_LETTERS;
+		charset = PTG.CHARSET_LETTERS_LOWERCASE;
 	}
 
 	public static void setCharset(char[] chars) {
