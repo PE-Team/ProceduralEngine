@@ -81,10 +81,9 @@ public class Console implements Runnable{
 		//console.start();
 		console.setCanWriteToFile(true);
 		
-		List<Class<?>> classes = Util.getClassesByName("Vec3f");
-		System.out.println(classes.toString());
+		//List<Class<?>> classes = Util.getClassesByName("Vec3f");
 		
-		Util.parseConstructor("new Vec3f(new Vec2f(1.0, Vec5f(4.0,5,6,7,8)), Vec1f(3.0))");
+		Util.parseConstructor("new Vec4f(Vec3f(Vec2f(1f,2.0f),5f),6f)");
 		
 		console.log("Normal");
 		console.logSuccess("Success");
