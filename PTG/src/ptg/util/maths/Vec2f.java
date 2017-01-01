@@ -50,4 +50,8 @@ public class Vec2f {
 	public float length(){
 		return (float) Math.sqrt(this.x*this.x + this.y*this.y);
 	}
+	
+	public String toString(){
+		return "{" + this.x + "," + this.y + "}";
+	}
 }

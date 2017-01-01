@@ -7,6 +7,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.lang.reflect.Field;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -26,9 +27,12 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
+import ptg.engine.main.PTG;
+import ptg.test.main.TestObject;
 import ptg.util.Timer;
 import ptg.util.Util;
 import ptg.util.color.Color;
+import ptg.util.maths.Vec3f;
 
 public class Console implements Runnable{
 
@@ -81,9 +85,9 @@ public class Console implements Runnable{
 		//console.start();
 		console.setCanWriteToFile(true);
 		
-		//List<Class<?>> classes = Util.getClassesByName("Vec3f");
-		
-		Util.parseConstructor("new Vec4f(Vec3f(Vec2f(1f,2.0f),5f),6f)");
+		String[] classFileLocations = new String[]{"./bin","C:/Program Files/Java/jdk1.8.0_101/"};
+		Object result = Util.parseConstructor("TestObject(TestObject.BOOLEAN.TRUE)", classFileLocations);
+		System.out.println(result);
 		
 		console.log("Normal");
 		console.logSuccess("Success");
