@@ -8,26 +8,26 @@ public class TestObject {
 		TRUE, FALSE;
 	}
 	
-	public static final float final_value_f = 2557;
-	public static float static_value_f = 2556;
+	public static final float final_valuef = 2557;
+	public static float static_valuef = 2556;
 	public static Vec2f static_vec2f = new Vec2f(25.0f, 2.0f);
 	
 	public String name;
-	public float value_f;
+	public float valuef;
 	public BOOLEAN bool;
 
-	public TestObject(String name, float value_f){
+	public TestObject(String name, float valuef){
 		this.name = name;
-		this.value_f = value_f;
+		this.valuef = valuef;
 	}
 	
 	public TestObject(BOOLEAN bool){
-		this.name = "BOOLEAN enum test";
-		this.value_f = 0;
+		this.name = "BOOLEAN_ENUM_TEST";
+		this.valuef = 0;
 		this.bool = bool;
 	}
 	
 	public String toString(){
-		return name + ", " + value_f + ", " + bool;
+		return name + ", " + valuef + ", " + bool;
 	}
 }

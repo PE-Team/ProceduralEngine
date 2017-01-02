@@ -86,7 +86,7 @@ public class Console implements Runnable{
 		console.setCanWriteToFile(true);
 		
 		String[] classFileLocations = new String[]{"./bin","C:/Program Files/Java/jdk1.8.0_101/"};
-		Object result = Util.parseConstructor("TestObject(TestObject.BOOLEAN.TRUE)", classFileLocations);
+		Object result = Util.parseConstructors("TestObject(TestObject.BOOLEAN.TRUE)", classFileLocations);
 		System.out.println(result);
 		
 		console.log("Normal");

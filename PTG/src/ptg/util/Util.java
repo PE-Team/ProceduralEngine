@@ -69,6 +69,7 @@ public class Util {
 	
 	public static <T> List<T> arrayToList(T[] array){
 		List<T> result = new ArrayList<>();
+		if(array == null) return result;
 		for(int i = 0; i < array.length; i++){
 			result.add(array[i]);
 		}
@@ -580,14 +581,18 @@ public class Util {
 		return result;
 	}
 	
-	public static Object parseConstructor(String constrStr, String[] classFileLocations){
+	public static Object parseConstructors(String constrStr, String[] classFileLocations){
+		return parseConstructors(constrStr, classFileLocations, new ArrayList<Object>(), 0);
+	}
+	
+	public static Object parseConstructors(String constrStr, String[] classFileLocations, List<Object> parameterValues, int parameterNumb){
 		if(!isParsableConstructor(constrStr)) throw new IllegalArgumentException(constrStr + " is not a valid Constructor.");
-		List<Object> paramValues = new ArrayList<Object>();
+		List<Object> paramValues = parameterValues;
 		
 		constrStr = constrStr.replace("new ", "");
 		constrStr = constrStr.replace(" ", "");
 		
-		int paramNumb = 0;
+		int paramNumb = parameterNumb;
 		
 		// Iterate through the string to get it down to a list of @p[number] separated by commas
 		while(true){
@@ -725,7 +730,7 @@ public class Util {
 		return paramValues.get(getStringParameterIndex(constrStr));
 	}
 
-	public static Object parseMethod(){
+	public static Object parseMethods(){
 		
 		return null;
 	}
