@@ -168,14 +168,12 @@ public class Util {
 		List<Class<?>> listClasses = getClassesByName(className, classFileLocations);
 		
 		if((listClasses.size() > 1 && !identifiedSpecificClass) || index >= listClasses.size()){
-			System.err.println("There is more than one possible class with the name " + listClasses);
+			String errMsg = "There is more than one possible class with the name " + listClasses + "\n";
 			for(int pc = 0; pc < listClasses.size(); pc++){
-				System.err.println("\t" + pc + ": " + listClasses.get(pc).getName());
+				errMsg += "\t" + pc + ": " + listClasses.get(pc).getName() + "\n";
 			}
-			System.err.println();
-			System.err.println("Next time, call the correct class by using 'number_from_above:Class_Name'");
-			System.err.println("\tEx: '0:Scanner' will return java.util.Scanner.class");
-			System.exit(0);
+			errMsg += "\nNext time, call the correct class by using 'number_from_above:Class_Name'\n\tEx: '0:Scanner' will return java.util.Scanner.class";
+			throw new IllegalArgumentException(errMsg);
 		}
 		
 		return listClasses.get(index);

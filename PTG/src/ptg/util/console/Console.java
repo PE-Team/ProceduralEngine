@@ -41,6 +41,9 @@ public class Console implements Runnable{
 	private final int UPS = 60;
 	private final long NANO = 1000000000;
 	
+	private int pastConsoleCommandIndex = 0;
+	private List<String> pastConsoleCommands = new ArrayList<String>();
+	
 	private List<ConsoleQueue> queues = new ArrayList<ConsoleQueue>();
 	private List<ConsoleQueue> updateQueues = new ArrayList<ConsoleQueue>();
 	
@@ -82,14 +85,8 @@ public class Console implements Runnable{
 	public static void main(String...args){
 		Console console = new Console();
 		Timer timer = new Timer(2000);
-		//console.start();
+		console.start();
 		console.setCanWriteToFile(true);
-		
-		String[] classFileLocations = new String[]{"./bin","C:/Program Files/Java/jdk1.8.0_101/"};
-		List<Object> paramValues = new ArrayList<Object>();
-		Object result = Util.parseString("\"Hi there\"", paramValues);
-		System.out.println(result);
-		
 		
 		console.log("Normal");
 		console.logSuccess("Success");
@@ -394,6 +391,18 @@ public class Console implements Runnable{
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
 					new ConsoleInputInterpreter(thisConsole);
 				}
+				
+				if(e.getKeyCode() == KeyEvent.VK_UP){
+					thisConsole.pastConsoleCommandIndex = thisConsole.pastConsoleCommandIndex >= thisConsole.pastConsoleCommands.size() ? thisConsole.pastConsoleCommands.size() : thisConsole.pastConsoleCommandIndex + 1;
+					thisConsole.setInput(thisConsole.pastConsoleCommands.get(thisConsole.pastConsoleCommands.size() - thisConsole.pastConsoleCommandIndex));
+				}
+				
+				if(e.getKeyCode() == KeyEvent.VK_DOWN){
+					thisConsole.pastConsoleCommandIndex = thisConsole.pastConsoleCommandIndex <= 0 ? 0 : thisConsole.pastConsoleCommandIndex - 1;
+					if(thisConsole.pastConsoleCommandIndex > 0){
+						thisConsole.setInput(thisConsole.pastConsoleCommands.get(thisConsole.pastConsoleCommands.size() - thisConsole.pastConsoleCommandIndex));
+					}
+				}
 			}
 
 			public void keyTyped(KeyEvent e) {}
@@ -446,6 +455,26 @@ public class Console implements Runnable{
 	
 	public synchronized Console hide(){
 		consoleFrame.setVisible(false);
+		return this;
+	}
+	
+	public synchronized Console addPastCommand(String cmd){
+		this.pastConsoleCommands.add(cmd);
+		return this;
+	}
+	
+	public synchronized Console setPastConsoleCommandIndex(int index){
+		this.pastConsoleCommandIndex = index;
+		return this;
+	}
+	
+	public synchronized Console setInput(String cmd){
+		clearInput();
+		try {
+			this.consoleInput.insertString(0, cmd, logText);
+		} catch (BadLocationException e) {
+			e.printStackTrace();
+		}
 		return this;
 	}
 	

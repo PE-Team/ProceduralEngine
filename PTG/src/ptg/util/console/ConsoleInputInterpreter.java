@@ -10,13 +10,14 @@ public class ConsoleInputInterpreter implements Runnable{
 	
 	private Console console;
 	private Thread interpreterThread;
+	private static String[] classFileLocations = new String[]{"./bin","C:/Program Files/Java/jdk1.8.0_101/"};
 	private static List<ConsoleCommand> commands;
 	
 	private static final ConsoleCommand HELP = new ConsoleCommand("help","Shows the help menu.");
 	private static final ConsoleCommand INFO = new ConsoleCommand("info","Shows the description and use of a command.", 
 										"(Command)");
-	private static final ConsoleCommand EXECUTE = new ConsoleCommand("execute","Will invoke a method given a class, method name, and arguments.\n\tThe method may contain constructors as arguments, however, it cannot be a constructor itself.",
-										"(Class)", "(Method)", "[Arg0]", "[Arg1]", "[...]");
+	private static final ConsoleCommand EXECUTE = new ConsoleCommand("execute","Will invoke a method given a class, method name, and arguments.\n\tThe command connot contain mathematical operations not within a method or constructor.\n\tLook up Util.parseIntoObject() for more details on the command's format.",
+										"(Java formatted command)");
 	private static final ConsoleCommand CLIST = new ConsoleCommand("clist","Lists all of the possible commands or options for a given argument.");
 
 	private static final ConsoleCommand SET_SCROLL_LOCK = new ConsoleCommand("setScrollLock", "Sets whether the console allows vertical scrolling",
@@ -47,6 +48,7 @@ public class ConsoleInputInterpreter implements Runnable{
 	public void run() {
 		String input = console.getInputText().replaceAll("\n", "").trim();
 		console.clearInput();
+		console.addPastCommand(input);
 		
 		console.log(input);
 		if(input.length() == 0 || input.charAt(0) != '/') return;
@@ -114,17 +116,19 @@ public class ConsoleInputInterpreter implements Runnable{
 	}
 	
 	private void cmdExecute(String[] input){
-		if(input.length < 3){
+		if(input.length < 2){
 			errIncorrectUsageOfCommand(EXECUTE);
 			return;
 		}
 		
-		String className = input[1];
-		String methodName = input[2];
-		String[] args = new String[input.length - 3];
-		
-		for(int i = 3; i < input.length; i++){
-			args[i-3] = input[i];
+		String command = "";
+		for(int i = 1; i < input.length; i++){
+			command += input[i];
+		}
+		try{
+		console.log(Util.parseIntoObject(command, new ArrayList<Object>(), classFileLocations));
+		}catch (Exception e){
+			console.err(e.getMessage());
 		}
 	}
 	
