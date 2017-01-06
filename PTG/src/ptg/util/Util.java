@@ -38,6 +38,18 @@ public class Util {
 		return result + msg;
 	}
 
+	public static boolean allCharsMatch(char charRight, char charLeft, String statementStr){
+		int rightCharNumb = 0;
+		int leftCharNumb = 0;
+		for(int c = 0; c < statementStr.length(); c++){
+			if(statementStr.charAt(c) == charRight) rightCharNumb++;
+			if(statementStr.charAt(c) == charLeft) leftCharNumb++;
+			if(leftCharNumb > rightCharNumb) return false;
+		}
+		if(rightCharNumb != leftCharNumb) return false;
+		return true;
+	}
+
 	public static int[] append(int[] array, int numb){
 		int[] result = new int[array.length + 1];
 		for(int i = 0; i < array.length; i++){
@@ -46,7 +58,7 @@ public class Util {
 		result[result.length-1] = numb;
 		return result;
 	}
-
+	
 	public static int[] append(int[] array1, int[] array2){
 		int[] result = new int[array1.length+array2.length];
 		for(int i = 0; i < array1.length; i++){
@@ -102,6 +114,25 @@ public class Util {
 		return result;
 	}
 	
+	public static int count(String strPart, String str){
+		int result = 0;
+		
+		for(int c = 0; c < str.length() - strPart.length() + 1; c++){
+			if(str.charAt(c) == strPart.charAt(0)){
+				boolean fullString = true;
+				for(int i = 1; i < strPart.length(); i++){
+					if(str.charAt(c+i) != strPart.charAt(i)){
+						fullString = false;
+						break;
+					}
+				}
+				if(fullString) result++;
+			}
+		}
+		
+		return result;
+	}
+	
 	public static int countPrimitiveNumberClassesIn(List<Class<?>> list){
 		int count = 0;
 		for(int c = 0; c < list.size(); c++){
@@ -115,14 +146,14 @@ public class Util {
 		}
 		return count;
 	}
-	
+
 	public static boolean existsChar(String string, char character){
 		for(int i = 0; i < string.length(); i++){
 			if(string.charAt(i) == character) return true;
 		}
 		return false;
 	}
-	
+
 	public static Class<?> getClassByName(String className, String[] classFileLocations){
 		boolean identifiedSpecificClass = false;
 		int index = 0;
@@ -149,7 +180,7 @@ public class Util {
 		
 		return listClasses.get(index);
 	}
-
+	
 	public static List<Class<?>> getClassesByName(String className, String[] classFileLocations){
 		
 		List<Class<?>> possibleClasses = new ArrayList<Class<?>>();
@@ -231,7 +262,7 @@ public class Util {
 		
 		return possibleClasses;
 	}
-
+	
 	public static Constructor<?> getConstructor(Class<?> className, List<Class<?>> initClasses){
 		try {
 			return className.getConstructor(initClasses.toArray(new Class<?>[0]));
@@ -385,11 +416,11 @@ public class Util {
 		}
 		return -1;
 	}
-	
+
 	public static int getLastIndexOf(String strPart, String str){
 		return getLastIndexBefore(str.length(), strPart, str);
 	}
-	
+
 	public static Method getMethod(Class<?> className, String name, List<Class<?>> paramClasses){
 		try {
 			return className.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[0]));
@@ -399,7 +430,7 @@ public class Util {
 		}
 		return null;
 	}
-
+	
 	public static int[] getNewLineIndeces(String string){
 		int[] result = new int[0];
 		int[] old = result;
@@ -415,7 +446,7 @@ public class Util {
 		}
 		return result;
 	}
-
+	
 	public static Class<?> getPrimitiveClassOf(Object obj){
 		Class<?> objClass = obj.getClass();
 		if(objClass.equals(Double.class)) return double.class;
@@ -428,7 +459,7 @@ public class Util {
 		
 		return objClass;
 	}
-	
+
 	public static int[] getPrimitiveNumberClassIndeces(List<Class<?>> list){
 		int[] indeces = new int[0];
 		for(int c = 0; c < list.size(); c++){
@@ -447,7 +478,7 @@ public class Util {
 	public static int getStringParameterIndex(String paramStr){
 		return Integer.parseInt(paramStr.substring(2));
 	}
-
+	
 	public static <T> List<T> insertList(List<T> listInsert, List<T> base, int index){
 		List<T> result = new ArrayList<>();
 		for(int i = 0; i < base.size(); i++){
@@ -462,31 +493,17 @@ public class Util {
 		return result;
 	}
 	
-	public static boolean isParsableConstructor(String constrStr){
-		constrStr = constrStr.replace("new ", "");
-		constrStr = constrStr.replace(" ", "");
-		
-		int colonIndex = getFirstIndexOf(":", constrStr);
-		if(colonIndex == -1){
-			return isConstructor(constrStr);
-		}else if(isNumber(constrStr.substring(0, colonIndex))){
-			return isConstructor(constrStr.substring(colonIndex + 1));
-		}else{
-			return false;
-		}
+	public static boolean isBoolean(String bool){
+		return bool.equals("true") || bool.equals("false");
 	}
 	
 	public static boolean isConstructor(String constrStr){
 		constrStr = constrStr.replace("new ", "");
 		constrStr = constrStr.replace(" ", "");
 		
-		int firstBegParenth = getFirstIndexOf("(", constrStr);
-		int lastEndParenth = getLastIndexOf(")", constrStr);
+		int begParenthIndex = getFirstIndexOf("(", constrStr);
 		
-		int nextLastBegParenth = getFirstIndexAfter(firstBegParenth, "(", constrStr);
-		int nextEndParenth = getLastIndexBefore(lastEndParenth, ")", constrStr);
-		
-		return (firstBegParenth > 0) && (firstBegParenth < lastEndParenth) && (nextLastBegParenth <= nextEndParenth) && isValidByCharset(constrStr.substring(0,firstBegParenth), PTG.CHARSET_NUMBERS_LETTERS);
+		return (begParenthIndex > 0) && allCharsMatch('(', ')', constrStr) && isValidByCharset(constrStr.substring(0,begParenthIndex), PTG.CHARSET_NUMBERS_LETTERS);
 	}
 	
 	public static boolean isDecimal(String number){
@@ -510,6 +527,14 @@ public class Util {
 			if(str.equals(array[i])) return true;
 		}
 		return false;
+	}
+	
+	public static boolean isMethod(String methodStr) {
+		
+		int periodIndex = getFirstIndexOf(".", methodStr);
+		int begParenthIndex = getFirstIndexOf("(", methodStr);
+		
+		return (periodIndex > 0) && (begParenthIndex > 0) && allCharsMatch('(', ')', methodStr) && isValidByCharset(methodStr.substring(0,periodIndex), PTG.CHARSET_NUMBERS_LETTERS) && isValidByCharset(methodStr.substring(periodIndex + 1, begParenthIndex), PTG.CHARSET_NUMBERS_LETTERS);
 	}
 	
 	public static boolean isNumber(char number){
@@ -537,6 +562,33 @@ public class Util {
 		char numbCast = number.charAt(number.length() - 1);
 		if(!isNumber(numbCast) && !Util.isValidByCharset(numbCast, PTG.CHARSET_NUMBER_CASTING_CHARACTERS)) return false;
 		return true;
+	}
+	
+	public static boolean isParsableConstructor(String constrStr){
+		int colonIndex = getFirstIndexOf(":", constrStr);
+		if(colonIndex == -1){
+			return isConstructor(constrStr);
+		}else if(isNumber(constrStr.substring(0, colonIndex))){
+			return isConstructor(constrStr.substring(colonIndex + 1));
+		}else{
+			return false;
+		}
+	}
+	
+	public static boolean isParsableMethod(String methodStr){
+		int colonIndex = getFirstIndexOf(":", methodStr);
+		int periodIndex = getFirstIndexOf(".",methodStr);
+		if(colonIndex == -1){
+			if(isStringParameter(methodStr.substring(0,periodIndex))){
+				return isConstructor(methodStr.substring(periodIndex + 1));
+			}else{
+				return isMethod(methodStr);
+			}
+		}else if(isNumber(methodStr.substring(0, colonIndex))){
+			return isMethod(methodStr.substring(colonIndex + 1));
+		}else{
+			return false;
+		}
 	}
 	
 	public static boolean isStringParameter(String paramStr){
@@ -572,7 +624,7 @@ public class Util {
 		}
 		return objArray;
 	}
-	
+
 	public static String listToString(List<String> list){
 		String result = "";
 		for(int i = 0; i < list.size(); i++){
@@ -581,183 +633,226 @@ public class Util {
 		return result;
 	}
 	
-	public static Object parseConstructors(String constrStr, String[] classFileLocations){
-		return parseConstructors(constrStr, classFileLocations, new ArrayList<Object>(), 0);
+	public static Object parseBoolean(String bool, List<Object> paramValues){
+		if(!isBoolean(bool)) throw new IllegalArgumentException(bool + "is not a valid boolean");
+		
+		if(bool.equals("true")){
+			paramValues.add(true);
+			return true;
+		}else{
+			paramValues.add(false);
+			return false;
+		}
 	}
 	
-	public static Object parseConstructors(String constrStr, String[] classFileLocations, List<Object> parameterValues, int parameterNumb){
-		if(!isParsableConstructor(constrStr)) throw new IllegalArgumentException(constrStr + " is not a valid Constructor.");
-		List<Object> paramValues = parameterValues;
-		
-		constrStr = constrStr.replace("new ", "");
-		constrStr = constrStr.replace(" ", "");
-		
-		int paramNumb = parameterNumb;
-		
-		// Iterate through the string to get it down to a list of @p[number] separated by commas
-		while(true){
-			int leftEndIndex = constrStr.length();
-			int rightStartIndex = constrStr.length();
-			
-			for(int c = constrStr.length() - 1; c >= 0; c--){
-				if(constrStr.charAt(c) == '(') rightStartIndex = c;
-				if(constrStr.charAt(c) == ')') leftEndIndex = c;
-				if(rightStartIndex < leftEndIndex){
-					String inner = constrStr.substring(rightStartIndex + 1, leftEndIndex);
-					if(isStringParameterList(inner)){
-						// This is for Constructors within the constructor argument
-						
-						int nextComma = getLastIndexBefore(rightStartIndex, ",", constrStr);
-						int nextParenth = getLastIndexBefore(rightStartIndex, "(", constrStr);
-						int finalNext = nextComma > nextParenth ? nextComma : nextParenth;
-						String constructorName = constrStr.substring(finalNext + 1, rightStartIndex);
+	public static Object parseConstructor(String constrStr, List<Object> paramValues, String[] classFileLocations){
+		if(!isParsableConstructor(constrStr)) throw new IllegalArgumentException(constrStr + "is not a valid Constructor");
 
-						Class<?> constrClass = getClassByName(constructorName, classFileLocations);
-						
-						List<Class<?>> paramClasses = new ArrayList<Class<?>>();
-						List<Object> paramObjects = new ArrayList<Object>();
-						String[] innerArgs = inner.split(",");
-						for(int i = 0; i < innerArgs.length; i++){
-							int argIndex = getStringParameterIndex(innerArgs[i]);
-							paramClasses.add(getPrimitiveClassOf(paramValues.get(argIndex)));
-							paramObjects.add(paramValues.get(argIndex));
+		constrStr = constrStr.replace("new", "").replace(" ", "");
+		
+		int rightStartParenth = Util.getFirstIndexOf("(", constrStr);
+		int leftEndParenth = Util.getLastIndexOf(")", constrStr);
+		
+		String constructorName = constrStr.substring(0, rightStartParenth);
+		
+		Class<?> constrClass = getClassByName(constructorName, classFileLocations);
+		
+		List<Class<?>> paramClasses = new ArrayList<Class<?>>();
+		List<Object> paramObjects = new ArrayList<Object>();
+		String[] innerArgs = constrStr.substring(rightStartParenth + 1, leftEndParenth).split(",");
+		for(int i = 0; i < innerArgs.length; i++){
+			int argIndex = getStringParameterIndex(innerArgs[i]);
+			paramClasses.add(getPrimitiveClassOf(paramValues.get(argIndex)));
+			paramObjects.add(paramValues.get(argIndex));
+		}
+		
+		Constructor<?> constr = Util.getConstructor(constrClass, paramClasses);
+		
+		Object instancedObject = null;
+		try {
+			instancedObject = constr.newInstance(listToArray(paramObjects));
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		
+		paramValues.add(instancedObject);
+		
+		return paramValues.get(paramValues.size() - 1);
+	}
+	
+	public static Object parseField(String fieldStr, List<Object> paramValues, String[] classFileLocations){
+		if(!isField(fieldStr)) throw new IllegalArgumentException(fieldStr + "is not a valid field");
+
+		int paramNumb = paramValues.size();
+		String[] fields = fieldStr.split("\\.");
+		String className = fields[0];
+		Class<?> varClass = Util.getClassByName(className, classFileLocations);
+		
+		for(int f = 1; f < fields.length; f++){
+			
+			className = fields[f - 1];
+			String varName = fields[f];
+			
+			if(isStringParameter(className)){
+				int paramIndex = getStringParameterIndex(className);
+				Object paramObj = paramValues.get(paramIndex);
+				try {
+					paramValues.add(paramObj.getClass().getField(varName).get(paramObj));
+					fields[f] = "@p" + paramNumb;
+					paramNumb++;
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+					boolean enumFound = false;
+					Object[] enums = ((Class<?>) paramObj).getEnumConstants();
+					for(Object enm:enums){
+						if(enm.toString().equals(fields[f])){
+							paramValues.add(enm);
+							fields[f] = "@p" + paramNumb;
+							paramNumb++;
+							enumFound = true;
+							break;
 						}
-						
-						Constructor<?> constr = Util.getConstructor(constrClass, paramClasses);
-						
-						Object instancedObject = null;
-						try {
-							instancedObject = constr.newInstance(listToArray(paramObjects));
-						} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-							e.printStackTrace();
-						}
-						
-						
-						paramValues.add(instancedObject);
-						constrStr = constrStr.substring(0, finalNext + 1) + "@p" + paramNumb + constrStr.substring(leftEndIndex + 1);
-						paramNumb++;
-					}else{
-						// This is for values within the Constructor which are not Constructors within themselves
-						
-						String[] innerArgs = inner.split(",");
-						String insertedParams = "";
-						for(int i = 0; i < innerArgs.length; i++){
-							if(isStringParameter(innerArgs[i])){
-								insertedParams += "," + innerArgs[i];
-								continue;
-							}
-							if(isNumber(innerArgs[i])){
-								paramValues.add(parseNumber(innerArgs[i]));
-								insertedParams += ",@p" + paramNumb;
-								paramNumb++;
-							}else if(isField(innerArgs[i])){
-								String[] fields = innerArgs[i].split("\\.");
-								String className = fields[0];
-								Class<?> varClass = Util.getClassByName(className, classFileLocations);
-								
-								for(int f = 1; f < fields.length; f++){
-									
-									className = fields[f - 1];
-									String varName = fields[f];
-									
-									if(isStringParameter(className)){
-										int paramIndex = getStringParameterIndex(className);
-										Object paramObj = paramValues.get(paramIndex);
-										try {
-											paramValues.add(paramObj.getClass().getField(varName).get(paramObj));
-											fields[f] = "@p" + paramNumb;
-											paramNumb++;
-										} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-											boolean enumFound = false;
-											Object[] enums = ((Class<?>) paramObj).getEnumConstants();
-											for(Object enm:enums){
-												if(enm.toString().equals(fields[f])){
-													paramValues.add(enm);
-													fields[f] = "@p" + paramNumb;
-													paramNumb++;
-													enumFound = true;
-													break;
-												}
-											}
-											
-											if(!enumFound){
-												e.printStackTrace();
-												System.exit(2);
-											}
-										}
-									}else{
-										try {
-											paramValues.add(varClass.getField(varName).get(varClass));
-											fields[f] = "@p" + paramNumb;
-											paramNumb++;
-										} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-											boolean enumClassFound = false;
-											Class<?>[] declClasses = varClass.getDeclaredClasses();
-											for(Class<?> declClass:declClasses){
-												if(declClass.getSimpleName().equals(fields[f])){
-													paramValues.add(declClass);
-													fields[f] = "@p" + paramNumb;
-													paramNumb++;
-													enumClassFound = true;
-													break;
-												}
-											}
-											
-											if(!enumClassFound){
-												e.printStackTrace();
-												System.exit(0);
-											}
-										}
-									}
-								}
-								insertedParams += ",@p" + (paramNumb - 1);
-							}else{
-								paramValues.add(innerArgs[i]);
-								insertedParams += ",@p" + paramNumb;
-								paramNumb++;
-							}
-						}
-						insertedParams = insertedParams.substring(1);
-						
-						constrStr = constrStr.substring(0, rightStartIndex + 1) + insertedParams + constrStr.substring(leftEndIndex);
 					}
+					
+					if(!enumFound){
+						e.printStackTrace();
+						System.exit(2);
+					}
+				}
+			}else{
+				try {
+					paramValues.add(varClass.getField(varName).get(varClass));
+					fields[f] = "@p" + paramNumb;
+					paramNumb++;
+				} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+					boolean enumClassFound = false;
+					Class<?>[] declClasses = varClass.getDeclaredClasses();
+					for(Class<?> declClass:declClasses){
+						if(declClass.getSimpleName().equals(fields[f])){
+							paramValues.add(declClass);
+							fields[f] = "@p" + paramNumb;
+							paramNumb++;
+							enumClassFound = true;
+							break;
+						}
+					}
+					
+					if(!enumClassFound){
+						e.printStackTrace();
+						System.exit(0);
+					}
+				}
+			}
+		}
+		
+		return paramValues.get(paramValues.size() - 1);
+	}
+	
+	public static Object parseIntoObject(String objStr, List<Object> paramValues, String[] classFileLocations){
+		
+		objStr = objStr.replace("new ", "").replace(" ","");
+		
+		int paramNumb = 0;
+		int iterations = 0;
+		
+		while(true){
+			int rightParenthIndex = -1;
+			int leftParenthIndex = -1;
+			for(int c = 0; c < objStr.length(); c++){
+				if(objStr.charAt(c) == '(') rightParenthIndex = c;
+				if(objStr.charAt(c) == ')') leftParenthIndex = c;
+				
+				if(leftParenthIndex > rightParenthIndex && rightParenthIndex > -1){
+					System.out.println(objStr);
+					objStr = objStr.substring(0, rightParenthIndex) + "@p" + paramNumb + objStr.substring(leftParenthIndex + 1);
+					paramNumb++;
 					break;
 				}
 			}
-			if(isStringParameterList(constrStr)) break;
+			
+			if(isStringParameter(objStr)) break;
+			if(iterations > 20) break;
+			iterations++;
 		}
-		
-		return paramValues.get(getStringParameterIndex(constrStr));
-	}
-
-	public static Object parseMethods(){
+			
+		System.out.println(objStr);
 		
 		return null;
 	}
 	
-	public static Object parseNumber(String numb){
+	public static Object parseMethod(String methodStr, List<Object> paramValues, String[] classFileLocations){
+		if(!isParsableMethod(methodStr)) throw new IllegalArgumentException(methodStr + "is not a valid Method");
+
+		methodStr = methodStr.replace(" ", "");
+		
+		int rightStartParenth = Util.getFirstIndexOf("(", methodStr);
+		int leftEndParenth = Util.getLastIndexOf(")", methodStr);
+		int rightStartPeriod = Util.getFirstIndexOf(".", methodStr);
+		
+		String methodObject = methodStr.substring(0, rightStartPeriod);
+		boolean invokeOnObject = isStringParameter(methodObject);
+		String methodName = methodStr.substring(rightStartPeriod + 1, rightStartParenth);
+		
+		Class<?> methodClass = invokeOnObject ? paramValues.get(getStringParameterIndex(methodObject)).getClass() : getClassByName(methodObject, classFileLocations);
+		
+		List<Class<?>> paramClasses = new ArrayList<Class<?>>();
+		List<Object> paramObjects = new ArrayList<Object>();
+		String[] innerArgs = methodStr.substring(rightStartParenth + 1, leftEndParenth).split(",");
+		for(int i = 0; i < innerArgs.length; i++){
+			int argIndex = getStringParameterIndex(innerArgs[i]);
+			paramClasses.add(getPrimitiveClassOf(paramValues.get(argIndex)));
+			paramObjects.add(paramValues.get(argIndex));
+		}
+		
+		Method method = Util.getMethod(methodClass, methodName, paramClasses);
+		
+		Object methodResult = null;
+		try {
+			methodResult = invokeOnObject ? method.invoke(paramValues.get(getStringParameterIndex(methodObject)), listToArray(paramObjects)) : method.invoke(methodClass, listToArray(paramObjects));
+		} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			e.printStackTrace();
+		}
+		
+		paramValues.add(methodResult);
+		
+		return paramValues.get(paramValues.size() - 1);
+	}
+	
+	public static Object parseNumber(String numb, List<Object> paramValues){
+		if(!isNumber(numb)) throw new IllegalArgumentException(numb + "is not a valid number");
+		
 		switch(numb.charAt(numb.length() - 1)){
 		case 'f':case 'F':
-			return Float.parseFloat(numb.substring(0, numb.length() - 1));
+			paramValues.add(Float.parseFloat(numb.substring(0, numb.length() - 1)));
+			break;
 		case 'l':case 'L':
-			return Long.parseLong(numb.substring(0, numb.length() - 1).split("\\.")[0]);
+			paramValues.add(Long.parseLong(numb.substring(0, numb.length() - 1).split("\\.")[0]));
+			break;
 		case 'i':case 'I':
-			return Integer.parseInt(numb.substring(0, numb.length() - 1).split("\\.")[0]);
+			paramValues.add(Integer.parseInt(numb.substring(0, numb.length() - 1).split("\\.")[0]));
+			break;
 		case 'd':case 'D':
-			return Double.parseDouble(numb.substring(0, numb.length() - 1));
+			paramValues.add(Double.parseDouble(numb.substring(0, numb.length() - 1)));
+			break;
 		case 's':case 'S':
-			return Short.parseShort(numb.substring(0, numb.length() - 1).split("\\.")[0]);
+			paramValues.add(Short.parseShort(numb.substring(0, numb.length() - 1).split("\\.")[0]));
+			break;
 		case 'b':case 'B':
-			return Byte.parseByte(numb.substring(0, numb.length() - 1).split("\\.")[0]);
+			paramValues.add(Byte.parseByte(numb.substring(0, numb.length() - 1).split("\\.")[0]));
+			break;
 		default:
 			if(isDecimal(numb)){
-				return Double.parseDouble(numb);
+				paramValues.add(Double.parseDouble(numb));
+				break;
 			}else{
-				return Long.parseLong(numb);
+				paramValues.add(Long.parseLong(numb));
+				break;
 			}
 		}
+		
+		return paramValues.get(paramValues.size() - 1);
 	}
-
+	
 	public static String[] remove(String[] array, int start, int length) {
 		String[] temp = new String[array.length - length];
 		int index = 0;
@@ -781,7 +876,7 @@ public class Util {
 		int index = getLastIndexOf(strPart, str);
 		return index == -1 ? str : str.substring(0,index) + str.substring(index + strPart.length());
 	}
-	
+
 	public static List<?> shrinkList(List<?> list, int min, int max){
 		int size = list.size();
 		for(int i = 0; i < size-max-1; i++){
@@ -793,30 +888,32 @@ public class Util {
 		return list;
 	}
 	
-	public static String[] splitConstructorArguments(String constrArgStr){
-		System.out.println(constrArgStr);
-		constrArgStr = constrArgStr.replace("new ", "");
-		constrArgStr = constrArgStr.replace(" ", "");
+	public static String[] splitBy(String str, String... parts){
+		String[] result = new String[0];
+		int startIndex = 0;
 		
-		String[] args = constrArgStr.split(",");
-		String[] finalArgs = new String[0];
-		for(int i = 0; i < args.length; i++){
-			for(int l = 1; l <= args.length - i; l++){
-				String possibleConstructor = "";
-				for(int arg = 0; arg < l; arg++){
-					possibleConstructor += "," + args[arg+i];
-				}
-				if(possibleConstructor.length() > 0) possibleConstructor = possibleConstructor.substring(1, possibleConstructor.length());
-				
-				if(isConstructor(possibleConstructor) || isNumber(possibleConstructor)){
-					finalArgs = append(finalArgs, possibleConstructor);
-					args = remove(args, i, l);
-					i = 0;
-					l = 0;
+		for(int c = 0; c < str.length(); c++){
+			for(int i = 0; i < parts.length; i++){
+				if(c + parts[i].length() >= str.length()) break;
+					
+				if(str.charAt(c) == parts[i].charAt(0)){
+					boolean fullString = true;
+					for(int j = 1; j < parts[i].length(); j++){
+						if(str.charAt(c + j) != parts[i].charAt(j)) fullString = false;
+					}
+					if(fullString){
+						String appendPart = str.substring(startIndex, c);
+						
+						result = Util.append(result, appendPart);
+						c += parts[i].length();
+						startIndex = c;
+						break;
+					}
 				}
 			}
 		}
-		return finalArgs;
+		
+		return result;
 	}
 	
 	public static int[] subtract(int[] array1, int[] array2){

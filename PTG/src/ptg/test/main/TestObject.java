@@ -27,6 +27,11 @@ public class TestObject {
 		this.bool = bool;
 	}
 	
+	public TestObject set(float numb){
+		this.valuef = numb;
+		return this;
+	}
+	
 	public String toString(){
 		return name + ", " + valuef + ", " + bool;
 	}
