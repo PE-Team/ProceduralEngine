@@ -87,8 +87,8 @@ public class Console implements Runnable{
 		
 		String[] classFileLocations = new String[]{"./bin","C:/Program Files/Java/jdk1.8.0_101/"};
 		List<Object> paramValues = new ArrayList<Object>();
-		Object result = Util.parseIntoObject("0:Vec3f.add(0:Vec3f(Vec2f(1f,2f),3f),0:Vec3f(4f,5f,6f))", paramValues, classFileLocations);
-		System.out.println(paramValues);
+		Object result = Util.parseString("\"Hi there\"", paramValues);
+		System.out.println(result);
 		
 		
 		console.log("Normal");

@@ -476,6 +476,7 @@ public class Util {
 	}
 	
 	public static int getStringParameterIndex(String paramStr){
+		if(!isStringParameter(paramStr)) throw new IllegalArgumentException("'" + paramStr + "' does not follow the format: @p[number].");
 		return Integer.parseInt(paramStr.substring(2));
 	}
 	
@@ -578,6 +579,7 @@ public class Util {
 	public static boolean isParsableMethod(String methodStr){
 		int colonIndex = getFirstIndexOf(":", methodStr);
 		int periodIndex = getFirstIndexOf(".",methodStr);
+		if(periodIndex == -1) return false;
 		if(colonIndex == -1){
 			if(isStringParameter(methodStr.substring(0,periodIndex))){
 				return isConstructor(methodStr.substring(periodIndex + 1));
@@ -589,6 +591,10 @@ public class Util {
 		}else{
 			return false;
 		}
+	}
+	
+	public static boolean isString(String str){
+		return  (count("\"", str) == 2) && (str.charAt(0) == '\"') && (str.charAt(str.length() - 1) == '\"');
 	}
 	
 	public static boolean isStringParameter(String paramStr){
@@ -616,7 +622,7 @@ public class Util {
 		}
 		return true;
 	}
-	
+
 	public static Object[] listToArray(List<Object> list){
 		Object[] objArray = new Object[list.size()];
 		for(int i = 0; i < list.size(); i++){
@@ -624,7 +630,7 @@ public class Util {
 		}
 		return objArray;
 	}
-
+	
 	public static String listToString(List<String> list){
 		String result = "";
 		for(int i = 0; i < list.size(); i++){
@@ -753,7 +759,6 @@ public class Util {
 		objStr = objStr.replace("new ", "").replace(" ","");
 		
 		int paramNumb = 0;
-		int iterations = 0;
 		
 		while(true){
 			int rightParenthIndex = -1;
@@ -763,21 +768,70 @@ public class Util {
 				if(objStr.charAt(c) == ')') leftParenthIndex = c;
 				
 				if(leftParenthIndex > rightParenthIndex && rightParenthIndex > -1){
-					System.out.println(objStr);
-					objStr = objStr.substring(0, rightParenthIndex) + "@p" + paramNumb + objStr.substring(leftParenthIndex + 1);
-					paramNumb++;
-					break;
+					String inParenthStr = objStr.substring(rightParenthIndex + 1, leftParenthIndex);
+					if(!isStringParameterList(inParenthStr)){
+						String[] inParenthArgs = inParenthStr.split(",");
+						String finalInsert = "";
+						for(int arg = 0; arg < inParenthArgs.length; arg++){
+							String currentArg = inParenthArgs[arg];
+							
+							if(isStringParameter(currentArg)){
+								finalInsert += "," + currentArg;
+								continue;
+							}else if(isBoolean(currentArg)){
+								parseBoolean(currentArg, paramValues);
+								finalInsert += ",@p" + paramNumb;
+								paramNumb++;
+								continue;
+							}else if(isNumber(currentArg)){
+								parseNumber(currentArg, paramValues);
+								finalInsert += ",@p" + paramNumb;
+								paramNumb++;
+								continue;
+							}else if(isString(currentArg)){
+								parseString(currentArg, paramValues);
+								finalInsert += ",@p" + paramNumb;
+								paramNumb++;
+								continue;
+							}else if(isField(currentArg)){
+								parseField(currentArg, paramValues, classFileLocations);
+								finalInsert += ",@p" + paramNumb;
+								paramNumb++;
+								continue;
+							}
+							
+							throw new IllegalArgumentException("'" + currentArg + "' is not an accepted argument.");
+						}
+						
+						objStr = objStr.substring(0, rightParenthIndex + 1) + finalInsert.substring(1) + objStr.substring(leftParenthIndex);
+						break;
+					}else{
+						int rightOuterParenthIndex = getLastIndexBefore(rightParenthIndex, "(", objStr);
+						int rightOuterCommaIndex = getLastIndexBefore(rightParenthIndex, ",", objStr);
+						int rightOuterIndex = rightOuterParenthIndex > rightOuterCommaIndex ? rightOuterParenthIndex : rightOuterCommaIndex;
+						String functionStr = objStr.substring(rightOuterIndex + 1, leftParenthIndex + 1);
+						
+						if(isParsableConstructor(functionStr)){
+							parseConstructor(functionStr, paramValues, classFileLocations);
+							objStr = objStr.substring(0, rightOuterIndex + 1) + "@p" + paramNumb + objStr.substring(leftParenthIndex + 1);
+							paramNumb++;
+							break;
+						}else if(isParsableMethod(functionStr)){
+							parseMethod(functionStr, paramValues, classFileLocations);
+							objStr = objStr.substring(0, rightOuterIndex + 1) + "@p" + paramNumb + objStr.substring(leftParenthIndex + 1);
+							paramNumb++;
+							break;
+						}
+						
+						throw new IllegalArgumentException("'" + functionStr + "' is not an accepted constructor or method.");
+					}
 				}
 			}
 			
 			if(isStringParameter(objStr)) break;
-			if(iterations > 20) break;
-			iterations++;
 		}
-			
-		System.out.println(objStr);
 		
-		return null;
+		return paramValues.get(paramValues.size() - 1);
 	}
 	
 	public static Object parseMethod(String methodStr, List<Object> paramValues, String[] classFileLocations){
@@ -851,6 +905,13 @@ public class Util {
 		}
 		
 		return paramValues.get(paramValues.size() - 1);
+	}
+	
+	public static Object parseString(String str, List<Object> paramValues){
+		if(!isString(str)) throw new IllegalArgumentException("'" + str + "' is not a valid String");
+		String result = new String(str.substring(1, str.length() - 1));
+		paramValues.add(result);
+		return result;
 	}
 	
 	public static String[] remove(String[] array, int start, int length) {
