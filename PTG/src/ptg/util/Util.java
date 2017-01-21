@@ -936,6 +936,12 @@ public class Util {
 		return index == -1 ? str : str.substring(0,index) + str.substring(index + strPart.length());
 	}
 
+	public static String replaceChar(String str, int index, char character){
+		char[] charArr = str.toCharArray();
+		charArr[index] = character;
+		return new String(charArr);
+	}
+	
 	public static List<?> shrinkList(List<?> list, int min, int max){
 		int size = list.size();
 		for(int i = 0; i < size-max-1; i++){

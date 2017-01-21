@@ -87,11 +87,6 @@ public class Console implements Runnable{
 		Timer timer = new Timer(2000);
 		console.start();
 		console.setCanWriteToFile(true);
-		
-		console.log("Normal");
-		console.logSuccess("Success");
-		console.warn("Warning");
-		console.err("Error");
 	}
 	
 	public Console(){

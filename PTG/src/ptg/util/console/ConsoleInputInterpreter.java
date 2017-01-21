@@ -1,6 +1,5 @@
 package ptg.util.console;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +15,7 @@ public class ConsoleInputInterpreter implements Runnable{
 	private static final ConsoleCommand HELP = new ConsoleCommand("help","Shows the help menu.");
 	private static final ConsoleCommand INFO = new ConsoleCommand("info","Shows the description and use of a command.", 
 										"(Command)");
-	private static final ConsoleCommand EXECUTE = new ConsoleCommand("execute","Will invoke a method given a class, method name, and arguments.\n\tThe command connot contain mathematical operations not within a method or constructor.\n\tLook up Util.parseIntoObject() for more details on the command's format.",
+	private static final ConsoleCommand EXECUTE = new ConsoleCommand("execute","Will invoke a method or constructor given a class, method name, and arguments.\n\tThe command connot contain mathematical operations not within a method or constructor.\n\tLook up Util.parseIntoObject() for more details on the command's format.",
 										"(Java formatted command)");
 	private static final ConsoleCommand CLIST = new ConsoleCommand("clist","Lists all of the possible commands or options for a given argument.");
 
@@ -32,7 +31,7 @@ public class ConsoleInputInterpreter implements Runnable{
 	
 	public static void initConsoleInputInterpreter(Console console){
 		if(commands != null){
-			console.err("Console commands have not yet been initialized");
+			console.err("Console commands have already been initialized");
 			return;
 		}
 		
@@ -128,7 +127,14 @@ public class ConsoleInputInterpreter implements Runnable{
 		try{
 		console.log(Util.parseIntoObject(command, new ArrayList<Object>(), classFileLocations));
 		}catch (Exception e){
-			console.err(e.getMessage());
+			String location = null;
+			for(int ln = 0; ln < e.getStackTrace().length; ln++){
+				if(e.getStackTrace()[ln].getLineNumber() != -1){
+					location = e.getStackTrace()[ln].toString();
+					break;
+				}
+			}
+			console.err(e.getMessage() + "\n\t @ " + location);
 		}
 	}
 	
@@ -184,12 +190,6 @@ public class ConsoleInputInterpreter implements Runnable{
 		console.log("------------------------------------------------------------");
 	}
 	
-	private void errEnterCommand(){
-		console.err("Error: No command given");
-		console.err("\tUsage: /(Command)");
-		console.err("\tType /help for help");
-	}
-	
 	private void errIncorrectUsageOfCommand(ConsoleCommand cmd){
 		console.err("Error: Incorrect usage of /" + cmd.getName());
 		console.errln("\tUsage: /" + cmd.getName());
@@ -198,12 +198,12 @@ public class ConsoleInputInterpreter implements Runnable{
 			console.errln(" " + args[i]);
 		}
 		console.errln("\n");
-		console.err("\tType /help for help");
+		console.err("\tType '/help' for help");
 	}
 	
 	private void errCommandNameNotFound(Object cmdName){
 		console.err("/" + cmdName + " was not found. Please enter a valid command");
 		console.err("\tUsage: /(Command)");
-		console.err("\tType /help for help");
+		console.err("\tType '/help' for help");
 	}
 }
