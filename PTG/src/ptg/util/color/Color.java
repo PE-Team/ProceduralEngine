@@ -58,7 +58,7 @@ public class Color {
 	}
 	
 	public int toInt(){
-		return ((int) this.r)<<24 + ((int) this.g)<<16 + ((int) this.b)<<8 + ((int) a);
+		return ((int) r)<<24 + ((int) g)<<16 + ((int) b)<<8 + ((int) a);
 	}
 	
 	public Color toDecimal(){

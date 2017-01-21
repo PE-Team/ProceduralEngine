@@ -171,29 +171,56 @@ public class Mat3f {
 			case 0:
 				switch(centerY){
 					case 0:
-						return new Mat2f(this.s11, this.s12, this.s21, this.s22);
+						return new Mat2f(
+											this.s11, this.s12, 
+											this.s21, this.s22
+										 );
 					case 1:
-						return new Mat2f(this.s10, this.s12, this.s20, this.s22);
+						return new Mat2f(
+											this.s10, this.s12, 
+											this.s20, this.s22
+										);
 					case 2:
-						return new Mat2f(this.s10, this.s11, this.s20, this.s21);
+						return new Mat2f(
+											this.s10, this.s11, 
+											this.s20, this.s21
+										);
 				}
 			case 1:
 				switch(centerY){
 					case 0:
-						return new Mat2f(this.s01, this.s02, this.s21, this.s22);
+						return new Mat2f(
+											this.s01, this.s02, 
+											this.s21, this.s22
+										);
 					case 1:
-						return new Mat2f(this.s00, this.s02, this.s20, this.s22);
+						return new Mat2f(
+											this.s00, this.s02, 
+											this.s20, this.s22
+										);
 					case 2:
-						return new Mat2f(this.s00, this.s02, this.s10, this.s12);
+						return new Mat2f(
+											this.s00, this.s02, 
+											this.s10, this.s12
+										);
 				}
 			case 2:
 				switch(centerY){
 					case 0:
-						return new Mat2f(this.s10, this.s11, this.s20, this.s21);
+						return new Mat2f(
+											this.s10, this.s11, 
+											this.s20, this.s21
+										);
 					case 1:
-						return new Mat2f(this.s00, this.s01, this.s20, this.s21);
+						return new Mat2f(
+											this.s00, this.s01, 
+											this.s20, this.s21
+										);
 					case 2:
-						return new Mat2f(this.s00, this.s01, this.s10, this.s11);
+						return new Mat2f(
+											this.s00, this.s01, 
+											this.s10, this.s11
+									);
 				}
 		}
 		throw new IndexOutOfBoundsException("Cannot get submatrix at x: " + centerX + ", y: " + centerY);
