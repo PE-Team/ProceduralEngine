@@ -30,15 +30,15 @@ public class Mat2f {
 	
 	public static Mat2f add(Mat2f mat1, Mat2f mat2){
 		return new Mat2f(
-				mat2.s00+mat1.s00, mat2.s01+mat1.s01,
-				mat2.s10+mat1.s10, mat2.s11+mat1.s11
+				mat1.s00+mat2.s00, mat1.s01+mat2.s01,
+				mat1.s10+mat2.s10, mat1.s11+mat2.s11
 				);
 	}
 	
 	public static Mat2f sub(Mat2f mat1, Mat2f mat2){
 		return new Mat2f(
-				mat2.s00-mat1.s00, mat2.s01-mat1.s01,
-				mat2.s10-mat1.s10, mat2.s11-mat1.s11
+				mat1.s00-mat2.s00, mat1.s01-mat2.s01,
+				mat1.s10-mat2.s10, mat1.s11-mat2.s11
 				);
 	}
 	
@@ -64,7 +64,7 @@ public class Mat2f {
 		return Mat2f.mul(mat1, mat2.inverse());
 	}
 	
-	public Mat2f scale(float scale){
+	public Mat2f mul(float scale){
 		this.s00 *= scale; this.s01 *= scale;
 		this.s10 *= scale; this.s11 *= scale;
 		return this;
@@ -82,7 +82,7 @@ public class Mat2f {
 	}
 	
 	public Mat2f inverse(){
-		return this.getAdjointMatrix().scale(1/this.det());
+		return this.getAdjointMatrix().mul(1/this.det());
 	}
 	
 	public Mat2f getAdjointMatrix(){

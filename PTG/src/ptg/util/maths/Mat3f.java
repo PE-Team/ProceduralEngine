@@ -21,9 +21,9 @@ public class Mat3f {
 		this.s20 = s20; this.s21 = s21; this.s22 = s22;
 	}
 	
-	public Mat3f(Vec2f vec1, Vec2f vec2){
-		this.s00 = vec1.x; 	this.s01 = vec2.x; 	this.s02 = 0;
-		this.s10 = vec1.y; 	this.s11 = vec2.y; 	this.s12 = 0;
+	public Mat3f(Vec2f vec1, Vec2f vec2, Vec2f vec3){
+		this.s00 = vec1.x; 	this.s01 = vec2.x; 	this.s02 = vec3.x;
+		this.s10 = vec1.y; 	this.s11 = vec2.y; 	this.s12 = vec3.y;
 		this.s20 = 0; 		this.s21 = 0; 		this.s22 = 1;
 	}
 	
@@ -48,17 +48,17 @@ public class Mat3f {
 	
 	public static Mat3f add(Mat3f mat1, Mat3f mat2){
 		return new Mat3f(
-				mat2.s00+mat1.s00, mat2.s01+mat1.s01, mat2.s02+mat1.s02,
-				mat2.s10+mat1.s10, mat2.s11+mat1.s11, mat2.s12+mat1.s12,
-				mat2.s20+mat1.s20, mat2.s21+mat1.s21, mat2.s22+mat1.s22
+				mat1.s00+mat2.s00, mat1.s01+mat2.s01, mat1.s02+mat2.s02,
+				mat1.s10+mat2.s10, mat1.s11+mat2.s11, mat1.s12+mat2.s12,
+				mat1.s20+mat2.s20, mat1.s21+mat2.s21, mat1.s22+mat2.s22
 				);
 	}
 	
 	public static Mat3f sub(Mat3f mat1, Mat3f mat2){
 		return new Mat3f(
-				mat2.s00-mat1.s00, mat2.s01-mat1.s01, mat2.s02-mat1.s02,
-				mat2.s10-mat1.s10, mat2.s11-mat1.s11, mat2.s12-mat1.s12,
-				mat2.s20-mat1.s20, mat2.s21-mat1.s21, mat2.s22-mat1.s22
+				mat1.s00-mat2.s00, mat1.s01-mat2.s01, mat1.s02-mat2.s02,
+				mat1.s10-mat2.s10, mat1.s11-mat2.s11, mat1.s12-mat2.s12,
+				mat1.s20-mat2.s20, mat1.s21-mat2.s21, mat1.s22-mat2.s22
 				);
 	}
 	
@@ -91,7 +91,7 @@ public class Mat3f {
 		return Mat3f.mul(mat1, mat2.inverse());
 	}
 	
-	public Mat3f scale(float scale){
+	public Mat3f mul(float scale){
 		this.s00 *= scale; this.s01 *= scale; this.s02 *= scale;
 		this.s10 *= scale; this.s11 *= scale; this.s12 *= scale;
 		this.s20 *= scale; this.s21 *= scale; this.s22 *= scale;
@@ -110,11 +110,13 @@ public class Mat3f {
 	
 	public Mat3f rotate(float theta){
 		Mat3f rotation = new Mat3f();
-		float cos = (float) Math.cos(Math.toRadians(theta));
-		rotation.s00 = cos;
-		rotation.s01 = (float) Math.sin(Math.toRadians(theta));
-		rotation.s10 = (float) -Math.sin(Math.toRadians(theta));
-		rotation.s11 = cos;
+		double rotRadian = Math.toRadians(theta);
+		float cos = (float) Math.cos(rotRadian);
+		float sin = (float) Math.sin(rotRadian);
+		rotation.s00 =  cos;
+		rotation.s01 =  sin;
+		rotation.s10 = -sin;
+		rotation.s11 =  cos;
 		return Mat3f.mul(this, rotation);
 	}
 	
@@ -125,9 +127,21 @@ public class Mat3f {
 		return Mat3f.mul(this, scale);
 	}
 	
-	public Mat3f transform(Vec2f translation, float rotation, Vec2f scale){
-		float cos = (float) Math.cos(Math.toRadians(rotation));
-		float sin = (float) Math.sin(Math.toRadians(rotation));
+	public static Mat3f getTransformationMatrix(Vec2f translation, float rotation, float scale){
+		double rotRadian = Math.toRadians(rotation);
+		float cos = (float) Math.cos(rotRadian);
+		float sin = (float) Math.sin(rotRadian);
+		return new Mat3f(
+				scale*cos,	scale*sin,	translation.x,
+				-scale*sin,	scale*cos,	translation.y,
+				0,			0,			1
+				);
+	}
+	
+	public static Mat3f getTransformationMatrix(Vec2f translation, float rotation, Vec2f scale){
+		double rotRadian = Math.toRadians(rotation);
+		float cos = (float) Math.cos(rotRadian);
+		float sin = (float) Math.sin(rotRadian);
 		return new Mat3f(
 				scale.x*cos,	scale.y*sin,	translation.x,
 				-scale.x*sin,	scale.y*cos,	translation.y,
@@ -144,14 +158,19 @@ public class Mat3f {
 				this.s02, this.s12, this.s22
 				);
 	}
-	
+	/*
 	public float det(){
 		return 	this.s00*this.s11*this.s22 + this.s01*this.s12*this.s20 + this.s02*this.s10*this.s21 
 				- this.s20*this.s11*this.s02 - this.s21*this.s12*this.s00 - this.s22*this.s10*this.s01;
 	}
+	*/
+	
+	public float det(){
+		return s00*this.getSubmatrix(0, 0).det() - s01*this.getSubmatrix(0, 1).det() + s02*this.getSubmatrix(0, 2).det();
+	}
 	
 	public Mat3f inverse(){
-		return this.getAdjointMatrix().scale(1/this.det());
+		return this.getAdjointMatrix().mul(1/this.det());
 	}
 	
 	public Mat3f getAdjointMatrix(){
@@ -172,7 +191,7 @@ public class Mat3f {
 				switch(centerY){
 					case 0:
 						return new Mat2f(
-											this.s11, this.s12, 
+											this.s11, this.s12,
 											this.s21, this.s22
 										 );
 					case 1:
@@ -220,7 +239,7 @@ public class Mat3f {
 						return new Mat2f(
 											this.s00, this.s01, 
 											this.s10, this.s11
-									);
+										);
 				}
 		}
 		throw new IndexOutOfBoundsException("Cannot get submatrix at x: " + centerX + ", y: " + centerY);
