@@ -1,4 +1,4 @@
-package pe.util.maths;
+package pe.util.math;
 
 public class Vec2f {
 
@@ -14,7 +14,7 @@ public class Vec2f {
 		this.y = y;
 	}
 	
-	public Vec2f scale(float scale){
+	public Vec2f mul(float scale){
 		this.x *= scale;
 		this.y *= scale;
 		return this;

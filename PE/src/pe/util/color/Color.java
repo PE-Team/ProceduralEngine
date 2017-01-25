@@ -1,8 +1,8 @@
 package pe.util.color;
 
-import pe.util.maths.Maths;
-import pe.util.maths.Vec3f;
-import pe.util.maths.Vec4f;
+import pe.util.math.Maths;
+import pe.util.math.Vec3f;
+import pe.util.math.Vec4f;
 
 public class Color {
 

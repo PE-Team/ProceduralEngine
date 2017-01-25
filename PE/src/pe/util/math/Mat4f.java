@@ -1,4 +1,4 @@
-package pe.util.maths;
+package pe.util.math;
 
 public class Mat4f {
 
@@ -216,6 +216,10 @@ public class Mat4f {
 		}
 		
 		public static Mat4f getTransformationMatrix(Vec3f translation, Vec3f rotation, Vec3f scale){
+			return new Mat4f().translate(translation).rotate(rotation).scale(scale);
+		}
+		
+		public static Mat4f getTransformationMatrix(Vec3f translation, Vec3f rotation, float scale){
 			return new Mat4f().translate(translation).rotate(rotation).scale(scale);
 		}
 		

@@ -2,7 +2,7 @@ package pe.test.testUnits;
 
 import pe.test.main.Test;
 import pe.test.main.TestUnit;
-import pe.util.maths.Vec3f;
+import pe.util.math.Vec3f;
 
 public class Vec3fTest extends Test{
 	

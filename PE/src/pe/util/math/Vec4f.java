@@ -1,4 +1,4 @@
-package pe.util.maths;
+package pe.util.math;
 
 public class Vec4f {
 
@@ -32,7 +32,7 @@ public class Vec4f {
 		this.w = w;
 	}
 	
-	public Vec4f scale(float scale){
+	public Vec4f mul(float scale){
 		this.x *= scale;
 		this.y *= scale;
 		this.z *= scale;

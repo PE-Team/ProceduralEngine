@@ -414,7 +414,7 @@ public class Util {
 		}
 		return -1;
 	}
-
+	
 	public static int getLastIndexOf(String strPart, String str){
 		return getLastIndexBefore(str.length(), strPart, str);
 	}
@@ -428,7 +428,7 @@ public class Util {
 		}
 		return null;
 	}
-	
+
 	public static int[] getNewLineIndeces(String string){
 		int[] result = new int[0];
 		int[] old = result;
@@ -457,7 +457,7 @@ public class Util {
 		
 		return objClass;
 	}
-
+	
 	public static int[] getPrimitiveNumberClassIndeces(List<Class<?>> list){
 		int[] indeces = new int[0];
 		for(int c = 0; c < list.size(); c++){
@@ -472,7 +472,7 @@ public class Util {
 		}
 		return indeces;
 	}
-	
+
 	public static int getStringParameterIndex(String paramStr){
 		if(!isStringParameter(paramStr)) throw new IllegalArgumentException("'" + paramStr + "' does not follow the format: @p[number].");
 		return Integer.parseInt(paramStr.substring(2));
@@ -490,6 +490,14 @@ public class Util {
 			}
 		}
 		return result;
+	}
+	
+	public static String invertString(String str){
+		StringBuilder result = new StringBuilder();
+		for(int c = str.length() - 1; c >= 0; c--){
+			result.append(str.charAt(c));
+		}
+		return result.toString();
 	}
 	
 	public static boolean isBoolean(String bool){
