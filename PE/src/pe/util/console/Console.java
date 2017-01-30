@@ -87,7 +87,7 @@ public class Console implements Runnable{
 	
 	public Console(){
 		this.logFileName = "defaultConsoleLogFile.log";
-		this.logFilePath = "./PTG/src/ptg/output/logs/";
+		this.logFilePath = "./PE/src/pe/output/logs/";
 		this.lineMax = 10;
 		this.textColor = Color.BLACK;
 		this.canWriteToFile = false;
