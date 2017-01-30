@@ -17,11 +17,11 @@ public class Mat4f {
 		}
 		
 		// Goes down the row, then goes to the next row
-		public Mat4f(float s00, float s01, float s02, float s03, float s10, float s11, float s12, float s13, float s20, float s21, float s22, float s23, float s30, float s31, float s32, float s33){
-			this.s00 = s00; this.s01 = s01; this.s02 = s02; this.s03 = s22;
-			this.s10 = s10; this.s11 = s11; this.s12 = s12; this.s13 = s22;
-			this.s20 = s20; this.s21 = s21; this.s22 = s22; this.s23 = s22;
-			this.s30 = s20; this.s31 = s21; this.s32 = s22; this.s33 = s22;
+		public Mat4f(float s00, float s10, float s20, float s30, float s01, float s11, float s21, float s31, float s02, float s12, float s22, float s32, float s03, float s13, float s23, float s33){
+			this.s00 = s00; this.s01 = s01; this.s02 = s02; this.s03 = s03;
+			this.s10 = s10; this.s11 = s11; this.s12 = s12; this.s13 = s13;
+			this.s20 = s20; this.s21 = s21; this.s22 = s22; this.s23 = s23;
+			this.s30 = s30; this.s31 = s31; this.s32 = s32; this.s33 = s33;
 		}
 		
 		public Mat4f(Vec2f vec1, Vec2f vec2, Vec2f vec3, Vec2f vec4){
@@ -136,9 +136,9 @@ public class Mat4f {
 		
 		public Mat4f translate(Vec3f delta){
 			Mat4f translation = new Mat4f();
-			translation.s30 = delta.x;
-			translation.s31 = delta.y;
-			translation.s32 = delta.z;
+			translation.s03 = delta.x;
+			translation.s13 = delta.y;
+			translation.s23 = delta.z;
 			return Mat4f.mul(this, translation);
 		}
 		
@@ -391,5 +391,9 @@ public class Mat4f {
 					return new Vec4f(s30,s31,s32,s33);
 			}
 			throw new IndexOutOfBoundsException("No such Row: " + row);
+		}
+		
+		public String toString(){
+			return "[" + getCol(0).toString() + "," + getCol(1).toString() + "," + getCol(2).toString() + "," + getCol(3).toString() + "]";
 		}
 }

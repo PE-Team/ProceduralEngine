@@ -15,7 +15,7 @@ public class Mat3f {
 	}
 	
 	// Goes down the row, then goes to the next row
-	public Mat3f(float s00, float s01, float s02, float s10, float s11, float s12, float s20, float s21, float s22){
+	public Mat3f(float s00, float s10, float s20, float s01, float s11, float s21, float s02, float s12, float s22){
 		this.s00 = s00; this.s01 = s01; this.s02 = s02;
 		this.s10 = s10; this.s11 = s11; this.s12 = s12;
 		this.s20 = s20; this.s21 = s21; this.s22 = s22;
@@ -267,5 +267,9 @@ public class Mat3f {
 				return new Vec3f(s20,s21,s22);
 		}
 		throw new IndexOutOfBoundsException("No such Row: " + row);
+	}
+	
+	public String toString(){
+		return "[" + getCol(0).toString() + "," + getCol(1).toString() + "," + getCol(2).toString() + "]";
 	}
 }

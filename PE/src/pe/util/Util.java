@@ -15,6 +15,8 @@ import pe.engine.main.PE;
 
 public class Util {
 	
+	public static String[] defaultClassFileLocations = new String[]{"./bin","C:/Program Files/Java/jdk1.8.0_101/"};
+	
 	public static int[] add(int[] array, int addend){
 		for(int i = 0; i < array.length; i++){
 			array[i] += addend;
