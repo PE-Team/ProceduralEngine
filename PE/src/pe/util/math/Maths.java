@@ -34,6 +34,7 @@ public class Maths {
 		float angle = 2 * (float) Math.acos(c1c2*c3 - s1s2*s3);
 		if (rotation.x == 0 && rotation.y == 0 && rotation.z == 0) return new Vec4f(1, 0, 0, 0);
 		
+		return new Vec4f(new Vec3f(x,y,z).unit(), angle);
 	}
 	
 	public static long hexToLong(String hex){
