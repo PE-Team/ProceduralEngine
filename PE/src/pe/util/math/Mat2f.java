@@ -12,7 +12,7 @@ public class Mat2f {
 		this.s10 = 0; this.s11 = 1; 
 	}
 	
-	public Mat2f(float s00, float s01, float s10, float s11){
+	public Mat2f(float s00, float s10, float s01, float s11){
 		this.s00 = s00; this.s01 = s01;
 		this.s10 = s10; this.s11 = s11;
 	}
@@ -114,5 +114,9 @@ public class Mat2f {
 				return new Vec2f(s10,s11);
 		}
 		throw new IndexOutOfBoundsException("No such Row: " + row);
+	}
+	
+	public String toString(){
+		return "[" + getCol(0).toString() + "," + getCol(1).toString() + "]";
 	}
 }
