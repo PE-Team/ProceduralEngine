@@ -18,8 +18,22 @@ public class Maths {
 	}
 	
 	public static Vec4f getAxisAngle(Vec3f rotation){
-		//TODO Stub
-		return null;
+		float c1 = (float) Math.cos(Math.toRadians(rotation.x / 2));
+		float s1 = (float) Math.sin(Math.toRadians(rotation.x / 2));
+		float c2 = (float) Math.cos(Math.toRadians(rotation.y / 2));
+		float s2 = (float) Math.sin(Math.toRadians(rotation.y / 2));
+		float c3 = (float) Math.cos(Math.toRadians(rotation.z / 2));
+		float s3 = (float) Math.sin(Math.toRadians(rotation.z / 2));
+		float c1c2 = c1*c2;
+		float s1s2 = s1*s2;
+		float c1s2 = c1*s2;
+		float s1c2 = s1*c2;
+		float x =c1c2*s3 + s1s2*c3;
+		float y =s1c2*c3 + c1s2*s3;
+		float z =c1s2*c3 - s1c2*s3;
+		float angle = 2 * (float) Math.acos(c1c2*c3 - s1s2*s3);
+		if (rotation.x == 0 && rotation.y == 0 && rotation.z == 0) return new Vec4f(1, 0, 0, 0);
+		
 	}
 	
 	public static long hexToLong(String hex){
