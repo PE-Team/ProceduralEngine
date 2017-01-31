@@ -5,13 +5,6 @@ import pe.engine.main.PE;
 import pe.util.Util;
 
 public class Maths {
-
-	public static void main(String... args){
-		long resultLong = hexToLong("ffaa");
-		System.out.println(resultLong);
-		String resultStr = Maths.intToHex((int) resultLong);
-		System.out.println(resultStr);
-	}
 	
 	public static Mat4f getViewMatrix(Camera camera){
 		return Mat4f.getTransformationMatrix(camera.getPosition().mul(-1), new Vec3f(camera.getPitch(), camera.getYaw(), camera.getRoll()), 1);
