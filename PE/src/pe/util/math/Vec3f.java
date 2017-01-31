@@ -1,4 +1,4 @@
-package pe.util.maths;
+package pe.util.math;
 
 public class Vec3f {
 
@@ -22,7 +22,7 @@ public class Vec3f {
 		this.z = z;
 	}
 	
-	public Vec3f scale(float scale){
+	public Vec3f mul(float scale){
 		this.x *= scale;
 		this.y *= scale;
 		this.z *= scale;

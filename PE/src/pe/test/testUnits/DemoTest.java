@@ -7,7 +7,7 @@ import pe.test.main.DemoClass;
 import pe.test.main.Test;
 import pe.test.main.TestUnit;
 import pe.util.Util;
-import pe.util.maths.Vec3f;
+import pe.util.math.Vec3f;
 
 public class DemoTest extends Test{
 

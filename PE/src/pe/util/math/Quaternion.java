@@ -1,4 +1,4 @@
-package pe.util.maths;
+package pe.util.math;
 
 public class Quaternion {
 

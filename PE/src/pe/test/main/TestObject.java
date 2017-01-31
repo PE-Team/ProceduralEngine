@@ -1,6 +1,6 @@
 package pe.test.main;
 
-import pe.util.maths.Vec2f;
+import pe.util.math.Vec2f;
 
 public class TestObject {
 	
