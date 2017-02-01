@@ -5,69 +5,141 @@ import java.util.List;
 
 public class Data {
 	
-	private List<Byte> byteArray = null;
-	private List<Short> shortArray = null;
-	private List<Integer> intArray = null;
-	private List<Long> longArray = null;
-	private List<Float> floatArray = null;
-	private List<Double> doubleArray = null;
-	private List<Boolean> booleanArray = null;
-	private List<Character> charArray = null;
-	private List<Object> objArray = null;
+	private List<Byte> byteList = null;
+	private List<Short> shortList = null;
+	private List<Integer> intList = null;
+	private List<Long> longList = null;
+	private List<Float> floatList = null;
+	private List<Double> doubleList = null;
+	private List<Boolean> booleanList = null;
+	private List<Character> charList = null;
+	private List<Object> objList = null;
 	
 	public Data(){};
 	
 	public Data store(byte b){
-		if(byteArray == null) byteArray = new ArrayList<Byte>();
-		byteArray.add(b);
+		if(byteList == null) byteList = new ArrayList<Byte>();
+		byteList.add(b);
 		return this;
 	}
 	
 	public Data store(short s){
-		if(shortArray == null) shortArray = new ArrayList<Short>();
-		shortArray.add(s);
+		if(shortList == null) shortList = new ArrayList<Short>();
+		shortList.add(s);
 		return this;
 	}
 	
 	public Data store(int i){
-		if(intArray == null) intArray = new ArrayList<Integer>();
-		intArray.add(i);
+		if(intList == null) intList = new ArrayList<Integer>();
+		intList.add(i);
 		return this;
 	}
 	
 	public Data store(long l){
-		if(longArray == null) longArray = new ArrayList<Long>();
-		longArray.add(l);
+		if(longList == null) longList = new ArrayList<Long>();
+		longList.add(l);
 		return this;
 	}
 	
 	public Data store(float f){
-		if(floatArray == null) floatArray = new ArrayList<Float>();
-		floatArray.add(f);
+		if(floatList == null) floatList = new ArrayList<Float>();
+		floatList.add(f);
 		return this;
 	}
 	
 	public Data store(double d){
-		if(doubleArray == null) doubleArray = new ArrayList<Double>();
-		doubleArray.add(d);
+		if(doubleList == null) doubleList = new ArrayList<Double>();
+		doubleList.add(d);
 		return this;
 	}
 	
 	public Data store(boolean b){
-		if(booleanArray == null) booleanArray = new ArrayList<Boolean>();
-		booleanArray.add(b);
+		if(booleanList == null) booleanList = new ArrayList<Boolean>();
+		booleanList.add(b);
 		return this;
 	}
 	
 	public Data store(char b){
-		if(charArray == null) charArray = new ArrayList<Character>();
-		charArray.add(b);
+		if(charList == null) charList = new ArrayList<Character>();
+		charList.add(b);
 		return this;
 	}
 	
 	public Data store(Object o){
-		if(objArray == null) objArray = new ArrayList<Object>();
-		objArray.add(o);
+		if(objList == null) objList = new ArrayList<Object>();
+		objList.add(o);
 		return this;
+	}
+	
+	public byte getByte(int index){
+		return byteList.get(index);
+	}
+	
+	public short getShort(int index){
+		return shortList.get(index);
+	}
+	
+	public int getInt(int index){
+		return intList.get(index);
+	}
+	
+	public long getLong(int index){
+		return longList.get(index);
+	}
+	
+	public float getFloat(int index){
+		return floatList.get(index);
+	}
+	
+	public double getDouble(int index){
+		return doubleList.get(index);
+	}
+	
+	public boolean getBoolean(int index){
+		return booleanList.get(index);
+	}
+	
+	public char getChar(int index){
+		return charList.get(index);
+	}
+	
+	public Object getObject(int index){
+		return objList.get(index);
+	}
+	
+	public List<Byte> getByteList(){
+		return byteList;
+	}
+	
+	public List<Short> getShortList(){
+		return shortList;
+	}
+	
+	public List<Integer> getIntList(){
+		return intList;
+	}
+	
+	public List<Long> getLongList(){
+		return longList;
+	}
+	
+	public List<Float> getFloatList(){
+		return floatList;
+	}
+	
+	public List<Double> getDoubleList(){
+		return doubleList;
+	}
+	
+	public List<Boolean> getBooleanList(){
+		return booleanList;
+	}
+	
+	public List<Character> getCharList(){
+		return charList;
+	}
+	
+	public List<Object> getObjectList(){
+		return objList;
 	}
 }
