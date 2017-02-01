@@ -2,6 +2,7 @@ package pe.util;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -50,6 +51,15 @@ public class Util {
 		}
 		if(rightCharNumb != leftCharNumb) return false;
 		return true;
+	}
+	
+	public static <T> T[] append(T[] array, T element){
+		List<T> result = new ArrayList<T>();
+		for(int i = 0; i < array.length; i++){
+			result.add(array[i]);
+		}
+		result.add(element);
+		return result.toArray(array);
 	}
 
 	public static int[] append(int[] array, int numb){
