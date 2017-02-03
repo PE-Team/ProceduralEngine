@@ -42,10 +42,10 @@ public class Mat2f {
 				);
 	}
 	
-	public static Mat2f mul(Mat2f mat, Vec2f vec){
-		return new Mat2f(
-				mat.s00*vec.x, mat.s01*vec.y,
-				mat.s10*vec.x, mat.s11*vec.y
+	public static Vec2f mul(Mat2f mat, Vec2f vec){
+		return new Vec2f(
+				mat.s00*vec.x + mat.s01*vec.y,
+				mat.s10*vec.x + mat.s11*vec.y
 				);
 	}
 	

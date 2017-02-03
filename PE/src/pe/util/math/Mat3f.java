@@ -62,11 +62,11 @@ public class Mat3f {
 				);
 	}
 	
-	public static Mat3f mul(Mat3f mat, Vec3f vec){
-		return new Mat3f(
-				mat.s00*vec.x, mat.s01*vec.y, mat.s02*vec.z,
-				mat.s10*vec.x, mat.s11*vec.y, mat.s12*vec.z,
-				mat.s20*vec.x, mat.s21*vec.y, mat.s22*vec.z
+	public static Vec3f mul(Mat3f mat, Vec3f vec){
+		return new Vec3f(
+				mat.s00*vec.x + mat.s01*vec.y + mat.s02*vec.z,
+				mat.s10*vec.x + mat.s11*vec.y + mat.s12*vec.z,
+				mat.s20*vec.x + mat.s21*vec.y + mat.s22*vec.z
 				);
 	}
 	

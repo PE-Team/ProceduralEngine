@@ -85,12 +85,12 @@ public class Mat4f {
 					);
 		}
 		
-		public static Mat4f mul(Mat4f mat, Vec4f vec){
-			return new Mat4f(
-					mat.s00*vec.x, mat.s01*vec.y, mat.s02*vec.z, mat.s03*vec.w,
-					mat.s10*vec.x, mat.s11*vec.y, mat.s12*vec.z, mat.s13*vec.w,
-					mat.s20*vec.x, mat.s21*vec.y, mat.s22*vec.z, mat.s23*vec.w,
-					mat.s30*vec.x, mat.s31*vec.y, mat.s32*vec.z, mat.s33*vec.w
+		public static Vec4f mul(Mat4f mat, Vec4f vec){
+			return new Vec4f(
+					mat.s00*vec.x + mat.s01*vec.y + mat.s02*vec.z + mat.s03*vec.w,
+					mat.s10*vec.x + mat.s11*vec.y + mat.s12*vec.z + mat.s13*vec.w,
+					mat.s20*vec.x + mat.s21*vec.y + mat.s22*vec.z + mat.s23*vec.w,
+					mat.s30*vec.x + mat.s31*vec.y + mat.s32*vec.z + mat.s33*vec.w
 					);
 		}
 		
