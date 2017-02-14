@@ -380,6 +380,7 @@ public class Console implements Runnable{
 
 			public void keyReleased(KeyEvent e) {
 				if(e.getKeyCode() == KeyEvent.VK_ENTER){
+					thisConsole.pastConsoleCommandIndex = 0;
 					new ConsoleInputInterpreter(thisConsole);
 				}
 				
