@@ -10,6 +10,13 @@ public class Maths {
 		return Mat4f.getTransformationMatrix(camera.getPosition().mul(-1), new Vec3f(camera.getPitch(), camera.getYaw(), camera.getRoll()), 1);
 	}
 	
+	public static int digitsIn(Object numb){
+		if(!Util.isNumber(numb.toString()))
+			throw new IllegalArgumentException(numb + "is not a valid number.");
+		
+		return numb.toString().length();
+	}
+	
 	public static Vec4f getAxisAngle(Vec3f rotation){
 		float c1 = (float) Math.cos(Math.toRadians(rotation.x / 2));
 		float s1 = (float) Math.sin(Math.toRadians(rotation.x / 2));
