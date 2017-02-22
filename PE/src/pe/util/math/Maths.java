@@ -6,6 +6,19 @@ import pe.util.Util;
 
 public class Maths {
 	
+	public static int LCM(int a, int b){
+		return a / GCF(a, b) * b;
+	}
+	
+	public static int GCF(int a, int b){
+		while(b != 0){
+			int temp = b;
+			b = a % b;
+			a = temp;
+		}
+		return a;
+	}
+	
 	public static Mat4f getViewMatrix(Camera camera){
 		return Mat4f.getTransformationMatrix(camera.getPosition().mul(-1), new Vec3f(camera.getPitch(), camera.getYaw(), camera.getRoll()), 1);
 	}
