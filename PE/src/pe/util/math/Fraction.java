@@ -8,6 +8,7 @@ public class Fraction{
 	private boolean autoSimplify;
 	
 	public Fraction(int numerator, int denominator){
+		if(denominator == 0) throw new IllegalArgumentException("The denominator for a fraction cannot be zero.");
 		this.numerator = numerator;
 		this.denominator = denominator;
 		this.autoSimplify = true;
@@ -15,6 +16,7 @@ public class Fraction{
 	}
 	
 	public Fraction(int numerator, int denominator, boolean autoSimplify){
+		if(denominator == 0) throw new IllegalArgumentException("The denominator for a fraction cannot be zero.");
 		this.numerator = numerator;
 		this.denominator = denominator;
 		this.autoSimplify = autoSimplify;
@@ -34,6 +36,7 @@ public class Fraction{
 	}
 	
 	public Fraction divide(Fraction fraction){
+		if(fraction.getNumerator() == 0) throw new IllegalArgumentException("Cannot divide by a fraction who's numerator is zero.");
 		numerator *= fraction.getDenominator();
 		denominator *= fraction.getNumerator();
 		if(autoSimplify) simplify();
@@ -45,6 +48,7 @@ public class Fraction{
 	}
 	
 	public Fraction flip(){
+		if(numerator == 0) throw new IllegalArgumentException("Cannot flip a fraction who's numerator is zero.");
 		int tempNum = numerator;
 		numerator = denominator;
 		denominator = tempNum;
@@ -120,6 +124,9 @@ public class Fraction{
 	}
 	
 	public String toFracString(){
+		if(numerator == 0) return "0";
+		if(denominator == 1) return Integer.toString(numerator);
+		
 		int numStrLen = Integer.toString(numerator).length();
 		int denomStrLen = Integer.toString(denominator).length();
 		int strLen = numStrLen > denomStrLen ? numStrLen : denomStrLen;
@@ -133,6 +140,8 @@ public class Fraction{
 	}
 	
 	public String toString(){
+		if(numerator == 0) return "0";
+		if(denominator == 1) return Integer.toString(numerator);
 		return numerator + "/" + denominator;
 	}
 }
