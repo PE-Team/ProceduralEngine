@@ -25,7 +25,7 @@ public class Maths {
 	
 	public static int digitsIn(Object numb){
 		if(!Util.isNumber(numb.toString()))
-			throw new IllegalArgumentException(numb + "is not a valid number.");
+			throw new IllegalArgumentException("'" + numb + "' is not a valid number.");
 		
 		return numb.toString().length();
 	}

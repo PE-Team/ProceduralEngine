@@ -7,7 +7,16 @@ public class Fraction{
 	private int numerator, denominator;
 	private boolean autoSimplify;
 	
+	public static Fraction ZERO = new Fraction(0, 1);
+	
+	public Fraction(int constant){
+		this.numerator = constant;
+		this.denominator = 1;
+		this.autoSimplify = true;
+	}
+	
 	public Fraction(int numerator, int denominator){
+		if(denominator == 0) throw new IllegalArgumentException("The denominator for a fraction cannot be zero.");
 		this.numerator = numerator;
 		this.denominator = denominator;
 		this.autoSimplify = true;
@@ -15,10 +24,17 @@ public class Fraction{
 	}
 	
 	public Fraction(int numerator, int denominator, boolean autoSimplify){
+		if(denominator == 0) throw new IllegalArgumentException("The denominator for a fraction cannot be zero.");
 		this.numerator = numerator;
 		this.denominator = denominator;
 		this.autoSimplify = autoSimplify;
 		if(autoSimplify) simplify();
+	}
+	
+	public Fraction add(int numb){
+		numerator += numb * denominator;
+		if(autoSimplify) simplify();
+		return this;
 	}
 	
 	public Fraction add(Fraction fraction){
@@ -33,7 +49,14 @@ public class Fraction{
 		return new Fraction(numerator, denominator, autoSimplify);
 	}
 	
+	public Fraction divide(int numb){
+		denominator *= numb;
+		if(autoSimplify) simplify();
+		return this;
+	}
+	
 	public Fraction divide(Fraction fraction){
+		if(fraction.getNumerator() == 0) throw new IllegalArgumentException("Cannot divide by a fraction who's numerator is zero.");
 		numerator *= fraction.getDenominator();
 		denominator *= fraction.getNumerator();
 		if(autoSimplify) simplify();
@@ -41,10 +64,11 @@ public class Fraction{
 	}
 	
 	public boolean equals(Fraction frac){
-		return numerator == frac.getNumerator() && denominator == frac.getDenominator();
+		return numerator * frac.getDenominator() == denominator * frac.getNumerator();
 	}
 	
 	public Fraction flip(){
+		if(numerator == 0) throw new IllegalArgumentException("Cannot flip a fraction who's numerator is zero.");
 		int tempNum = numerator;
 		numerator = denominator;
 		denominator = tempNum;
@@ -65,6 +89,12 @@ public class Fraction{
 	
 	public boolean isSimplified(){
 		return autoSimplify || copy().simplify().equals(this);
+	}
+	
+	public Fraction mul(int numb){
+		numerator *= numb;
+		if(autoSimplify) simplify();
+		return this;
 	}
 	
 	public Fraction mul(Fraction fraction){
@@ -100,6 +130,16 @@ public class Fraction{
 		int GCF = Maths.GCF(numerator, denominator);
 		numerator /= GCF;
 		denominator /= GCF;
+		if(denominator < 0){
+			numerator *= -1;
+			denominator *= -1;
+		}
+		return this;
+	}
+	
+	public Fraction subtract(int numb){
+		numerator -= numb * denominator;
+		if(autoSimplify) simplify();
 		return this;
 	}
 	
@@ -120,6 +160,9 @@ public class Fraction{
 	}
 	
 	public String toFracString(){
+		if(numerator == 0) return "0";
+		if(denominator == 1) return Integer.toString(numerator);
+		
 		int numStrLen = Integer.toString(numerator).length();
 		int denomStrLen = Integer.toString(denominator).length();
 		int strLen = numStrLen > denomStrLen ? numStrLen : denomStrLen;
@@ -133,6 +176,8 @@ public class Fraction{
 	}
 	
 	public String toString(){
+		if(numerator == 0) return "0";
+		if(denominator == 1) return Integer.toString(numerator);
 		return numerator + "/" + denominator;
 	}
 }
