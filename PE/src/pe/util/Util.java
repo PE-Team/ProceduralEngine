@@ -2,7 +2,6 @@ package pe.util;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -33,14 +32,6 @@ public class Util {
 		return count;
 	}
 	
-	public static String addSpaces(String msg, int stringLength){
-		String result = "";
-		for(int i = 0; i < stringLength - msg.length(); i++){
-			result += " ";
-		}
-		return result + msg;
-	}
-
 	public static boolean allCharsMatch(char charRight, char charLeft, String statementStr){
 		int rightCharNumb = 0;
 		int leftCharNumb = 0;
@@ -53,15 +44,6 @@ public class Util {
 		return true;
 	}
 	
-	public static <T> T[] append(T[] array, T element){
-		List<T> result = new ArrayList<T>();
-		for(int i = 0; i < array.length; i++){
-			result.add(array[i]);
-		}
-		result.add(element);
-		return result.toArray(array);
-	}
-
 	public static int[] append(int[] array, int numb){
 		int[] result = new int[array.length + 1];
 		for(int i = 0; i < array.length; i++){
@@ -91,6 +73,15 @@ public class Util {
 		return result;
 	}
 	
+	public static <T> T[] append(T[] array, T element){
+		List<T> result = new ArrayList<T>();
+		for(int i = 0; i < array.length; i++){
+			result.add(array[i]);
+		}
+		result.add(element);
+		return result.toArray(array);
+	}
+
 	public static <T> List<T> arrayToList(T[] array){
 		List<T> result = new ArrayList<>();
 		if(array == null) return result;
@@ -107,6 +98,11 @@ public class Util {
 		}
 		if(result.length() > 0) result = result.substring(1, result.length());
 		return "[" + result + "]";
+	}
+
+	public static String centerAlignString(String msg, int stringLength){
+		int extraChars = (int) (stringLength - msg.length());
+		return repeatCharFor(' ', extraChars / 2) + msg + repeatCharFor(' ', (extraChars / 2) + (extraChars % 2));
 	}
 	
 	public static <T> List<T> cloneList(List<T> list1, List<T> list2){
@@ -158,14 +154,14 @@ public class Util {
 		}
 		return count;
 	}
-
+	
 	public static boolean existsChar(String string, char character){
 		for(int i = 0; i < string.length(); i++){
 			if(string.charAt(i) == character) return true;
 		}
 		return false;
 	}
-
+	
 	public static Class<?> getClassByName(String className, String[] classFileLocations){
 		boolean identifiedSpecificClass = false;
 		int index = 0;
@@ -286,7 +282,7 @@ public class Util {
 			throw new NullPointerException("No such constructor: " + constructor);
 		}
 	}
-	
+
 	public static List<Constructor<?>> getConstructors(Class<?> className, List<Class<?>> initClasses){
 		List<Constructor<?>> possibleConstructors = new ArrayList<Constructor<?>>();
 		List<Integer> possibleConstructorProximity = new ArrayList<Integer>();
@@ -378,7 +374,7 @@ public class Util {
 		
 		return finalConstructors;
 	}
-	
+
 	public static int getFirstIndexAfter(int index, String strPart, String str){
 		for(int i = index + 1; i < str.length() - strPart.length() + 1; i++){
 			if(str.charAt(i) == strPart.charAt(0)){
@@ -430,7 +426,7 @@ public class Util {
 	public static int getLastIndexOf(String strPart, String str){
 		return getLastIndexBefore(str.length(), strPart, str);
 	}
-
+	
 	public static Method getMethod(Class<?> className, String name, List<Class<?>> paramClasses){
 		try {
 			return className.getDeclaredMethod(name, paramClasses.toArray(new Class<?>[0]));
@@ -440,7 +436,7 @@ public class Util {
 		}
 		return null;
 	}
-
+	
 	public static int[] getNewLineIndeces(String string){
 		int[] result = new int[0];
 		int[] old = result;
@@ -489,7 +485,7 @@ public class Util {
 		if(!isStringParameter(paramStr)) throw new IllegalArgumentException("'" + paramStr + "' does not follow the format: @p[number].");
 		return Integer.parseInt(paramStr.substring(2));
 	}
-	
+
 	public static <T> List<T> insertList(List<T> listInsert, List<T> base, int index){
 		List<T> result = new ArrayList<>();
 		for(int i = 0; i < base.size(); i++){
@@ -515,7 +511,7 @@ public class Util {
 	public static boolean isBoolean(String bool){
 		return bool.equals("true") || bool.equals("false");
 	}
-	
+
 	public static boolean isConstructor(String constrStr){
 		constrStr = constrStr.replace("new ", "");
 		constrStr = constrStr.replace(" ", "");
@@ -640,7 +636,11 @@ public class Util {
 		}
 		return true;
 	}
-
+	
+	public static String leftAlignString(String msg, int stringLength){
+		return msg + repeatCharFor(' ', stringLength - msg.length());
+	}
+	
 	public static Object[] listToArray(List<Object> list){
 		Object[] objArray = new Object[list.size()];
 		for(int i = 0; i < list.size(); i++){
@@ -668,7 +668,7 @@ public class Util {
 			return false;
 		}
 	}
-	
+
 	public static Object parseConstructor(String constrStr, List<Object> paramValues, String[] classFileLocations){
 		if(!isParsableConstructor(constrStr)) throw new IllegalArgumentException(constrStr + "is not a valid Constructor");
 
@@ -955,11 +955,31 @@ public class Util {
 		int index = getLastIndexOf(strPart, str);
 		return index == -1 ? str : str.substring(0,index) + str.substring(index + strPart.length());
 	}
-
+	
+	public static String repeatCharFor(char character, int length){
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < length; i ++){
+			sb.append(character);
+		}
+		return sb.toString();
+	}
+	
+	public static String repeatStringFor(String str, int numbTimes){
+		StringBuilder sb = new StringBuilder();
+		for(int i = 0; i < numbTimes; i ++){
+			sb.append(str);
+		}
+		return sb.toString();
+	}
+	
 	public static String replaceChar(String str, int index, char character){
 		char[] charArr = str.toCharArray();
 		charArr[index] = character;
 		return new String(charArr);
+	}
+
+	public static String rightAlignString(String msg, int stringLength){
+		return repeatCharFor(' ', stringLength - msg.length()) + msg;
 	}
 	
 	public static List<?> shrinkList(List<?> list, int min, int max){

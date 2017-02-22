@@ -370,7 +370,7 @@ public class Matf {
 			str.append("|");
 			for(int c = 0; c < columns; c++){
 				
-				str.append(Util.addSpaces(Float.toString(matrix[r][c]), digitsInCol[c]));
+				str.append(Util.rightAlignString(Float.toString(matrix[r][c]), digitsInCol[c]));
 				str.append("  ");
 			}
 			str.deleteCharAt(str.length() - 1);
