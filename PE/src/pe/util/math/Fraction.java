@@ -7,6 +7,14 @@ public class Fraction{
 	private int numerator, denominator;
 	private boolean autoSimplify;
 	
+	public static Fraction ZERO = new Fraction(0, 1);
+	
+	public Fraction(int constant){
+		this.numerator = constant;
+		this.denominator = 1;
+		this.autoSimplify = true;
+	}
+	
 	public Fraction(int numerator, int denominator){
 		if(denominator == 0) throw new IllegalArgumentException("The denominator for a fraction cannot be zero.");
 		this.numerator = numerator;
@@ -23,6 +31,12 @@ public class Fraction{
 		if(autoSimplify) simplify();
 	}
 	
+	public Fraction add(int numb){
+		numerator += numb * denominator;
+		if(autoSimplify) simplify();
+		return this;
+	}
+	
 	public Fraction add(Fraction fraction){
 		int LCM = Maths.LCM(denominator, fraction.getDenominator());
 		numerator = LCM / denominator * numerator + LCM / fraction.getDenominator() * fraction.getNumerator();
@@ -35,6 +49,12 @@ public class Fraction{
 		return new Fraction(numerator, denominator, autoSimplify);
 	}
 	
+	public Fraction divide(int numb){
+		denominator *= numb;
+		if(autoSimplify) simplify();
+		return this;
+	}
+	
 	public Fraction divide(Fraction fraction){
 		if(fraction.getNumerator() == 0) throw new IllegalArgumentException("Cannot divide by a fraction who's numerator is zero.");
 		numerator *= fraction.getDenominator();
@@ -44,7 +64,7 @@ public class Fraction{
 	}
 	
 	public boolean equals(Fraction frac){
-		return numerator == frac.getNumerator() && denominator == frac.getDenominator();
+		return numerator * frac.getDenominator() == denominator * frac.getNumerator();
 	}
 	
 	public Fraction flip(){
@@ -69,6 +89,12 @@ public class Fraction{
 	
 	public boolean isSimplified(){
 		return autoSimplify || copy().simplify().equals(this);
+	}
+	
+	public Fraction mul(int numb){
+		numerator *= numb;
+		if(autoSimplify) simplify();
+		return this;
 	}
 	
 	public Fraction mul(Fraction fraction){
@@ -104,6 +130,16 @@ public class Fraction{
 		int GCF = Maths.GCF(numerator, denominator);
 		numerator /= GCF;
 		denominator /= GCF;
+		if(denominator < 0){
+			numerator *= -1;
+			denominator *= -1;
+		}
+		return this;
+	}
+	
+	public Fraction subtract(int numb){
+		numerator -= numb * denominator;
+		if(autoSimplify) simplify();
 		return this;
 	}
 	

@@ -2,40 +2,60 @@ package pe.util.math;
 
 import pe.util.Util;
 
-public class Matf {
+public class Matrix {
 	
-	private float[][] matrix;
+	private Fraction[][] matrix;
 	private int rows;
 	private int columns;
 	
-	public Matf(int dimension){
+	public Matrix divide(int numb) {
+		for(int r = 0; r < rows; r++){
+			for(int c = 0; c < columns; c++){
+				matrix[r][c].divide(numb);
+			}
+		}
+		return this;
+	}
+
+	public Matrix(int dimension){
 		if(dimension <= 0)
 			throw new IllegalArgumentException("The matrix must have a dimension of at least 1.\n" + dimension + " dimensions were given.");
 		
 		rows = dimension;
 		columns = dimension;
-		matrix = new float[dimension][dimension];
+		matrix = new Fraction[dimension][dimension];
 		
-		for(int i = 0; i < dimension; i++){
-			matrix[i][i] = 1;
+		for(int r = 0; r < dimension; r++){
+			for(int c = 0; c < dimension; c++){
+				if(r == c){
+					matrix[r][c] = new Fraction(1,1);
+				}else{
+					matrix[r][c] = Fraction.ZERO;
+				}
+			}
 		}
 	}
 	
-	public Matf(int rows, int columns){
+	public Matrix(int rows, int columns){
 		if(rows <= 0 || columns <= 0)
 			throw new IllegalArgumentException("The matrix must have at least 1 row and at least 1 column.\n" + rows + " rows were given and " + columns + " columns were given.");
 		
 		this.rows = rows;
 		this.columns = columns;
-		matrix = new float[rows][columns];
-		
-		int iterations = rows < columns ? rows : columns;
-		for(int i = 0; i < iterations; i++){
-			matrix[i][i] = 1;
+		matrix = new Fraction[rows][columns];
+
+		for(int r = 0; r < rows; r++){
+			for(int c = 0; c < columns; c++){
+				if(r == c){
+					matrix[r][c] = new Fraction(1,1);
+				}else{
+					matrix[r][c] = Fraction.ZERO;
+				}
+			}
 		}
 	}
 	
-	public Matf(int rows, int columns, float... values){
+	public Matrix(int rows, int columns, int... values){
 		if(rows <= 0 || columns <= 0)
 			throw new IllegalArgumentException("The matrix must have at least 1 row and at least 1 column.\n" + rows + " rows were given and " + columns + " columns were given.");
 		
@@ -44,7 +64,25 @@ public class Matf {
 		
 		this.rows = rows;
 		this.columns = columns;
-		matrix = new float[rows][columns];
+		matrix = new Fraction[rows][columns];
+		
+		for(int i = 0; i < values.length; i++){
+			int row = i / columns;
+			int column = i % columns;
+			matrix[row][column] = new Fraction(values[i]);
+		}
+	}
+	
+	public Matrix(int rows, int columns, Fraction... values){
+		if(rows <= 0 || columns <= 0)
+			throw new IllegalArgumentException("The matrix must have at least 1 row and at least 1 column.\n" + rows + " rows were given and " + columns + " columns were given.");
+		
+		if(values.length < rows * columns) 
+			throw new IllegalArgumentException("Must have the same ammount of values as the dimensions of the Matrix.\n" + values.length + " values were given, " + (rows*columns) + " values were needed.");
+		
+		this.rows = rows;
+		this.columns = columns;
+		matrix = new Fraction[rows][columns];
 		
 		for(int i = 0; i < values.length; i++){
 			int row = i / columns;
@@ -53,10 +91,10 @@ public class Matf {
 		}
 	}
 	
-	public Matf(Matf matrix1, Matf matrix2){
+	public Matrix(Matrix matrix1, Matrix matrix2){
 		rows = matrix1.rows() > matrix2.rows() ? matrix1.rows() : matrix2.rows();
 		columns = matrix1.columns() + matrix2.columns();
-		matrix = new float[rows][columns];
+		matrix = new Fraction[rows][columns];
 		
 		for(int r = 0; r < matrix1.rows(); r++){
 			for(int c = 0; c < matrix1.columns(); c++){
@@ -73,9 +111,9 @@ public class Matf {
 		for(int r = matrix2.rows(); r < rows; r++){
 			for(int c = matrix1.columns(); c < columns; c++){
 				if(r == c){
-					matrix[r][c] = 1;
+					matrix[r][c] = new Fraction(1,1);
 				}else{
-					matrix[r][c] = 0;
+					matrix[r][c] = new Fraction(0,1);
 				}
 			}
 		}
@@ -101,9 +139,9 @@ public class Matf {
 	}
 	
 	public boolean equals(Object obj){
-		if(!obj.getClass().equals(Matf.class)) return false;
+		if(!obj.getClass().equals(Matrix.class)) return false;
 		
-		Matf comparedMatrix = (Matf) obj;
+		Matrix comparedMatrix = (Matrix) obj;
 		
 		if(comparedMatrix.rows() != rows || comparedMatrix.columns() != columns) return false;
 		
@@ -116,62 +154,62 @@ public class Matf {
 		return true;
 	}
 	
-	public float getDet(){
+	public Fraction getDet(){
 		if(rows == 1 && columns == 1){
-			return matrix[0][0];
+			return matrix[0][0].copy();
 		}else{
-			float determinant = 0;
+			Fraction determinant = new Fraction(0, 1);
 			for(int c = 0; c < columns; c++){
-				determinant += (int) Math.pow(-1, c) * matrix[0][c] * getSubmatrix(0, c).getDet();
+				determinant.add(matrix[0][c].copy().mul(new Fraction((int) Math.pow(-1, c), 1)).mul(getSubmatrix(0, c).getDet()));
 			}
 			return determinant;
 		}
 	}
 	
-	public float get(int row, int column){
+	public Fraction get(int row, int column){
 		checkIsInBounds(row, column);
-		return matrix[row][column];
+		return matrix[row][column].copy();
 	}
 	
-	public Vecf getCol(int column){
+	public Vector getCol(int column){
 		checkIsColInBounds(column);
 		
-		float[] colVec = new float[rows];
+		Fraction[] colVec = new Fraction[rows];
 		for(int r = 0; r < rows; r++){
-			colVec[r] = matrix[r][column];
+			colVec[r] = matrix[r][column].copy();
 		}
-		return new Vecf(colVec);
+		return new Vector(colVec);
 	}
 	
-	public Matf getMat(int rowStart, int colStart, int rowLength, int colLength){
+	public Matrix getMat(int rowStart, int colStart, int rowLength, int colLength){
 		checkIsInBounds(rowStart, colStart);
 		checkIsInBounds(rowStart + rowLength - 1, colStart + colLength - 1);
 		
-		float[] values = new float[rowLength * colLength];
+		Fraction[] values = new Fraction[rowLength * colLength];
 		for(int r = 0; r < rowLength; r++){
 			for(int c = 0; c < colLength; c++){
-				values[r * rowLength + c] = matrix[r + rowStart][c + colStart];
+				values[r * rowLength + c] = matrix[r + rowStart][c + colStart].copy();
 			}
 		}
 		
-		return new Matf(rowLength, colLength, values);
+		return new Matrix(rowLength, colLength, values);
 	}
 	
-	public Vecf getRow(int row){
+	public Vector getRow(int row){
 		checkIsRowInBounds(row);
 		
-		float[] rowVec = new float[columns];
+		Fraction[] rowVec = new Fraction[columns];
 		for(int c = 0; c < columns; c++){
-			rowVec[c] = matrix[row][c];
+			rowVec[c] = matrix[row][c].copy();
 		}
-		return new Vecf(rowVec);
+		return new Vector(rowVec);
 	}
 	
-	public Matf getInverse(){
+	public Matrix getInverse(){
 		if(columns != rows)
 			throw new IllegalArgumentException("The inverse of a matrix can only be found for sqare matricies.\nThis matrix had " + rows + " rows and " + columns + " columns.");
 		
-		Matf bigM = new Matf(this, new Matf(rows, columns));
+		Matrix bigM = new Matrix(this, new Matrix(rows, columns));
 		return bigM.RREF().getMat(0, columns, rows, columns);
 	}
 	
@@ -184,8 +222,8 @@ public class Matf {
 		
 		for(int r = 0; r < rows; r++){
 			for(int c = 0; c < columns; c++){
-				if(largestVal < matrix[r][c])
-					largestVal = matrix[r][c];
+				if(largestVal < matrix[r][c].toDecf())
+					largestVal = matrix[r][c].toDecf();
 			}
 		}
 		
@@ -198,8 +236,8 @@ public class Matf {
 		for(int c = 0; c < columns; c++){
 			float largestVal = Float.MIN_VALUE;
 			for(int r = 0; r < rows; r++){
-				if(largestVal < matrix[r][c])
-					largestVal = matrix[r][c];
+				if(largestVal < matrix[r][c].toDecf())
+					largestVal = matrix[r][c].toDecf();
 			}
 			largestVals[c] = largestVal;
 		}
@@ -212,7 +250,7 @@ public class Matf {
 		for(int c = 0; c < columns; c++){
 			int mostDigitsInCol = Integer.MIN_VALUE;
 			for(int r = 0; r < rows; r++){
-				int digitsInCol = Maths.digitsIn(matrix[r][c]);
+				int digitsInCol = matrix[r][c].toString().length();
 				if(mostDigitsInCol < digitsInCol)
 					mostDigitsInCol = digitsInCol;
 			}
@@ -221,14 +259,14 @@ public class Matf {
 		return mostDigits;
 	}
 	
-	public Matf REF(){
+	public Matrix REF(){
 		int iterations = rows < columns ? rows : columns;
 		
 		for(int i = 0; i < iterations; i++){
-			if(matrix[i][i] == 0){
+			if(matrix[i][i].equals(Fraction.ZERO)){
 				boolean foundSwap = false;
 				for(int r = i + 1; r < rows; r++){
-					if(matrix[r][i] != 0){
+					if(!matrix[r][i].equals(Fraction.ZERO)){
 						foundSwap = true;
 						rowInterchange(i, r);
 						break;
@@ -236,30 +274,29 @@ public class Matf {
 				}
 				if(!foundSwap) continue;
 			}
-			rowScale(i, 1/matrix[i][i]);
+			rowScale(i, get(i,i).flip());
 			
 			for(int r = i + 1; r < rows; r++){
-				rowAdd(r, i, -matrix[r][i]);
+				rowAdd(r, i, get(r,i).mul(-1));
 			}
 		}
 		
 		return this;
 	}
 	
-	public Matf rowAdd(int row1, int row2, float matrix2){
+	public Matrix rowAdd(int row1, int row2, Fraction row2Multiplier){
 		checkIsRowInBounds(row1);
 		checkIsRowInBounds(row2);
 		
-		setRow(row1, getRow(row1).add(getRow(row2).mul(matrix2)));
-		
-		return null;
+		setRow(row1, getRow(row1).add(getRow(row2).mul(row2Multiplier)));
+		return this;
 	}
 	
-	public Matf rowInterchange(int row1, int row2){
+	public Matrix rowInterchange(int row1, int row2){
 		checkIsRowInBounds(row1);
 		checkIsRowInBounds(row2);
 		
-		Vecf row1Vec = getRow(row1);
+		Vector row1Vec = getRow(row1);
 		setRow(row1, getRow(row2));
 		setRow(row2, row1Vec);
 		
@@ -270,7 +307,7 @@ public class Matf {
 		return rows;
 	}
 	
-	public Matf rowScale(int row, float scale){
+	public Matrix rowScale(int row, Fraction scale){
 		checkIsRowInBounds(row);
 		
 		setRow(row, getRow(row).mul(scale));
@@ -278,15 +315,15 @@ public class Matf {
 		return this;
 	}
 	
-	public Matf RREF(){
+	public Matrix RREF(){
 		REF();
 		
 		for(int r = 1; r < rows; r++){
 			for(int c = 0; c < columns; c++){
-				if(matrix[r - 1][c] !=0){
+				if(!matrix[r - 1][c].equals(Fraction.ZERO)){
 					if(c + 1 < columns){
 						for(int row = 0; row < r; row++){
-							rowAdd(row, r, -matrix[row][c + 1]);
+							rowAdd(row, r, get(row, c + 1).mul(-1));
 						}
 					}
 					break;
@@ -297,14 +334,14 @@ public class Matf {
 		return this;
 	}
 	
-	public Matf set(int row, int column, float value){
+	public Matrix set(int row, int column, Fraction value){
 		checkIsInBounds(row, column);
 		
 		matrix[row][column] = value;
 		return this;
 	}
 	
-	public Matf setCol(int column, Vecf values){
+	public Matrix setCol(int column, Vector values){
 		checkIsColInBounds(column);
 		
 		if(values.length() != rows)
@@ -317,7 +354,7 @@ public class Matf {
 		return this;
 	}
 	
-	public Matf setRow(int row, Vecf values){
+	public Matrix setRow(int row, Vector values){
 		checkIsRowInBounds(row);
 		
 		if(values.length() != columns)
@@ -330,10 +367,10 @@ public class Matf {
 		return this;
 	}
 	
-	public Matf getSubmatrix(int row, int column){
+	public Matrix getSubmatrix(int row, int column){
 		checkIsInBounds(row, column);
 		
-		float[] values = new float[(rows - 1) * (columns - 1)];
+		Fraction[] values = new Fraction[(rows - 1) * (columns - 1)];
 		for(int r = 0; r < row; r++){
 			for(int c = 0; c < column; c++){
 				values[r * (columns - 1) + c] = matrix[r][c];
@@ -358,7 +395,7 @@ public class Matf {
 			}
 		}
 		
-		return new Matf(rows - 1, columns -1, values);
+		return new Matrix(rows - 1, columns -1, values);
 	}
 	
 	public String toMatString(){
@@ -370,7 +407,7 @@ public class Matf {
 			str.append("|");
 			for(int c = 0; c < columns; c++){
 				
-				str.append(Util.rightAlignString(Float.toString(matrix[r][c]), digitsInCol[c]));
+				str.append(Util.rightAlignString(matrix[r][c].toString(), digitsInCol[c]));
 				str.append("  ");
 			}
 			str.deleteCharAt(str.length() - 1);
