@@ -1,0 +1,11 @@
+NEW DEPENDENCY
+>git submodule add -f REPOSITORY_PATH FILE_PATH_IN_PROJECT
+>git submodule init
+>git submodule update
+
+usually FILE_PATH_IN_PROJECT is PE/lib/[REPOSITORY_NAME]
+
+UPDATE DEPENCENCY
+
+>cd PE/lib/[REPOSITORY_NAME]
+>git pull
