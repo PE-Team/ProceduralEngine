@@ -1,5 +1,7 @@
 package pe.util.math;
 
+import java.nio.FloatBuffer;
+
 public class Vec3f {
 
 	public float x, y, z;
@@ -59,6 +61,10 @@ public class Vec3f {
 	
 	public float length(){
 		return (float) Math.sqrt(this.x*this.x + this.y*this.y + this.z*this.z);
+	}
+	
+	public void putInBuffer(FloatBuffer buffer){
+		buffer.put(x).put(y).put(z);
 	}
 	
 	public String toString(){

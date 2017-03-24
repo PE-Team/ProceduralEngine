@@ -50,6 +50,7 @@ public class Fraction{
 	}
 	
 	public Fraction divide(int numb){
+		if(numb == 0) throw new IllegalArgumentException("Cannot divide by zero.");
 		denominator *= numb;
 		if(autoSimplify) simplify();
 		return this;

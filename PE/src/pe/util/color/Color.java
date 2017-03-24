@@ -1,12 +1,14 @@
 package pe.util.color;
 
+import java.nio.FloatBuffer;
+
 import pe.util.math.Maths;
 import pe.util.math.Vec3f;
 import pe.util.math.Vec4f;
 
 public class Color {
-
 	public float r,g,b,a;
+	private int colorType;
 	
 	public static final Color BLACK = new Color(0,0,0);
 	public static final Color DARK_GREY = new Color(64,64,64);
@@ -17,6 +19,13 @@ public class Color {
 	public static final Color ORANGE = new Color(255, 165, 0);
 	public static final Color BLUE = new Color(0,0,255);
 	public static final Color GREEN = new Color(0,255,0);
+	
+	public Color(int r, int g, int b){
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = 1;
+	}
 	
 	public Color(float r, float g, float b){
 		this.r = r;
@@ -30,6 +39,13 @@ public class Color {
 		this.g = vec.y;
 		this.b = vec.z;
 		this.a = 1;
+	}
+	
+	public Color(int r, int g, int b, int a){
+		this.r = r;
+		this.g = g;
+		this.b = b;
+		this.a = a;
 	}
 	
 	public Color(float r, float g, float b, float a){
@@ -55,6 +71,14 @@ public class Color {
 	
 	public String toHex(){
 		return Maths.intToHex(this.toInt());
+	}
+	
+	public void putInBufferRGB(FloatBuffer buffer){
+		buffer.put(r).put(g).put(b);
+	}
+	
+	public void putInBufferRGBA(FloatBuffer buffer){
+		buffer.put(r).put(g).put(b).put(a);
 	}
 	
 	public int toInt(){

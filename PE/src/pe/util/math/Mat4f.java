@@ -1,5 +1,9 @@
 package pe.util.math;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
+
 public class Mat4f {
 
 	//s[row][column]
@@ -16,7 +20,7 @@ public class Mat4f {
 			this.s30 = 0; this.s31 = 0; this.s32 = 0; this.s33 = 1;
 		}
 		
-		// Goes down the row, then goes to the next row
+		// Goes down the column, then goes to the next column
 		public Mat4f(float s00, float s10, float s20, float s30, float s01, float s11, float s21, float s31, float s02, float s12, float s22, float s32, float s03, float s13, float s23, float s33){
 			this.s00 = s00; this.s01 = s01; this.s02 = s02; this.s03 = s03;
 			this.s10 = s10; this.s11 = s11; this.s12 = s12; this.s13 = s13;
@@ -92,6 +96,18 @@ public class Mat4f {
 					mat.s20*vec.x + mat.s21*vec.y + mat.s22*vec.z + mat.s23*vec.w,
 					mat.s30*vec.x + mat.s31*vec.y + mat.s32*vec.z + mat.s33*vec.w
 					);
+		}
+		
+		public FloatBuffer toFloatBuffer(){
+			FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+			
+			buffer.put(s00).put(s10).put(s20).put(s30); // Column 1
+			buffer.put(s01).put(s11).put(s21).put(s31); // Column 2
+			buffer.put(s02).put(s12).put(s22).put(s32); // Column 3
+			buffer.put(s03).put(s13).put(s23).put(s33); // Column 4
+			
+			buffer.flip();
+			return buffer;
 		}
 		
 		public static Mat4f mul(Mat4f mat1, Mat4f mat2){
