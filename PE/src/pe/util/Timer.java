@@ -103,6 +103,7 @@ public class Timer {
 	 *            The delay in seconds required for <code>delayPassed</code> to
 	 *            return <code>true</code>.
 	 * 
+	 * @see #delayPassed()
 	 * @see #start()
 	 * @see #delay
 	 * 
