@@ -105,6 +105,14 @@ public class Util {
 		return repeatCharFor(' ', extraChars / 2) + msg + repeatCharFor(' ', (extraChars / 2) + (extraChars % 2));
 	}
 	
+	public static String alignStrings(String leftAlign, String centerAlign, String rightAlign, int stringLength){
+		int spaces = stringLength - (leftAlign.length() + centerAlign.length() + rightAlign.length() + 2);
+		spaces = spaces < 1 ? spaces = 1 : spaces;
+		String space1 = repeatCharFor(' ', spaces / 2);
+		String space2 = repeatCharFor(' ', spaces / 2 + spaces % 2);
+		return String.format("%s%s%s%s%s", leftAlign, space1, centerAlign, space2, rightAlign);
+	}
+	
 	public static <T> List<T> cloneList(List<T> list1, List<T> list2){
 		list1.clear();
 		for(int i = 0; i < list2.size(); i++){

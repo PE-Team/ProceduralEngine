@@ -26,7 +26,6 @@ import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
 
-import pe.util.Timer;
 import pe.util.Util;
 import pe.util.color.Color;
 
@@ -80,7 +79,6 @@ public class Console implements Runnable{
 	
 	public static void main(String...args){
 		Console console = new Console();
-		Timer timer = new Timer(2000);
 		console.start();
 		console.setCanWriteToFile(true);
 	}
