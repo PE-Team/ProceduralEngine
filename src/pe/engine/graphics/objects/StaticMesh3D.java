@@ -6,7 +6,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import pe.engine.main.PE;
-import peu.util.math.Vec3f;
+import pe.util.math.Vec3f;
 
 public class StaticMesh3D extends Mesh{
 	

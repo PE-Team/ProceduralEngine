@@ -1,6 +1,6 @@
 package pe.engine.entity.player;
 
-import peu.util.math.Vec3f;
+import pe.util.math.Vec3f;
 
 public class Camera {
 

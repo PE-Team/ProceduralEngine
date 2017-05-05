@@ -1,6 +1,6 @@
 package pe.engine.threading;
 
-import ep.testing.initial_program_setup2.Timer;
+import pe.util.Timer;
 
 public class RenderingThread implements Runnable{
 	

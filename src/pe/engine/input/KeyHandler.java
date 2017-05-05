@@ -3,6 +3,9 @@ package pe.engine.input;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
+import pe.engine.data.DisposableResource;
+import pe.engine.data.Resources;
+
 public class KeyHandler extends GLFWKeyCallback implements DisposableResource{
 
 	/* key[keyCode] */

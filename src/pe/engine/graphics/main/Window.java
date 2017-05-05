@@ -8,6 +8,9 @@ import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
 import org.lwjgl.system.MemoryUtil;
 
+import pe.engine.data.DisposableResource;
+import pe.engine.data.Resources;
+import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 
 public class Window implements DisposableResource{

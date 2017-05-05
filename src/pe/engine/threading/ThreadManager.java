@@ -4,7 +4,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import ep.testing.initial_program_setup2.Timer;
+import pe.util.Timer;
 
 public class ThreadManager {
 

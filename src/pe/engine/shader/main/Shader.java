@@ -6,9 +6,11 @@ import java.nio.file.Paths;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.opengl.GL32;
 
+import pe.engine.data.DisposableResource;
+import pe.engine.data.Resources;
+import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 
 public class Shader implements DisposableResource{

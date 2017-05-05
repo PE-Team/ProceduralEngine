@@ -1,11 +1,16 @@
 package pe.engine.shader.main;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
+import pe.engine.data.DisposableResource;
+import pe.engine.data.Resources;
+import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
-import peu.util.math.Mat4f;
+import pe.util.Util;
+import pe.util.math.Mat4f;
 
 public class ShaderProgram implements DisposableResource{
 	
@@ -67,7 +72,7 @@ public class ShaderProgram implements DisposableResource{
 	
 	public void setAttribVec3f(int attribID, String name, boolean normalized, int offset, int vboWidth){
 		GL20.glEnableVertexAttribArray(attribID);
-		GL20.glVertexAttribPointer(attribID, 3, GL11.GL_FLOAT, normalized, vboWidth * PE.FLOAT_BYTE_SIZE, offset * PE.FLOAT_BYTE_SIZE);
+		GL20.glVertexAttribPointer(attribID, 3, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE, offset * Util.FLOAT_BYTE_SIZE);
 	}
 	
 	public void setAttribVec3f(String name, boolean normalized, int offset, int vboWidth){
@@ -76,7 +81,7 @@ public class ShaderProgram implements DisposableResource{
 	
 	public void setUniformMat4f(String name, Mat4f matrix){
 		int uniformID = GL20.glGetUniformLocation(id, name);
-		GL20.glUniformMatrix4fv(uniformID, false, matrix.toFloatBuffer());
+		GL20.glUniformMatrix4fv(uniformID, false, matrix.toFloatBuffer(BufferUtils.createFloatBuffer(16)));
 	}
 	
 	public int getID(){

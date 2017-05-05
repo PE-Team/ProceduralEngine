@@ -2,8 +2,8 @@ package pe.engine.threading;
 
 import java.io.PrintStream;
 
-import peu.util.Timer;
-import peu.util.Util;
+import pe.util.Timer;
+import pe.util.Util;
 
 public class MasterThread{
 	
@@ -18,6 +18,7 @@ public class MasterThread{
 	private static boolean running = false;
 	
 	public static void main(String[] args){
+		Timer shutdownTimer = new Timer(15);
 		timer = new Timer(1);
 		timer.start();
 		println("Main Thread", "Procedural Engine Main Thread Started");
@@ -32,17 +33,15 @@ public class MasterThread{
 		threadManager.addTask(networking);
 		threadManager.addTask(audio);
 		
-		TestShutdownTask shutdownTask = new TestShutdownTask(15);
-		
-		threadManager.addTask(shutdownTask);
-		
-		for(int i = 0; i < 10; i++){
-			addUpdate(new TestTask());
-		}
+		shutdownTimer.start();
 		
 		while(!threadManager.threadsTerminated()){
 			if(timer.delayPassed()){
 				println("Thread Manager", threadManager.getCurrentStatus());
+			}
+			
+			if(shutdownTimer.delayPassed()){
+				shutdown();
 			}
 		}
 		
