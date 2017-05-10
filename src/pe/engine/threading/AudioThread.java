@@ -10,7 +10,7 @@ public class AudioThread implements Runnable{
 	public void run() {
 		timer = new Timer(2.1f);
 		
-		while(MasterThread.running()){
+		while(MasterThread.isRunning()){
 			if(timer.delayPassed()){
 				MasterThread.println("Audio Thread", "AudiO... AUDio... AUDIO!");
 			}

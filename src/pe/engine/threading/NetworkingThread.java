@@ -10,7 +10,7 @@ public class NetworkingThread implements Runnable{
 	public void run() {
 		timer = new Timer(2.9f);
 		
-		while(MasterThread.running()){
+		while(MasterThread.isRunning()){
 			if(timer.delayPassed()){
 				MasterThread.println("Networking Thread", "In the Database, Database. Just livin in the Database. Wha Oh!");
 			}
