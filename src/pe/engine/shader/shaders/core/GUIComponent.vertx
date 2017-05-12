@@ -1,0 +1,16 @@
+#version 150 core
+
+in vec2 position;
+
+out vec4 vertexColor;
+
+uniform vec4 backgroundColor;
+uniform vec4 foregroundColor;
+uniform int borderRadius;
+uniform int borderWidth;
+uniform vec4 borderColor;
+
+void main() {
+    vertexColor = backgroundColor;
+    gl_Position = vec4(position, 0.0, 1.0);
+}

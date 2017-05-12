@@ -8,7 +8,7 @@ import pe.util.Timer;
 
 public class ThreadManager {
 
-	public final int TIMEOUT_LENGTH = 10;
+	public final int TIMEOUT_LENGTH = 2;
 	public final int CORES = Runtime.getRuntime().availableProcessors();
 
 	/*
@@ -30,7 +30,7 @@ public class ThreadManager {
 		this.timeout = new Timer(TIMEOUT_LENGTH);
 
 		timeout.start();
-		MasterThread.println("Thread Manager", "Starting up Thread Manager");
+		MasterThread.println("Thread Manager", "Starting Thread Manager");
 	}
 
 	public String getCurrentStatus() {
@@ -70,7 +70,7 @@ public class ThreadManager {
 			timeout.start();
 		} else if (timeout.delayPassed()) {
 			threadPool.shutdown();
-			MasterThread.println("Thread Manager", "Shutting down Thread Manager");
+			MasterThread.println("Thread Manager", "Shutting Down Thread Manager");
 		}
 
 		return threadPool.isTerminated();

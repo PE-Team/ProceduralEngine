@@ -2,20 +2,26 @@ package pe.engine.threading;
 
 import java.io.PrintStream;
 
+import org.lwjgl.glfw.GLFW;
+
 import pe.engine.error.ErrorHandler;
+import pe.engine.graphics.gui.Divider;
+import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.main.Window;
+import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.input.KeyHandler;
 import pe.engine.main.InitializationProcesses;
 import pe.util.Timer;
 import pe.util.Util;
+import pe.util.color.Color;
+import pe.util.math.Vec2f;
 
 public class MasterThread {
 
 	private static PrintStream console = System.out;
 
 	/**
-	 * Creates a new object with a <code>Print Stream</code> which errors are
-	 * printed to.
+	 * Creates a new object with a Print Stream which errors are printed to.
 	 * 
 	 * @see ErrorHandler
 	 * 
@@ -33,34 +39,37 @@ public class MasterThread {
 	private static boolean running = false;
 
 	public static void main(String[] args) {
-		Timer shutdownTimer = new Timer(3);
+		try {
+			Timer shutdownTimer = new Timer(6);
 
-		managerPrintCycle.start();
-		println("Master Thread", "Procedural Engine Main Thread Started");
-		running = true;
+			managerPrintCycle.start();
+			println("Master Thread", "Procedural Engine Main Thread Started");
+			running = true;
 
-		println("Master Thread", "Creating the Thread Manager");
-		threadManager = new ThreadManager();
+			println("Master Thread", "Creating Thread Manager");
+			threadManager = new ThreadManager();
 
-		InitializationProcesses.init();
+			InitializationProcesses.init("Master Thread");
 
-		shutdownTimer.start();
-		
-		Window window = new Window(700, 400, "Test", true, true, new KeyHandler());
+			shutdownTimer.start();
 
-		while (!threadManager.threadsTerminated()) {
-			if (managerPrintCycle.delayPassed()) {
-				println("Thread Manager", threadManager.getCurrentStatus());
+			while (!threadManager.threadsTerminated()) {
+				if (managerPrintCycle.delayPassed()) {
+					println("Thread Manager", threadManager.getCurrentStatus());
+				}
+
+				if (shutdownTimer.delayPassed()) {
+					shutdown();
+				}
 			}
 
-			if (shutdownTimer.delayPassed()) {
-				shutdown();
-			}
-			
-			window.update();
+		} catch (Exception e) {
+			println("Master Thread", "An Exception has Occured Which Will Cause the Main Thread to Shutdown");
+			e.printStackTrace(console);
+			shutdown();
 		}
-		
-		InitializationProcesses.deinit();
+
+		InitializationProcesses.deinit("Master Thread");
 
 		println("Master Thread", "Procedural Engine Main Thread Terminated");
 	}
@@ -88,13 +97,12 @@ public class MasterThread {
 	}
 
 	/**
-	 * Adds a new <code>Runnable</code> task to the <code>Thread Manager</code>
-	 * for it to run when it can. This method is most often used to add update
-	 * tasks.
+	 * Adds a new <code>Runnable</code> task to the Thread Manager for it to run
+	 * when it can. This method is most often used to add update tasks.
 	 * 
 	 * @param task
-	 *            The task that should be added to the
-	 *            <code>Thread Manager</code> to be executed.
+	 *            The task that should be added to the Thread Manager to be
+	 *            executed.
 	 * 
 	 * @see #threadManager
 	 * @see ThreadManager
@@ -102,19 +110,21 @@ public class MasterThread {
 	 * 
 	 * @since 1.0
 	 */
-	public static void addTask(Runnable task) {
+	public static synchronized void addTask(Runnable task) {
 		threadManager.addTask(task);
 	}
 
 	/**
-	 * Sets the <code>Master Threads</code>'s Rendering Thread which should be
-	 * used to render scenes. Allows only one Rendering Thread to be added.
+	 * Sets the Master Threads's Rendering Thread which should be used to render
+	 * scenes. Allows only one Rendering Thread to be added.
 	 * 
 	 * @param renderingThread
+	 *            The thread which should be used to do rendering for the
+	 *            engine.
 	 * 
 	 * @throws IllegalArgumentException
-	 *             if another <code>Rendering Thread</code> is attempted to be
-	 *             added after one has already been added.
+	 *             if another Rendering Thread is attempted to be added after
+	 *             one has already been added.
 	 * 
 	 * @see #threadManager
 	 * @see #renderer
@@ -122,7 +132,7 @@ public class MasterThread {
 	 * 
 	 * @since 1.0
 	 */
-	public static void addRenderingThread(RenderingThread renderingThread) {
+	public static synchronized void addRenderingThread(RenderingThread renderingThread) {
 		if (renderer != null)
 			throw new IllegalArgumentException("Cannot add more than one Rendering Thread");
 
@@ -131,15 +141,16 @@ public class MasterThread {
 	}
 
 	/**
-	 * Sets the <code>Master Threads</code>'s Networking Thread which should be
-	 * used to do server-based updates. Allows only one Networking Thread to be
-	 * added.
+	 * Sets the Master Threads's Networking Thread which should be used to do
+	 * server-based updates. Allows only one Networking Thread to be added.
 	 * 
 	 * @param networkingThread
+	 *            The thread which should be used to do networking for the
+	 *            engine.
 	 * 
 	 * @throws IllegalArgumentException
-	 *             if another <code>Networking Thread</code> is attempted to be
-	 *             added after one has already been added.
+	 *             if another Networking Thread is attempted to be added after
+	 *             one has already been added.
 	 * 
 	 * @see #threadManager
 	 * @see #networking
@@ -147,7 +158,7 @@ public class MasterThread {
 	 * 
 	 * @since 1.0
 	 */
-	public static void addNetworkingThread(NetworkingThread networkingThread) {
+	public static synchronized void addNetworkingThread(NetworkingThread networkingThread) {
 		if (networking != null)
 			throw new IllegalArgumentException("Cannot add more than one Networking Thread");
 
@@ -156,14 +167,15 @@ public class MasterThread {
 	}
 
 	/**
-	 * Sets the <code>Master Threads</code>'s Audio Thread which should be used
-	 * to play audio sounds. Allows only one Audio Thread to be added.
+	 * Sets the Master Threads's Audio Thread which should be used to play audio
+	 * sounds. Allows only one Audio Thread to be added.
 	 * 
 	 * @param audioThread
+	 *            The thread which should be used to play audio for the engine.
 	 * 
 	 * @throws IllegalArgumentException
-	 *             if another <code>Audio Thread</code> is attempted to be added
-	 *             after one has already been added.
+	 *             if another Audio Thread is attempted to be added after one
+	 *             has already been added.
 	 * 
 	 * @see #threadManager
 	 * @see #audio
@@ -171,7 +183,7 @@ public class MasterThread {
 	 * 
 	 * @since 1.0
 	 */
-	public static void addAudioThread(AudioThread audioThread) {
+	public static synchronized void addAudioThread(AudioThread audioThread) {
 		if (audio != null)
 			throw new IllegalArgumentException("Cannot add more than one Audio Thread");
 
@@ -183,8 +195,7 @@ public class MasterThread {
 	 * Returns the <code>ErrorHandler</code> object which will print errors
 	 * encountered by GLFW.
 	 * 
-	 * @return the <code>Master Thread</code>'s <code>errorHandler</code>
-	 *         object.
+	 * @return the Master Thread's <code>errorHandler</code> object.
 	 * 
 	 * @see #errorHandler
 	 * @see ErrorHandler
@@ -194,10 +205,14 @@ public class MasterThread {
 	public static ErrorHandler getErrorHandler() {
 		return errorHandler;
 	}
+	
+	public static PrintStream getConsoleStream(){
+		return console;
+	}
 
-	public static void println(String source, String msg) {
+	public static synchronized void println(String source, String msg) {
 		String time = String.format("[%f", managerPrintCycle.getTime());
 		String src = String.format("%s]:", source);
-		console.println(String.format("%s\t%s", Util.alignStrings(time, "", src, 35), msg));
+		console.println(String.format("%s\t%s", Util.alignStrings(time, "", src, 40), msg));
 	}
 }

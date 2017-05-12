@@ -10,7 +10,6 @@ import pe.engine.main.PE;
 public class GLVersion {
 	
 	private static int GLVersion;
-	private static boolean initialized = false;
 
 	public static void loadVersion() {
 		GLFW.glfwDefaultWindowHints();
@@ -58,8 +57,6 @@ public class GLVersion {
 		}else{
 			GLVersion = PE.NULL;
 		}
-		
-		initialized = true;
 	}
 	
 	public static int getGLVersion(){

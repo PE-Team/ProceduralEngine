@@ -25,7 +25,7 @@ public abstract class Mesh {
 		this.vertexCount = vertexCount;
 		
 		enabledVertexAttribs.add(0); // Enable position vectors
-		//enabledVertexAttribs.add(1); // Enable vertex indeces
+		enabledVertexAttribs.add(1); // Enable vertex indeces
 	}
 	
 	public int getMeshType(){
