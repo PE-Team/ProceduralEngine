@@ -2,6 +2,7 @@ package pe.engine.graphics.gui;
 
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.util.color.Color;
+import pe.util.math.Vec2f;
 import pe.util.shapes.Rectangle;
 
 public class Divider extends GUIComponent{

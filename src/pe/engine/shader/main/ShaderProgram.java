@@ -11,6 +11,7 @@ import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 import pe.util.Util;
 import pe.util.color.Color;
+import pe.util.math.Mat3f;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec3f;
 
@@ -80,35 +81,6 @@ public class ShaderProgram implements DisposableResource {
 
 	/**
 	 * Will set where in the currently used Attribute Array
-	 * (<code>VertexBufferObject</code>) each attribute is. This is used for the
-	 * 'in' values for the shader.
-	 * 
-	 * @param attribID
-	 *            The ID of the attribute. If this is not known, it would be
-	 *            recommended to use a different version of this function.
-	 * @param name
-	 *            The name of the attribute in the shader itself.
-	 * @param normalized
-	 *            Whether the attribute has been normalized. Most often false.
-	 * @param offset
-	 *            The offset of the data in the Attribute Array
-	 * @param vboWidth
-	 *            The width of the Attribute Array, which is to say the number
-	 *            of data elements in each row of the array.
-	 * 
-	 * @see #setAttribVec2f(String, boolean, int, int)
-	 * @see pe.engine.data.VertexBufferObject
-	 * 
-	 * @since 1.0
-	 */
-	public void setAttribVec2f(int attribID, String name, boolean normalized, int offset, int vboWidth) {
-		GL20.glEnableVertexAttribArray(attribID);
-		GL20.glVertexAttribPointer(attribID, 2, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE,
-				offset * Util.FLOAT_BYTE_SIZE);
-	}
-
-	/**
-	 * Will set where in the currently used Attribute Array
 	 * (<code>VertexBufferObject</code>) each attribute is. The attribute ID is
 	 * automatically retrieved. This is used for the 'in' values for the shader.
 	 * 
@@ -128,17 +100,17 @@ public class ShaderProgram implements DisposableResource {
 	 * @since 1.0
 	 */
 	public void setAttribVec2f(String name, boolean normalized, int offset, int vboWidth) {
-		setAttribVec3f(GL20.glGetAttribLocation(id, name), name, normalized, offset, vboWidth);
-	}
-
-	public void setAttribVec3f(int attribID, String name, boolean normalized, int offset, int vboWidth) {
+		int attribID = GL20.glGetAttribLocation(id, name);
 		GL20.glEnableVertexAttribArray(attribID);
-		GL20.glVertexAttribPointer(attribID, 3, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE,
+		GL20.glVertexAttribPointer(attribID, 2, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE,
 				offset * Util.FLOAT_BYTE_SIZE);
 	}
 
 	public void setAttribVec3f(String name, boolean normalized, int offset, int vboWidth) {
-		setAttribVec3f(GL20.glGetAttribLocation(id, name), name, normalized, offset, vboWidth);
+		int attribID = GL20.glGetAttribLocation(id, name);
+		GL20.glEnableVertexAttribArray(attribID);
+		GL20.glVertexAttribPointer(attribID, 3, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE,
+				offset * Util.FLOAT_BYTE_SIZE);
 	}
 
 	/**
@@ -172,6 +144,20 @@ public class ShaderProgram implements DisposableResource {
 	public void setUniformColor(String name, Color color){
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform4fv(uniformId, color.getVec4f().putInBuffer(BufferUtils.createFloatBuffer(4)));
+	}
+	
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader.
+	 * 
+	 * @param name The name of the uniform in the shader file.
+	 * @param matrix The matrix you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformMat3f(String name, Mat3f matrix) {
+		int uniformID = GL20.glGetUniformLocation(id, name);
+		GL20.glUniformMatrix3fv(uniformID, false, matrix.putInBuffer(BufferUtils.createFloatBuffer(9)));
 	}
 
 	/**
