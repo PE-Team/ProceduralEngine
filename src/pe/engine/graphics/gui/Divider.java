@@ -2,7 +2,7 @@ package pe.engine.graphics.gui;
 
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.util.color.Color;
-import pe.util.math.Vec2f;
+import pe.util.shapes.Rectangle;
 
 public class Divider extends GUIComponent{
 
@@ -13,19 +13,8 @@ public class Divider extends GUIComponent{
 		this.height = height;
 		this.backgroundColor = color;
 		
-		Vec2f[] verteces = {
-				new Vec2f(-0.5f, 0.5f),
-				new Vec2f(0.5f, 0.5f),
-				new Vec2f(0.5f, -0.5f),
-				new Vec2f(-0.5f, -0.5f)
-		};
-		
-		int[] indeces = {
-				0, 1, 3,
-				3, 1, 2
-		};
-		
-		this.mesh = new StaticMesh2D(verteces, indeces);
+		this.shape = new Rectangle(width, height);
+		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
 		
 		initShaderProgram();
 	}

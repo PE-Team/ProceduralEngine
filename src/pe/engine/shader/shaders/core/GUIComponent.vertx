@@ -12,5 +12,7 @@ uniform vec4 borderColor;
 
 void main() {
     vertexColor = backgroundColor;
-    gl_Position = vec4(position, 0.0, 1.0);
+    relativePosition = position + vec2(-1.0, 0.0)
+    vec2 finalPosition = relativePosition;
+    gl_Position = vec4(finalPosition, 0.0, 1.0);
 }

@@ -47,7 +47,8 @@ public class RenderingThread implements Runnable {
 			vertexArrayObject.use();
 
 			GUI gui = new GUI();
-			Divider div = new Divider(200, 100, Color.BLUE);
+			gui.setWindow(window);
+			Divider div = new Divider(1, 1, Color.BLUE);
 			gui.addComponent(div);
 
 			while (MasterThread.isRunning()) {

@@ -22,6 +22,12 @@ public class GUI {
 	
 	public void addComponent(GUIComponent component){
 		widgets.add(component);
+		component.setGUI(this);
+	}
+	
+	public void removeComponent(GUIComponent component){
+		widgets.remove(component);
+		component.setGUI(null);
 	}
 	
 	public void setWindow(Window window){
