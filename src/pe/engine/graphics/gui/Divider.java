@@ -10,11 +10,12 @@ public class Divider extends GUIComponent{
 
 	public static final String NAME = "div";
 	
-	public Divider(int width, int height, Color backgroundColor, Color borderColor){
+	public Divider(int width, int height, Color backgroundColor, Color borderColor, int borderWidth){
 		this.width = width;
 		this.height = height;
 		this.backgroundColor = backgroundColor;
 		this.borderColor = borderColor;
+		this.borderWidth = borderWidth;
 		this.center = new Vec2f(width / 2f, height / 2f);
 		
 		Vec2f[] polygon = { new Vec2f(1, 1), new Vec2f(0, 1), new Vec2f(0, 2), new Vec2f(1, 2), new Vec2f(1, 3),

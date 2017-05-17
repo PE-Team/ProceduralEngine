@@ -48,7 +48,7 @@ public class RenderingThread implements Runnable {
 
 			GUI gui = new GUI();
 			gui.setWindow(window);
-			Divider div = new Divider(100, 200, Color.BLUE, Color.ORANGE);
+			Divider div = new Divider(100, 200, Color.BLUE, Color.ORANGE, 5);
 			gui.addComponent(div);
 
 			while (MasterThread.isRunning()) {

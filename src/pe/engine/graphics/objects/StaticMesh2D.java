@@ -6,6 +6,7 @@ import java.nio.IntBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import pe.engine.main.PE;
+import pe.util.Util;
 import pe.util.math.Vec2f;
 import pe.util.math.Vec3f;
 
@@ -26,14 +27,8 @@ public class StaticMesh2D extends Mesh {
 			vao.addVBO(2, vertecesBuffer);
 
 			FloatBuffer barycentricBuffer = stack.mallocFloat(3 * vertices.length);
-			for (int i = 0; i < vertices.length; i++) {
-				if (i % 3 == 0) {
-					(new Vec3f(1, 0, 0)).putInBuffer(barycentricBuffer);
-				} else if (i % 3 == 1) {
-					(new Vec3f(0, 1, 0)).putInBuffer(barycentricBuffer);
-				} else if (i % 3 == 2) {
-					(new Vec3f(0, 0, 1)).putInBuffer(barycentricBuffer);
-				}
+			for(Vec3f barycentricVec:Util.giveBarycentricCoords(indices)){
+				barycentricVec.putInBuffer(barycentricBuffer);
 			}
 			barycentricBuffer.flip();
 
