@@ -2,7 +2,9 @@ package pe.engine.data;
 
 import java.nio.FloatBuffer;
 
+import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL15;
+import org.lwjgl.opengl.GL20;
 
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
@@ -21,6 +23,10 @@ public class VertexBufferObject extends BufferObject {
 	
 	public void use(){
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
+	}
+	
+	public void setIndex(int index){
+		GL20.glVertexAttribPointer(index, dimension, GL11.GL_FLOAT, false, 0, 0);
 	}
 	
 	public void setData(FloatBuffer data){

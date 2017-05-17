@@ -11,26 +11,26 @@ import pe.util.math.Vec3f;
 public class StaticMesh3D extends Mesh{
 	
 	public StaticMesh3D(Vec3f[] vertices, int[] indices){
-		super(3, PE.STATIC_MESH_3D, indices.length);
+		super(PE.STATIC_MESH_3D, indices.length);
 		
 		try (MemoryStack stack = MemoryStack.stackPush()){
+			vao.use();
+			
 			FloatBuffer vertecesBuffer = stack.mallocFloat(3 * vertices.length);
 			for(Vec3f vertex:vertices){
 				vertex.putInBuffer(vertecesBuffer);
 			}
 			vertecesBuffer.flip();
 			
-			vertexVBO.use();
-			vertexVBO.setData(vertecesBuffer);
-			vertexVBO.unbind();
+			vao.addVBO(3, vertecesBuffer);
 			
 			IntBuffer indecesBuffer = stack.mallocInt(indices.length);
 			indecesBuffer.put(indices);
 			indecesBuffer.flip();
 			
-			indicesEBO.use();
-			indicesEBO.setData(indecesBuffer);
-			indicesEBO.unbind();
+			vao.addEBO(indecesBuffer);
+			
+			vao.unbind();
 		}
 	}
 }

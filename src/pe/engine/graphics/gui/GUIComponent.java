@@ -8,7 +8,6 @@ import pe.util.color.Color;
 import pe.util.math.Mat3f;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec2f;
-import pe.util.math.Vec4f;
 import pe.util.shapes.Polygon;
 
 public abstract class GUIComponent {
@@ -50,18 +49,14 @@ public abstract class GUIComponent {
 		program.addShader(fragmentShader);
 
 		program.setDefaultFragOutValue("fragColor", 0);
+		
+		program.setAttribIndex(0, "position");
+		program.setAttribIndex(1, "barycentric");
 
 		program.compile();
 		program.compileStatus();
 
-		program.use();
-
-		program.setAttribVec2f("position", false, 0, 2);
-
-		program.stop();
-
 		shaderProgram = program;
-		
 	}
 
 	public GUIComponent() {

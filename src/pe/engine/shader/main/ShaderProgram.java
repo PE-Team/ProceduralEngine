@@ -11,10 +11,11 @@ import pe.engine.data.DisposableResource;
 import pe.engine.data.Resources;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
-import pe.util.Util;
 import pe.util.color.Color;
+import pe.util.math.Mat2f;
 import pe.util.math.Mat3f;
 import pe.util.math.Mat4f;
+import pe.util.math.Vec2f;
 import pe.util.math.Vec3f;
 import pe.util.math.Vec4f;
 
@@ -23,6 +24,14 @@ public class ShaderProgram implements DisposableResource {
 	private int id;
 	private boolean compiled = false;
 	private byte attachedTypes = 0b0000;
+	
+	private FloatBuffer bufferVec2f = BufferUtils.createFloatBuffer(2);
+	private FloatBuffer bufferVec3f = BufferUtils.createFloatBuffer(3);
+	private FloatBuffer bufferVec4f = BufferUtils.createFloatBuffer(4);
+	
+	private FloatBuffer bufferMat2f = BufferUtils.createFloatBuffer(4);
+	private FloatBuffer bufferMat3f = BufferUtils.createFloatBuffer(9);
+	private FloatBuffer bufferMat4f = BufferUtils.createFloatBuffer(16);
 
 	public ShaderProgram() {
 		GLVersion.checkAfter(PE.GL_VERSION_20);
@@ -81,39 +90,9 @@ public class ShaderProgram implements DisposableResource {
 					"A Fragment Shader has not been added to this Shader Program so there is not default Fragment out value to set.");
 		GL30.glBindFragDataLocation(id, value, name);
 	}
-
-	/**
-	 * Will set where in the currently used Attribute Array
-	 * (<code>VertexBufferObject</code>) each attribute is. The attribute ID is
-	 * automatically retrieved. This is used for the 'in' values for the shader.
-	 * 
-	 * @param name
-	 *            The name of the attribute in the shader itself.
-	 * @param normalized
-	 *            Whether the attribute has been normalized. Most often false.
-	 * @param offset
-	 *            The offset of the data in the Attribute Array
-	 * @param vboWidth
-	 *            The width of the Attribute Array, which is to say the number
-	 *            of data elements in each row of the array.
-	 * 
-	 * @see #setAttribVec2f(int, String, boolean, int, int)
-	 * @see pe.engine.data.VertexBufferObject
-	 * 
-	 * @since 1.0
-	 */
-	public void setAttribVec2f(String name, boolean normalized, int offset, int vboWidth) {
-		int attribID = GL20.glGetAttribLocation(id, name);
-		GL20.glEnableVertexAttribArray(attribID);
-		GL20.glVertexAttribPointer(attribID, 2, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE,
-				offset * Util.FLOAT_BYTE_SIZE);
-	}
-
-	public void setAttribVec3f(String name, boolean normalized, int offset, int vboWidth) {
-		int attribID = GL20.glGetAttribLocation(id, name);
-		GL20.glEnableVertexAttribArray(attribID);
-		GL20.glVertexAttribPointer(attribID, 3, GL11.GL_FLOAT, normalized, vboWidth * Util.FLOAT_BYTE_SIZE,
-				offset * Util.FLOAT_BYTE_SIZE);
+	
+	public void setAttribIndex(int index, String name){
+		GL20.glBindAttribLocation(id, index, name);
 	}
 
 	/**
@@ -131,6 +110,22 @@ public class ShaderProgram implements DisposableResource {
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform1i(uniformId, value);
 	}
+	
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param vec
+	 *            The vector you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformVec3f(String name, Vec2f vec) {
+		int uniformId = GL20.glGetUniformLocation(id, name);
+		GL20.glUniform2fv(uniformId, vec.putInBufferC(bufferVec2f));
+	}
 
 	/**
 	 * Sets the value of the uniform with the specified <code>name</code> in the
@@ -145,9 +140,7 @@ public class ShaderProgram implements DisposableResource {
 	 */
 	public void setUniformVec3f(String name, Vec3f vec) {
 		int uniformId = GL20.glGetUniformLocation(id, name);
-		FloatBuffer buffer = vec.putInBuffer(BufferUtils.createFloatBuffer(3));
-		buffer.flip();
-		GL20.glUniform3fv(uniformId, buffer);
+		GL20.glUniform3fv(uniformId, vec.putInBufferC(bufferVec3f));
 	}
 
 	/**
@@ -163,9 +156,7 @@ public class ShaderProgram implements DisposableResource {
 	 */
 	public void setUniformVec4f(String name, Vec4f vec) {
 		int uniformId = GL20.glGetUniformLocation(id, name);
-		FloatBuffer buffer = vec.putInBuffer(BufferUtils.createFloatBuffer(4));
-		buffer.flip();
-		GL20.glUniform4fv(uniformId, buffer);
+		GL20.glUniform4fv(uniformId, vec.putInBufferC(bufferVec4f));
 	}
 
 	/**
@@ -182,9 +173,23 @@ public class ShaderProgram implements DisposableResource {
 	 */
 	public void setUniformColor(String name, Color color) {
 		int uniformId = GL20.glGetUniformLocation(id, name);
-		FloatBuffer buffer = color.putInBuffer4(BufferUtils.createFloatBuffer(4));
-		buffer.flip();
-		GL20.glUniform4fv(uniformId, buffer);
+		GL20.glUniform4fv(uniformId, color.putInBuffer4C(bufferVec4f));
+	}
+	
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param matrix
+	 *            The matrix you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformMat3f(String name, Mat2f matrix) {
+		int uniformID = GL20.glGetUniformLocation(id, name);
+		GL20.glUniformMatrix2fv(uniformID, false, matrix.putInBufferC(bufferMat2f));
 	}
 
 	/**
@@ -200,9 +205,7 @@ public class ShaderProgram implements DisposableResource {
 	 */
 	public void setUniformMat3f(String name, Mat3f matrix) {
 		int uniformID = GL20.glGetUniformLocation(id, name);
-		FloatBuffer buffer = matrix.putInBuffer(BufferUtils.createFloatBuffer(9));
-		buffer.flip();
-		GL20.glUniformMatrix3fv(uniformID, false, buffer);
+		GL20.glUniformMatrix3fv(uniformID, false, matrix.putInBufferC(bufferMat3f));
 	}
 
 	/**
@@ -218,9 +221,7 @@ public class ShaderProgram implements DisposableResource {
 	 */
 	public void setUniformMat4f(String name, Mat4f matrix) {
 		int uniformID = GL20.glGetUniformLocation(id, name);
-		FloatBuffer buffer = matrix.putInBuffer(BufferUtils.createFloatBuffer(16));
-		buffer.flip();
-		GL20.glUniformMatrix4fv(uniformID, false, buffer);
+		GL20.glUniformMatrix4fv(uniformID, false, matrix.putInBufferC(bufferMat4f));
 	}
 
 	public int getID() {

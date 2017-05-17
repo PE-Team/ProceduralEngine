@@ -1,6 +1,9 @@
 #version 150 core
 
 in vec2 position;
+in vec3 barycentric;
+
+out vec3 barycentricValue;
 
 uniform mat3 transformation;
 uniform mat4 projection;
@@ -10,4 +13,6 @@ void main() {
     vec3 finalPosition = transformation * relativePosition;
     
     gl_Position = projection * vec4(finalPosition, 1.0);
+    
+    barycentricValue = barycentric;
 }
