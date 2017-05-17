@@ -33,12 +33,16 @@ public class VertexArrayObject implements DisposableResource{
 		GL30.glBindVertexArray(0);
 	}
 	
+	public void enableVBOLocation(int index){
+		GL20.glEnableVertexAttribArray(index);
+	}
+	
 	public void addVBO(int dimension, FloatBuffer data){
 		VertexBufferObject vbo = new VertexBufferObject(dimension);
 		vbo.use();
 		vbo.setData(data);
-		vbo.setIndex(vbos.size());
-		GL20.glEnableVertexAttribArray(vbos.size());
+		vbo.setLocation(vbos.size());
+		this.enableVBOLocation(vbos.size());
 		vbos.add(vbo);
 	}
 	
