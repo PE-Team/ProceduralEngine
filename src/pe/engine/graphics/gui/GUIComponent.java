@@ -8,7 +8,7 @@ import pe.util.color.Color;
 import pe.util.math.Mat3f;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec2f;
-import pe.util.math.Vec3f;
+import pe.util.math.Vec4f;
 import pe.util.shapes.Polygon;
 
 public abstract class GUIComponent {
@@ -16,13 +16,14 @@ public abstract class GUIComponent {
 	protected int width = 0;
 	protected int height = 0;
 	protected Vec2f position = Vec2f.ZERO;
+	protected Vec2f center = Vec2f.ZERO;
 	protected float rotation;
 	protected Color backgroundColor = Color.CLEAR;
-	protected Color foregroundColor = Color.CLEAR;
 	protected int borderRadius = 0;
 	protected int borderWidth = 0;
 	protected Color borderColor = Color.CLEAR;
 	protected String text = "";
+	protected Color textColor = Color.CLEAR;
 	protected Polygon shape = null;
 	protected Mesh mesh = null;
 	protected GUI gui = null;
@@ -92,15 +93,16 @@ public abstract class GUIComponent {
 	public void render() {
 		shaderProgram.use();
 		
-		float width = 1f * gui.getWindow().getWidth();
-		float height = 1f * gui.getWindow().getHeight();
-		Vec2f scale = new Vec2f(1f/10f, -1f/10f);
-		Vec2f translation = new Vec2f(-1f, 1f);
-		Mat3f transformation = new Mat3f().scale(scale).rotate(5);
+		float windowWidth = gui.getWindow().getWidth();
+		float windowHeight = gui.getWindow().getHeight();
+		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
+		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotation).translate(center.mul(-1)).translate(position);
+		
+		Mat4f projection = Mat4f.getOrthographicMatrix(0, windowWidth, windowHeight, 0, -1, 1);
 		
 		shaderProgram.setUniformMat3f("transformation", transformation);
+		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
-		shaderProgram.setUniformColor("foregroundColor", foregroundColor);
 		shaderProgram.setUniformInt("borderRadius", borderRadius);
 		shaderProgram.setUniformInt("borderWidth", borderWidth);
 		shaderProgram.setUniformColor("borderColor", borderColor);

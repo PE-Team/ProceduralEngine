@@ -20,17 +20,17 @@ public class StaticMesh3D extends Mesh{
 			}
 			vertecesBuffer.flip();
 			
-			vbo.use();
-			vbo.setData(vertecesBuffer);
-			vbo.unbind();
+			vertexVBO.use();
+			vertexVBO.setData(vertecesBuffer);
+			vertexVBO.unbind();
 			
 			IntBuffer indecesBuffer = stack.mallocInt(indices.length);
 			indecesBuffer.put(indices);
 			indecesBuffer.flip();
 			
-			ebo.use();
-			ebo.setData(indecesBuffer);
-			ebo.unbind();
+			indicesEBO.use();
+			indicesEBO.setData(indecesBuffer);
+			indicesEBO.unbind();
 		}
 	}
 }

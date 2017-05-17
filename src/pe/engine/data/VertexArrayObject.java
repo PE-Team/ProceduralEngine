@@ -21,16 +21,20 @@ public class VertexArrayObject implements DisposableResource{
 		Resources.add(this);
 	}
 	
-	public void add(VertexBufferObject vbo){
-		bufferObjects.add(vbo);
+	public void add(BufferObject bo){
+		bufferObjects.add(bo);
 	}
 	
-	public void remove(VertexBufferObject vbo){
-		bufferObjects.remove(vbo);
+	public void remove(BufferObject bo){
+		bufferObjects.remove(bo);
 	}
 	
 	public void use(){
 		GL30.glBindVertexArray(id);
+	}
+	
+	public void unlink(){
+		GL30.glBindVertexArray(0);
 	}
 	
 	public void useVBO(int id){

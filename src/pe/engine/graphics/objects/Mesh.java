@@ -24,8 +24,8 @@ public abstract class Mesh {
 		this.meshType = meshType;
 		this.vertexCount = vertexCount;
 		
-		enabledVertexAttribs.add(0); // Enable position vectors
-		enabledVertexAttribs.add(1); // Enable vertex indeces
+		enabledVertexAttribs.add(1); // Enable position vectors
+		enabledVertexAttribs.add(2); // Enable vertex indeces
 	}
 	
 	public int getMeshType(){
@@ -38,9 +38,11 @@ public abstract class Mesh {
 	
 	public void render() {
 		vbo.use();
+		ebo.use();
 		enableVertexAttribs();
 		GL11.glDrawElements(GL11.GL_TRIANGLES, vertexCount, GL11.GL_UNSIGNED_INT, 0);
 		disableVertexAttribs();
+		ebo.unbind();
 		vbo.unbind();
 	}
 	

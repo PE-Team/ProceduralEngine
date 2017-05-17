@@ -1,5 +1,7 @@
 package pe.engine.shader.main;
 
+import java.nio.FloatBuffer;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -14,6 +16,7 @@ import pe.util.color.Color;
 import pe.util.math.Mat3f;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec3f;
+import pe.util.math.Vec4f;
 
 public class ShaderProgram implements DisposableResource {
 
@@ -117,8 +120,10 @@ public class ShaderProgram implements DisposableResource {
 	 * Sets the value of the uniform with the specified <code>name</code> in the
 	 * currently used shader.
 	 * 
-	 * @param name The name of the uniform in the shader file.
-	 * @param value The integer value you wish to set the uniform to.
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param value
+	 *            The integer value you wish to set the uniform to.
 	 * 
 	 * @since 1.0
 	 */
@@ -126,52 +131,96 @@ public class ShaderProgram implements DisposableResource {
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform1i(uniformId, value);
 	}
-	
+
 	/**
 	 * Sets the value of the uniform with the specified <code>name</code> in the
 	 * currently used shader.
 	 * 
-	 * @param name The name of the uniform in the shader file.
-	 * @param vec The vector you wish to set the uniform to.
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param vec
+	 *            The vector you wish to set the uniform to.
 	 * 
 	 * @since 1.0
 	 */
-	public void setUniformVec3f(String name, Vec3f vec){
+	public void setUniformVec3f(String name, Vec3f vec) {
 		int uniformId = GL20.glGetUniformLocation(id, name);
-		GL20.glUniform3fv(uniformId, vec.putInBuffer(BufferUtils.createFloatBuffer(3)));
-	}
-	
-	public void setUniformColor(String name, Color color){
-		int uniformId = GL20.glGetUniformLocation(id, name);
-		GL20.glUniform4fv(uniformId, color.getVec4f().putInBuffer(BufferUtils.createFloatBuffer(4)));
-	}
-	
-	/**
-	 * Sets the value of the uniform with the specified <code>name</code> in the
-	 * currently used shader.
-	 * 
-	 * @param name The name of the uniform in the shader file.
-	 * @param matrix The matrix you wish to set the uniform to.
-	 * 
-	 * @since 1.0
-	 */
-	public void setUniformMat3f(String name, Mat3f matrix) {
-		int uniformID = GL20.glGetUniformLocation(id, name);
-		GL20.glUniformMatrix3fv(uniformID, false, matrix.putInBuffer(BufferUtils.createFloatBuffer(9)));
+		FloatBuffer buffer = vec.putInBuffer(BufferUtils.createFloatBuffer(3));
+		buffer.flip();
+		GL20.glUniform3fv(uniformId, buffer);
 	}
 
 	/**
 	 * Sets the value of the uniform with the specified <code>name</code> in the
 	 * currently used shader.
 	 * 
-	 * @param name The name of the uniform in the shader file.
-	 * @param matrix The matrix you wish to set the uniform to.
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param vec
+	 *            The vector you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformVec4f(String name, Vec4f vec) {
+		int uniformId = GL20.glGetUniformLocation(id, name);
+		FloatBuffer buffer = vec.putInBuffer(BufferUtils.createFloatBuffer(4));
+		buffer.flip();
+		GL20.glUniform4fv(uniformId, buffer);
+	}
+
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader. Color is considered the same as a
+	 * <code>vec4</code>.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param color
+	 *            The color you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformColor(String name, Color color) {
+		int uniformId = GL20.glGetUniformLocation(id, name);
+		FloatBuffer buffer = color.putInBuffer4(BufferUtils.createFloatBuffer(4));
+		buffer.flip();
+		GL20.glUniform4fv(uniformId, buffer);
+	}
+
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param matrix
+	 *            The matrix you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformMat3f(String name, Mat3f matrix) {
+		int uniformID = GL20.glGetUniformLocation(id, name);
+		FloatBuffer buffer = matrix.putInBuffer(BufferUtils.createFloatBuffer(9));
+		buffer.flip();
+		GL20.glUniformMatrix3fv(uniformID, false, buffer);
+	}
+
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param matrix
+	 *            The matrix you wish to set the uniform to.
 	 * 
 	 * @since 1.0
 	 */
 	public void setUniformMat4f(String name, Mat4f matrix) {
 		int uniformID = GL20.glGetUniformLocation(id, name);
-		GL20.glUniformMatrix4fv(uniformID, false, matrix.putInBuffer(BufferUtils.createFloatBuffer(16)));
+		FloatBuffer buffer = matrix.putInBuffer(BufferUtils.createFloatBuffer(16));
+		buffer.flip();
+		GL20.glUniformMatrix4fv(uniformID, false, buffer);
 	}
 
 	public int getID() {

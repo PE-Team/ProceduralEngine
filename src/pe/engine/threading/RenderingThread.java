@@ -48,13 +48,13 @@ public class RenderingThread implements Runnable {
 
 			GUI gui = new GUI();
 			gui.setWindow(window);
-			Divider div = new Divider(1, 1, Color.BLUE);
+			Divider div = new Divider(100, 200, Color.BLUE, Color.ORANGE);
 			gui.addComponent(div);
 
 			while (MasterThread.isRunning()) {
 				if (timer.delayPassed()) {
 					MasterThread.println("Rendering Thread", "I am Rendering some stuff. Look at me!");
-					GL11.glClearColor(1, 0, 0, 1);
+					GL11.glClearColor(0, 0, 0, 1);
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 					
 					gui.render();

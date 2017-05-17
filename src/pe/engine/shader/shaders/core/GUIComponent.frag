@@ -1,9 +1,12 @@
 #version 150 core
 
-in vec4 vertexColor;
-
 out vec4 fragColor;
 
+uniform vec4 backgroundColor;
+uniform int borderRadius;
+uniform int borderWidth;
+uniform vec4 borderColor;
+
 void main() {
-    fragColor = vertexColor;
+    fragColor = backgroundColor;
 }
