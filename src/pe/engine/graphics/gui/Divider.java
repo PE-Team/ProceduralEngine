@@ -22,8 +22,8 @@ public class Divider extends GUIComponent{
 				new Vec2f(2, 3), new Vec2f(2, 2), new Vec2f(3, 2), new Vec2f(3, 1), new Vec2f(2, 1), new Vec2f(2, 0),
 				new Vec2f(1, 0) };
 		
-		this.shape = new Rectangle(1, 1);
-//		this.shape = new Polygon(polygon);
+//		this.shape = new Rectangle(1, 1);
+		this.shape = new Polygon(polygon);
 		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
 		
 		initShaderProgram();

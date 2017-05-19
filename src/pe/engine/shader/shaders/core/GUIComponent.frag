@@ -19,6 +19,7 @@ float edgeFactor(){
     float mult = mapToAsymtotic(2*min(min(d.x, d.y), d.z), 8);
     vec3 a3 = smoothstep(d*mult, d, barycentricValue);
     return min(min(a3.x, a3.y), a3.z);
+    //return min(min(max(a3.x, a3.y), max(a3.x, a3.z)), max(a3.y, a3.z));
 }
 
 void main() {
