@@ -36,13 +36,9 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 		GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
 		if (GLVersion.isAfter(PE.GL_VERSION_32)) {
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 3);
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 1);
-			/* Should be the correct implementation, but currently broken */
-			// GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
-			// GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE,
-			// GLFW.GLFW_OPENGL_CORE_PROFILE);
-			// GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT,
-			// GLFW.GLFW_TRUE);
+			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
+			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
+			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
 		} else if (GLVersion.isAfter(PE.GL_VERSION_21)) {
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 1);
