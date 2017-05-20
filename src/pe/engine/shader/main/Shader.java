@@ -91,6 +91,8 @@ public class Shader implements DisposableResource{
 		switch(type){
 		case PE.SHADER_TYPE_VERTEX:
 			return "Vertex Shader";
+		case PE.SHADER_TYPE_GEOMETRY:
+			return "Geometry Shader";
 		case PE.SHADER_TYPE_FRAGMENT:
 			return "Fragment Shader";
 		}

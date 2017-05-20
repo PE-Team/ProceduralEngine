@@ -122,7 +122,7 @@ public class ShaderProgram implements DisposableResource {
 	 * 
 	 * @since 1.0
 	 */
-	public void setUniformVec3f(String name, Vec2f vec) {
+	public void setUniformVec2f(String name, Vec2f vec) {
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform2fv(uniformId, vec.putInBufferC(bufferVec2f));
 	}
@@ -187,7 +187,7 @@ public class ShaderProgram implements DisposableResource {
 	 * 
 	 * @since 1.0
 	 */
-	public void setUniformMat3f(String name, Mat2f matrix) {
+	public void setUniformMat2f(String name, Mat2f matrix) {
 		int uniformID = GL20.glGetUniformLocation(id, name);
 		GL20.glUniformMatrix2fv(uniformID, false, matrix.putInBufferC(bufferMat2f));
 	}

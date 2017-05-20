@@ -73,11 +73,11 @@ public class GLVersion {
 	
 	public static void checkAfter(int glVersion, String reason){
 		if(isBefore(glVersion))
-			throw new IllegalStateException("OpenGL " + versionName(glVersion) + " or above must be used");
+			throw new IllegalStateException("OpenGL " + versionName(glVersion) + " or above must be used. " + reason);
 	}
 	
 	public static void checkAfter(int glVersion){
-		checkAfter(glVersion, ".");
+		checkAfter(glVersion, "");
 	}
 	
 	public static String versionName(){

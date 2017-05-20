@@ -13,7 +13,7 @@ import pe.util.math.Vec3f;
 public class StaticMesh2D extends Mesh {
 
 	public StaticMesh2D(Vec2f[] vertices, int[] indices) {
-		super(PE.STATIC_MESH_2D, indices.length);
+		super(PE.STATIC_MESH_2D, indices.length, vertices.length);
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			vao.use();
@@ -25,14 +25,6 @@ public class StaticMesh2D extends Mesh {
 			vertecesBuffer.flip();
 
 			vao.addVBO(2, vertecesBuffer);
-
-			FloatBuffer barycentricBuffer = stack.mallocFloat(3 * vertices.length);
-			for(Vec3f barycentricVec:Util.giveBarycentricCoords(indices)){
-				barycentricVec.putInBuffer(barycentricBuffer);
-			}
-			barycentricBuffer.flip();
-
-			vao.addVBO(3, barycentricBuffer);
 
 			IntBuffer indecesBuffer = stack.mallocInt(indices.length);
 			indecesBuffer.put(indices);

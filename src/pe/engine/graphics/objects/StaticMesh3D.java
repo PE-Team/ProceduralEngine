@@ -11,7 +11,7 @@ import pe.util.math.Vec3f;
 public class StaticMesh3D extends Mesh{
 	
 	public StaticMesh3D(Vec3f[] vertices, int[] indices){
-		super(PE.STATIC_MESH_3D, indices.length);
+		super(PE.STATIC_MESH_3D, indices.length, vertices.length);
 		
 		try (MemoryStack stack = MemoryStack.stackPush()){
 			vao.use();

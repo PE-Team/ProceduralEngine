@@ -39,7 +39,7 @@ public class RenderingThread implements Runnable {
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_F4);
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_F4);
 
-			Window window = new Window(700, 400, "Test", true, true, true);
+			Window window = new Window(1400, 800, "Test", true, true, true);
 			window.setKeyHandler(keyHandler);
 			window.show();
 			
@@ -48,7 +48,7 @@ public class RenderingThread implements Runnable {
 
 			GUI gui = new GUI();
 			gui.setWindow(window);
-			Divider div = new Divider(400, 200, Color.BLUE, Color.ORANGE, 10);
+			Divider div = new Divider(400, 400, Color.BLUE, Color.ORANGE, 20);
 			gui.addComponent(div);
 
 			while (MasterThread.isRunning()) {

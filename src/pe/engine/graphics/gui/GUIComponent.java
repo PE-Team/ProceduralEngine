@@ -1,6 +1,7 @@
 package pe.engine.graphics.gui;
 
 import pe.engine.graphics.objects.Mesh;
+import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
 import pe.engine.shader.main.Shader;
 import pe.engine.shader.main.ShaderProgram;
@@ -38,6 +39,11 @@ public abstract class GUIComponent {
 		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, "src/pe/engine/shader/shaders/core/GUIComponent.vertx");
 		vertexShader.compile();
 		vertexShader.compileStatus();
+		
+		Shader geometryShader = new Shader(PE.SHADER_TYPE_GEOMETRY,
+				"src/pe/engine/shader/shaders/core/GUIComponent.geom");
+		geometryShader.compile();
+		geometryShader.compileStatus();
 
 		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT,
 				"src/pe/engine/shader/shaders/core/GUIComponent.frag");
@@ -46,12 +52,14 @@ public abstract class GUIComponent {
 
 		ShaderProgram program = new ShaderProgram();
 		program.addShader(vertexShader);
+		program.addShader(geometryShader);
 		program.addShader(fragmentShader);
 
-		program.setDefaultFragOutValue("fragColor", 0);
+		program.setDefaultFragOutValue("color", 0);
 		
 		program.setAttribIndex(0, "position");
-		program.setAttribIndex(1, "barycentric");
+		program.setAttribIndex(1, "vertexIn");
+		program.setAttribIndex(2, "vertexOut");
 
 		program.compile();
 		program.compileStatus();
@@ -92,10 +100,12 @@ public abstract class GUIComponent {
 		float windowHeight = gui.getWindow().getHeight();
 		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
 		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotation).translate(center.mul(-1)).translate(position);
-		
+		Mat3f inOutTransformation = new Mat3f().rotate(rotation);
 		Mat4f projection = Mat4f.getOrthographicMatrix(0, windowWidth, windowHeight, 0, -1, 1);
 		
+		shaderProgram.setUniformVec2f("windowDimensions", new Vec2f(windowWidth, windowHeight));
 		shaderProgram.setUniformMat3f("transformation", transformation);
+		shaderProgram.setUniformMat3f("inOutTransformation", inOutTransformation);
 		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
 		shaderProgram.setUniformInt("borderRadius", borderRadius);
