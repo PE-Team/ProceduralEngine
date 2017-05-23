@@ -58,7 +58,7 @@ public abstract class GUIComponent {
 		program.setDefaultFragOutValue("color", 0);
 		
 		program.setAttribIndex(0, "position");
-		program.setAttribIndex(1, "vertexOffset");
+		program.setAttribIndex(1, "vertexIDs");
 
 		program.compile();
 		program.compileStatus();

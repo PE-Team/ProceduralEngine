@@ -1,9 +1,11 @@
 #version 330 core
 
 layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 vertexIDs;
+layout (location = 1) in vec2 vertexOffset;
+layout (location = 2) in vec2 vertexIDs;
 
 out VS_OUT {
+	vec4 vertexOffset;
 	vec2 vertexIDs;
 } vs_out;
 
@@ -21,5 +23,7 @@ vec4 offsetTransform(vec2 vec){
 
 void main() {
 	gl_Position = finalVector(position);
+    
+    vs_out.vertexOffset = offsetTransform(vertexOffset);
     vs_out.vertexIDs = vertexIDs;
 }
