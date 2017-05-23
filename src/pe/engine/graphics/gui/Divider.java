@@ -30,27 +30,19 @@ public class Divider extends GUIComponent{
 				new Vec2f(1, 0) };
 		
 //		this.shape = new Triangle(new Vec2f(0, 0), new Vec2f(1, 1), new Vec2f(1, 0));
-		this.shape = new Rectangle(1, 1);
-//		this.shape = new Polygon(polygon);
+//		this.shape = new Rectangle(1, 1);
+		this.shape = new Polygon(polygon);
 		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
 		
-		Vec2f[][] inOut = Util.getBorderVertexInOut(shape.getVertices());
+		Vec2f[] vertexOffsets = Util.getBorderVertexOffset(shape.getVertices(), borderWidth);
 		
-		FloatBuffer inVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
-		for(Vec2f in:inOut[0]){
-			in.putInBuffer(inVectors);
-			System.out.println("in: " + in);
+		FloatBuffer offsetVectors = BufferUtils.createFloatBuffer(2 * polygon.length);
+		for(Vec2f offset:vertexOffsets){
+			offset.putInBuffer(offsetVectors);
+			System.out.println(offset);
 		}
-		inVectors.flip();
-		mesh.addShaderAttrib(2, inVectors);
-		
-		FloatBuffer outVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
-		for(Vec2f out:inOut[1]){
-			out.putInBuffer(outVectors);
-			System.out.println("out: " + out);
-		}
-		outVectors.flip();
-		mesh.addShaderAttrib(2, outVectors);
+		offsetVectors.flip();
+		mesh.addShaderAttrib(2, offsetVectors);
 		
 		mesh.setWireframe(true);
 		

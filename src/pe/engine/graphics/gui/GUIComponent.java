@@ -58,8 +58,7 @@ public abstract class GUIComponent {
 		program.setDefaultFragOutValue("color", 0);
 		
 		program.setAttribIndex(0, "position");
-		program.setAttribIndex(1, "vertexIn");
-		program.setAttribIndex(2, "vertexOut");
+		program.setAttribIndex(1, "vertexOffset");
 
 		program.compile();
 		program.compileStatus();
@@ -100,12 +99,12 @@ public abstract class GUIComponent {
 		float windowHeight = gui.getWindow().getHeight();
 		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
 		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotation).translate(center.mul(-1)).translate(position);
-		Mat3f inOutTransformation = new Mat3f().rotate(rotation);
+		Mat3f offsetTransformation = new Mat3f().rotate(rotation);
 		Mat4f projection = Mat4f.getOrthographicMatrix(0, windowWidth, windowHeight, 0, -1, 1);
 		
 		shaderProgram.setUniformVec2f("windowDimensions", new Vec2f(windowWidth, windowHeight));
 		shaderProgram.setUniformMat3f("transformation", transformation);
-		shaderProgram.setUniformMat3f("inOutTransformation", inOutTransformation);
+		shaderProgram.setUniformMat3f("offsetTransformation", offsetTransformation);
 		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
 		shaderProgram.setUniformInt("borderRadius", borderRadius);

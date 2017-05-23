@@ -1,29 +1,26 @@
 #version 330 core
 
 layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 vertexIn;
-layout (location = 2) in vec2 vertexOut;
+layout (location = 1) in vec2 vertexOffset;
 
 out VS_OUT {
-	vec2 vertexIn;
-	vec2 vertexOut;
+	vec4 vertexOffset;
 } vs_out;
 
 uniform mat3 transformation;
-uniform mat3 inOutTransformation;
+uniform mat3 offsetTransformation;
 uniform mat4 projection;
 
 vec4 finalVector(vec2 vec){
 	return projection * vec4(transformation * vec3(vec, 1.0), 1.0);
 }
 
-vec4 inOutTransform(vec2 vec){
-	return projection * vec4(inOutTransformation * vec3(vec, 1.0), 1.0);
+vec4 offsetTransform(vec2 vec){
+	return projection * vec4(offsetTransformation * vec3(vec, 0.0), 0.0);
 }
 
 void main() {
 	gl_Position = finalVector(position);
     
-    vs_out.vertexIn = inOutTransform(vertexIn).xy;
-    vs_out.vertexOut = inOutTransform(vertexOut).xy;
+    vs_out.vertexOffset = offsetTransform(vertexOffset);
 }
