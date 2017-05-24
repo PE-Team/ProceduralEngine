@@ -29,20 +29,28 @@ public class Divider extends GUIComponent{
 				new Vec2f(2, 3), new Vec2f(2, 2), new Vec2f(3, 2), new Vec2f(3, 1), new Vec2f(2, 1), new Vec2f(2, 0),
 				new Vec2f(1, 0) };
 		
-		this.shape = new Triangle(new Vec2f(0, 0), new Vec2f(1, 1), new Vec2f(1, 0));
+//		this.shape = new Triangle(new Vec2f(0, 0), new Vec2f(1, 1), new Vec2f(1, 0));
 //		this.shape = new Rectangle(1, 1);
-//		this.shape = new Polygon(polygon);
+		this.shape = new Polygon(polygon);
 		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
 		
-		Vec2f[] vertexIDs = Util.giveBorderEdgeIDs(shape.getVertices());
+		Vec2f[][] vertexInOut = Util.getBorderVertexInOut(shape.getVertices());
+		Vec2f[] in = vertexInOut[0];
+		Vec2f[] out = vertexInOut[1];
 		
-		FloatBuffer idVectors = BufferUtils.createFloatBuffer(2 * polygon.length);
-		for(Vec2f offset:vertexIDs){
-			offset.putInBuffer(idVectors);
-			System.out.println(offset);
+		FloatBuffer inVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
+		for(Vec2f inVec:in){
+			inVec.putInBuffer(inVectors);
 		}
-		idVectors.flip();
-		mesh.addShaderAttrib(2, idVectors);
+		inVectors.flip();
+		mesh.addShaderAttrib(2, inVectors);
+		
+		FloatBuffer outVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
+		for(Vec2f outVec:out){
+			outVec.putInBuffer(outVectors);
+		}
+		outVectors.flip();
+		mesh.addShaderAttrib(2, outVectors);
 		
 //		mesh.setWireframe(true);
 		
