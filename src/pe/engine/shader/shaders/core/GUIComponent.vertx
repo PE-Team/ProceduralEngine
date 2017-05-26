@@ -3,10 +3,12 @@
 layout (location = 0) in vec2 position;
 layout (location = 1) in vec2 vertexIn;
 layout (location = 2) in vec2 vertexOut;
+layout (location = 3) in vec2 vertexIDs;
 
 out VS_OUT {
 	vec2 vertexIn;
 	vec2 vertexOut;
+	vec2 vertexIDs;
 } vs_out;
 
 uniform mat3 transformation;
@@ -26,4 +28,5 @@ void main() {
 
     vs_out.vertexIn = varTransform(vertexIn).xy;
     vs_out.vertexOut = varTransform(vertexOut).xy;
+    vs_out.vertexIDs = vertexIDs;
 }

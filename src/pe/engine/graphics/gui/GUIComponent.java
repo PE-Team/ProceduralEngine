@@ -60,6 +60,7 @@ public abstract class GUIComponent {
 		program.setAttribIndex(0, "position");
 		program.setAttribIndex(1, "vertexIn");
 		program.setAttribIndex(2, "vertexOut");
+		program.setAttribIndex(3, "vertexIDs");
 
 		program.compile();
 		program.compileStatus();
