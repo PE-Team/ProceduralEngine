@@ -117,6 +117,22 @@ public class ShaderProgram implements DisposableResource {
 	 * 
 	 * @param name
 	 *            The name of the uniform in the shader file.
+	 * @param value
+	 *            The float value you wish to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformFloat(String name, float value) {
+		int uniformId = GL20.glGetUniformLocation(id, name);
+		GL20.glUniform1f(uniformId, value);
+	}
+	
+	/**
+	 * Sets the value of the uniform with the specified <code>name</code> in the
+	 * currently used shader.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
 	 * @param vec
 	 *            The vector you wish to set the uniform to.
 	 * 

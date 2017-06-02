@@ -99,16 +99,21 @@ public abstract class GUIComponent {
 	public float getRotation(){
 		return rotation;
 	}
+	
+	public void rotate(float degrees){
+		this.rotation += degrees;
+	}
 
 	public void render() {
 		shaderProgram.use();
-
+		float ratio = 1400f / 800f;
 		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
 		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotation).translate(center.mul(-1)).translate(position);
 		Mat4f projection = gui.getWindow().getOrthoProjection();
 		
 		shaderProgram.setUniformMat3f("transformation", transformation);
 		shaderProgram.setUniformMat4f("projection", projection);
+		shaderProgram.setUniformFloat("screenRatio", ratio);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
 		shaderProgram.setUniformInt("borderRadius", borderRadius);
 		shaderProgram.setUniformInt("borderWidth", borderWidth);

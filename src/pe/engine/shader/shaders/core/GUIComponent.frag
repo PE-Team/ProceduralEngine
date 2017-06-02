@@ -10,6 +10,7 @@ out vec4 color;
 uniform vec4 backgroundColor;
 uniform vec4 borderColor;
 uniform int borderWidth;
+uniform int borderRadius;
 
 vec2 ailizeVertField(vec2 vertField){
 	vec2 d = fwidth(vertField);
@@ -18,14 +19,26 @@ vec2 ailizeVertField(vec2 vertField){
     return a2;
 }
 
+float height(float r, float d){
+	return sqrt(r*r - d*d);
+}
+
 vec2 draw(vec2 mask){
-	float margin = 0.1;
-	float width = 0.0025;
+	float pixWidth = 0.0025;
+	float margin = pixWidth * borderWidth;
+	float width = 0.003;
+	float radius = 100 * pixWidth;
 	
-	vec2 ailizedBorder0 = smoothstep(margin - width, margin + width, border);
-	vec2 ailizedBorder1 = smoothstep(margin - width, margin + width, borderWidthMod - border);
-	//mask.x = min(min(min(ailizedBorder0.x, ailizedBorder0.y), ailizedBorder1.x), ailizedBorder1.y);
-	mask.x = min(ailizedBorder0.x, ailizedBorder0.y);
+	vec2 varBorder = border;
+	
+	// for varBorder.x
+	if(varBorder.y < radius){
+		varBorder.x -= radius - height(radius, varBorder.y);
+	}
+	
+	vec2 ailizedBorder0 = smoothstep(margin - width, margin + width, varBorder);
+	vec2 ailizedBorder1 = smoothstep(margin - width, margin + width, borderWidthMod - varBorder);
+	mask.x = min(min(min(ailizedBorder0.x, ailizedBorder0.y), ailizedBorder1.x), ailizedBorder1.y);
 
 	return mask;
 }
@@ -39,6 +52,4 @@ void main() {
 	
 	color = mix(borderC, fillC, colorMask.x);
 	color.w *= colorMask.y;
-	
-	//color = vec4(border, 0.0, 1.0);
 }

@@ -22,6 +22,7 @@ public class Divider extends GUIComponent {
 		this.backgroundColor = backgroundColor;
 		this.borderColor = borderColor;
 		this.borderWidth = borderWidth;
+		this.borderRadius = 40;
 		this.center = new Vec2f(width / 2f, height / 2f);
 		this.position = new Vec2f(posX, posY);
 		this.rotation = 0;
