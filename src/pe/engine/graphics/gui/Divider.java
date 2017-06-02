@@ -16,54 +16,31 @@ public class Divider extends GUIComponent {
 
 	public static final String NAME = "div";
 
-	public Divider(int width, int height, Color backgroundColor, Color borderColor, int borderWidth) {
+	public Divider(int width, int height, int posX, int posY, Color backgroundColor, Color borderColor, int borderWidth) {
 		this.width = width;
 		this.height = height;
 		this.backgroundColor = backgroundColor;
 		this.borderColor = borderColor;
 		this.borderWidth = borderWidth;
 		this.center = new Vec2f(width / 2f, height / 2f);
-		this.position = new Vec2f(300, 200);
+		this.position = new Vec2f(posX, posY);
+		this.rotation = 0;
 
-		Vec2f[] polygon = { new Vec2f(1, 1), new Vec2f(0, 1), new Vec2f(0, 2), new Vec2f(1, 2), new Vec2f(1, 3),
-				new Vec2f(2, 3), new Vec2f(2, 2), new Vec2f(3, 2), new Vec2f(3, 1), new Vec2f(2, 1), new Vec2f(2, 0),
-				new Vec2f(1, 0) };
-
-		Vec2f[] polygon2 = { new Vec2f(1, 0), new Vec2f(1, 1), new Vec2f(0, 1), new Vec2f(0, 2), new Vec2f(1, 2),
-				new Vec2f(3, 3), new Vec2f(2, 1), new Vec2f(2, 0) };
-
-//		this.shape = new Triangle(new Vec2f(0, 0), new Vec2f(1, 1), new Vec2f(1, 0));
-//		this.shape = new Rectangle(1, 1);
-//		this.shape = new Polygon(polygon);
-		this.shape = new Polygon(polygon2);
+		this.shape = new Rectangle(1, 1);
 		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
-
-		Vec2f[][] vertexInOut = Util.getBorderVertexInOut(shape.getVertices());
-		Vec2f[] in = vertexInOut[0];
-		Vec2f[] out = vertexInOut[1];
-
-		FloatBuffer inVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
-		for (Vec2f inVec : in) {
-			inVec.putInBuffer(inVectors);
-		}
-		inVectors.flip();
-		mesh.addShaderAttrib(2, inVectors);
-
-		FloatBuffer outVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
-		for (Vec2f outVec : out) {
-			outVec.putInBuffer(outVectors);
-		}
-		outVectors.flip();
-		mesh.addShaderAttrib(2, outVectors);
-
-		Vec2f[] ids = Util.giveBorderEdgeIDs(shape.getVertices());
-
-		FloatBuffer idVectors = BufferUtils.createFloatBuffer(2 * mesh.getVerticesCount());
-		for (Vec2f id : ids) {
-			id.putInBuffer(idVectors);
-		}
-		idVectors.flip();
-		mesh.addShaderAttrib(2, idVectors);
+		
+		Vec2f v0Border = Vec2f.ZERO;
+		Vec2f v1Border = new Vec2f(1, 0);
+		Vec2f v2Border = Vec2f.ZERO;
+		Vec2f v3Border = new Vec2f(0, 1);
+		
+		FloatBuffer borderVectors = BufferUtils.createFloatBuffer(8); // dim * # of vectors = 2 * 4
+		v0Border.putInBuffer(borderVectors);
+		v1Border.putInBuffer(borderVectors);
+		v2Border.putInBuffer(borderVectors);
+		v3Border.putInBuffer(borderVectors);
+		borderVectors.flip();
+		mesh.addShaderAttrib(2, borderVectors);
 
 		mesh.setWireframe(false);
 

@@ -1,17 +1,19 @@
 package pe.engine.graphics.gui;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import pe.engine.graphics.main.Window;
 
 public class GUI {
 
-	private Set<GUIComponent> widgets;
+	private List<GUIComponent> widgets;
 	private Window window = null;
 	
 	public GUI(){
-		widgets = new HashSet<GUIComponent>();
+		widgets = new ArrayList<GUIComponent>();
 	}
 	
 	public void render(){

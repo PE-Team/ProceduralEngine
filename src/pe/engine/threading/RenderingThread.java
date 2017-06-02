@@ -31,7 +31,7 @@ public class RenderingThread implements Runnable {
 
 			InitializationProcesses.glInit("Rendering Thread");
 
-			timer = new Timer(0.5f);
+			timer = new Timer(0.1f);
 			timer.start();
 
 			KeyHandler keyHandler = new KeyHandler();
@@ -48,8 +48,9 @@ public class RenderingThread implements Runnable {
 
 			GUI gui = new GUI();
 			gui.setWindow(window);
-			Divider div = new Divider(400, 400, Color.BLUE, Color.ORANGE, 20);
-			gui.addComponent(div);
+			Divider div1 = new Divider(1000, 500, 0, 0, Color.BLUE, Color.ORANGE, 20);
+			gui.addComponent(div1);
+			
 
 			while (MasterThread.isRunning()) {
 				if (timer.delayPassed()) {
@@ -57,6 +58,7 @@ public class RenderingThread implements Runnable {
 					GL11.glClearColor(0, 0, 0, 1);
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 					
+					div1.setRotation(div1.getRotation() + 5);
 					gui.render();
 
 					window.update();

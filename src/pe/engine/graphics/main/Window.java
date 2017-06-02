@@ -15,6 +15,7 @@ import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.gui.GUIComponent;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
+import pe.util.math.Mat4f;
 
 public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI {
 
@@ -24,10 +25,12 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 	private long id;
 	private boolean vsync;
 	private GUI gui;
+	private Mat4f orthoProjection;
 
 	public Window(int width, int height, String title, boolean vsync, boolean resizeable, boolean border) {
 		this.width = width;
 		this.height = height;
+		this.orthoProjection = Mat4f.getOrthographicMatrix(0, width, height, 0, -1, 1);
 		this.title = title;
 		this.vsync = vsync;
 		this.gui = new GUI();
@@ -171,6 +174,21 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 		return height;
 	}
 
+	/**
+	 * Returns the orthographic projection matrix for the pixel space of the
+	 * screen. This projection assumes that (0,0) is the top-left corner and
+	 * (width, height) is the bottom right.
+	 * 
+	 * @return The orthographic projection matrix for the window in pixel space.
+	 * 
+	 * @see #orthoProjection
+	 * 
+	 * @since 1.0
+	 */
+	public Mat4f getOrthoProjection() {
+		return orthoProjection;
+	}
+
 	@Override
 	public void invoke(long window, int newWidth, int newHeight) {
 		if (window != id)
@@ -178,5 +196,6 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 
 		this.width = newWidth;
 		this.height = newHeight;
+		this.orthoProjection = Mat4f.getOrthographicMatrix(0, width, height, 0, -1, 1);
 	}
 }
