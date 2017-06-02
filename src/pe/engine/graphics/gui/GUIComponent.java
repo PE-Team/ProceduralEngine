@@ -1,5 +1,7 @@
 package pe.engine.graphics.gui;
 
+import org.lwjgl.opengl.GL11;
+
 import pe.engine.graphics.objects.Mesh;
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
@@ -118,7 +120,9 @@ public abstract class GUIComponent {
 		shaderProgram.setUniformInt("borderRadius", borderRadius);
 		shaderProgram.setUniformInt("borderWidth", borderWidth);
 		shaderProgram.setUniformColor("borderColor", borderColor);
-
+		
+		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		mesh.render();
 
 		shaderProgram.stop();

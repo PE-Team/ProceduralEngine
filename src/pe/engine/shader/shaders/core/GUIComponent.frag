@@ -27,18 +27,25 @@ vec2 draw(vec2 mask){
 	float pixWidth = 0.0025;
 	float margin = pixWidth * borderWidth;
 	float width = 0.003;
-	float radius = 100 * pixWidth;
+	float radius0 = 100 * pixWidth; //a
+	float radius1 = 200 * pixWidth; //b
 	
 	vec2 varBorder = border;
 	
 	// for varBorder.x
-	if(varBorder.y < radius){
-		varBorder.x -= radius - height(radius, varBorder.y);
+	if(varBorder.y < radius1 && varBorder.x < radius0){
+		//varBorder.x -= radius0 - height(radius0, radius0 - varBorder.y);
+		float offset = 0.5*varBorder.y*radius0/radius1;
+		varBorder.y -= radius1 * (1 - sqrt(1 - pow( (radius0 - varBorder.x)/radius0 , 2) ) );
 	}
 	
 	vec2 ailizedBorder0 = smoothstep(margin - width, margin + width, varBorder);
 	vec2 ailizedBorder1 = smoothstep(margin - width, margin + width, borderWidthMod - varBorder);
 	mask.x = min(min(min(ailizedBorder0.x, ailizedBorder0.y), ailizedBorder1.x), ailizedBorder1.y);
+	
+	if(varBorder.x < 0.0 || varBorder.y < 0.0){
+		mask.y = 0.0;
+	}
 
 	return mask;
 }
