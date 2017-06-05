@@ -3,23 +3,48 @@ package pe.engine.graphics.objects;
 import java.nio.FloatBuffer;
 
 import org.lwjgl.opengl.GL11;
+import org.lwjgl.system.MemoryStack;
 
 import pe.engine.data.VertexArrayObject;
+import pe.util.math.Vec2f;
 
 public abstract class Mesh {
 	
 	protected VertexArrayObject vao;
+	protected int meshDataLocation = -1;
 	protected int meshType;
 	protected int indicesCount;
 	protected int verticesCount;
+	protected int dimension;
 	protected boolean wireframe;
 	
-	protected Mesh(int meshType, int indicesCount, int verticesCount){
+	protected Mesh(int meshType, int indicesCount, int verticesCount, int dimension){
 		this.vao = new VertexArrayObject();
 		this.meshType = meshType;
 		this.indicesCount = indicesCount;
 		this.verticesCount = verticesCount;
+		this.dimension = dimension;
 		this.wireframe = false;
+	}
+	
+	public void setVertexData(Vec2f[] vertices){
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			vao.use();
+
+			FloatBuffer vertecesBuffer = stack.mallocFloat(dimension * vertices.length);
+			for (Vec2f vertex : vertices) {
+				vertex.putInBuffer(vertecesBuffer);
+			}
+			vertecesBuffer.flip();
+			
+			if(meshDataLocation == -1){
+				vao.addVBO(dimension, vertecesBuffer);
+			}else{
+				vao.setVBO(dimension, vertecesBuffer, meshDataLocation);
+			}
+
+			vao.unbind();
+		}
 	}
 	
 	public void setWireframe(boolean wireframe){

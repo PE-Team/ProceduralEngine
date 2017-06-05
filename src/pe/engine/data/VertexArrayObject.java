@@ -2,8 +2,6 @@ package pe.engine.data;
 
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
@@ -15,12 +13,11 @@ public class VertexArrayObject implements DisposableResource{
 	
 	private int id;
 	private ElementBufferObject ebo = null;
-	private Set<VertexBufferObject> vbos;
+	private int vbos = 0;
 	
 	public VertexArrayObject(){
 		GLVersion.checkAfter(PE.GL_VERSION_30);
 		this.id = GL30.glGenVertexArrays();
-		this.vbos = new HashSet<VertexBufferObject>();
 		
 		Resources.add(this);
 	}
@@ -37,13 +34,26 @@ public class VertexArrayObject implements DisposableResource{
 		GL20.glEnableVertexAttribArray(index);
 	}
 	
-	public void addVBO(int dimension, FloatBuffer data){
+	public int addVBO(int dimension, FloatBuffer data){
+		int location = vbos;
 		VertexBufferObject vbo = new VertexBufferObject(dimension);
 		vbo.use();
 		vbo.setData(data);
-		vbo.setLocation(vbos.size());
-		this.enableVBOLocation(vbos.size());
-		vbos.add(vbo);
+		vbo.setLocation(location);
+		enableVBOLocation(vbos);
+		vbos++;
+		return location;
+	}
+	
+	public void setVBO(int dimension, FloatBuffer data, int location){
+		if(location > vbos)
+			throw new IllegalArgumentException("Cannot put a VBO at a location farther than the number of VBOs in the VAO.");
+		
+		VertexBufferObject vbo = new VertexBufferObject(dimension);
+		vbo.use();
+		vbo.setData(data);
+		vbo.setLocation(location);
+		enableVBOLocation(vbos);
 	}
 	
 	public void addEBO(IntBuffer indices){

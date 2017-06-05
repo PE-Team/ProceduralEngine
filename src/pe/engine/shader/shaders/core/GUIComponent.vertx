@@ -2,9 +2,11 @@
 
 layout (location = 0) in vec2 position;
 layout (location = 1) in vec2 borderVec;
+layout (location = 2) in float isTopValue;
 
 out VS_OUT {
 	vec2 border;
+	float isTop;
 } vs_out;
 
 uniform mat3 transformation;
@@ -18,4 +20,5 @@ void main() {
 	gl_Position = finalVertex(position);
 	
 	vs_out.border = borderVec;
+	vs_out.isTop = isTopValue;
 }

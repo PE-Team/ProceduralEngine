@@ -6,20 +6,11 @@ import org.lwjgl.opengl.GL11;
 import pe.engine.data.VertexArrayObject;
 import pe.engine.graphics.gui.Divider;
 import pe.engine.graphics.gui.GUI;
-import pe.engine.graphics.gui.GUIComponent;
 import pe.engine.graphics.main.Window;
-import pe.engine.graphics.objects.StaticMesh2D;
-import pe.engine.graphics.objects.StaticMesh3D;
 import pe.engine.input.KeyHandler;
 import pe.engine.main.InitializationProcesses;
-import pe.engine.main.PE;
-import pe.engine.shader.main.Shader;
-import pe.engine.shader.main.ShaderProgram;
 import pe.util.Timer;
 import pe.util.color.Color;
-import pe.util.math.Mat4f;
-import pe.util.math.Vec2f;
-import pe.util.math.Vec3f;
 
 public class RenderingThread implements Runnable {
 
@@ -48,7 +39,7 @@ public class RenderingThread implements Runnable {
 
 			GUI gui = new GUI();
 			gui.setWindow(window);
-			Divider div1 = new Divider(400, 400, 0, 0, Color.BLUE, Color.ORANGE, 20);
+			Divider div1 = new Divider(400, 400, 0, 0, Color.BLUE, Color.ORANGE);
 			gui.addComponent(div1);
 			
 

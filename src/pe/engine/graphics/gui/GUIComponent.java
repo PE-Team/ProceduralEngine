@@ -1,9 +1,11 @@
 package pe.engine.graphics.gui;
 
+import java.nio.FloatBuffer;
+
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import pe.engine.graphics.objects.Mesh;
-import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
 import pe.engine.shader.main.Shader;
 import pe.engine.shader.main.ShaderProgram;
@@ -11,6 +13,7 @@ import pe.util.color.Color;
 import pe.util.math.Mat3f;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec2f;
+import pe.util.math.Vec4f;
 import pe.util.shapes.Polygon;
 
 public abstract class GUIComponent {
@@ -21,9 +24,9 @@ public abstract class GUIComponent {
 	protected Vec2f center = Vec2f.ZERO;
 	protected float rotation;
 	protected Color backgroundColor = Color.CLEAR;
-	protected int borderRadius = 0;
-	protected int borderWidth = 0;
+	protected Vec4f borderWidth = Vec4f.ZERO;			// {TOP, RIGHT, BOTTOM, LEFT}
 	protected Color borderColor = Color.CLEAR;
+	protected Vec4f borderRadius = Vec4f.ZERO;			// {TOP-LEFT, TOP-RIGHT, BOTTOM-RIGHT, BOTTOM-LEFT}
 	protected String text = "";
 	protected Color textColor = Color.CLEAR;
 	protected Polygon shape = null;
@@ -33,6 +36,31 @@ public abstract class GUIComponent {
 	protected ShaderProgram program;
 
 	protected static ShaderProgram shaderProgram = null;
+	
+	protected void initMeshProperties()	{
+		Vec2f v0Border = Vec2f.ZERO;
+		Vec2f v1Border = new Vec2f(1, 0);
+		Vec2f v2Border = Vec2f.ZERO;
+		Vec2f v3Border = new Vec2f(0, 1);
+		
+		FloatBuffer borderVectors = BufferUtils.createFloatBuffer(8); // dim * # of vectors = 2 * 4
+		v0Border.putInBuffer(borderVectors);
+		v1Border.putInBuffer(borderVectors);
+		v2Border.putInBuffer(borderVectors);
+		v3Border.putInBuffer(borderVectors);
+		borderVectors.flip();
+		mesh.addShaderAttrib(2, borderVectors);
+		
+		FloatBuffer isTopBool = BufferUtils.createFloatBuffer(4);
+		isTopBool.put(1.0f);
+		isTopBool.put(0.0f);
+		isTopBool.put(0.0f);
+		isTopBool.put(0.0f);
+		isTopBool.flip();
+		mesh.addShaderAttrib(1, isTopBool);
+
+		mesh.setWireframe(false);
+	}
 
 	protected void initShaderProgram() {
 		if (shaderProgram != null)
@@ -61,6 +89,7 @@ public abstract class GUIComponent {
 		
 		program.setAttribIndex(0, "position");
 		program.setAttribIndex(1, "borderVec");
+		program.setAttribIndex(2, "isTopValue");
 
 		program.compile();
 		program.compileStatus();
@@ -108,7 +137,8 @@ public abstract class GUIComponent {
 
 	public void render() {
 		shaderProgram.use();
-		float ratio = 1400f / 800f;
+		float ratio = gui.getWindow().getWidth() * 1f / gui.getWindow().getHeight();
+		float pixWidth = 2f/gui.getWindow().getWidth();
 		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
 		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotation).translate(center.mul(-1)).translate(position);
 		Mat4f projection = gui.getWindow().getOrthoProjection();
@@ -116,10 +146,11 @@ public abstract class GUIComponent {
 		shaderProgram.setUniformMat3f("transformation", transformation);
 		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformFloat("screenRatio", ratio);
+		shaderProgram.setUniformFloat("pixWidth", pixWidth);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
-		shaderProgram.setUniformInt("borderRadius", borderRadius);
-		shaderProgram.setUniformInt("borderWidth", borderWidth);
+		shaderProgram.setUniformVec4f("borderWidth", borderWidth);
 		shaderProgram.setUniformColor("borderColor", borderColor);
+		shaderProgram.setUniformVec4f("borderRadius", borderRadius);
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

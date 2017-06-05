@@ -6,14 +6,12 @@ import java.nio.IntBuffer;
 import org.lwjgl.system.MemoryStack;
 
 import pe.engine.main.PE;
-import pe.util.Util;
 import pe.util.math.Vec2f;
-import pe.util.math.Vec3f;
 
 public class StaticMesh2D extends Mesh {
 
 	public StaticMesh2D(Vec2f[] vertices, int[] indices) {
-		super(PE.STATIC_MESH_2D, indices.length, vertices.length);
+		super(PE.STATIC_MESH_2D, indices.length, vertices.length, 2);
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
 			vao.use();
@@ -24,7 +22,7 @@ public class StaticMesh2D extends Mesh {
 			}
 			vertecesBuffer.flip();
 
-			vao.addVBO(2, vertecesBuffer);
+			this.meshDataLocation = vao.addVBO(2, vertecesBuffer);
 
 			IntBuffer indecesBuffer = stack.mallocInt(indices.length);
 			indecesBuffer.put(indices);
