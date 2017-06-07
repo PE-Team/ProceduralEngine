@@ -34,7 +34,7 @@ vec4 borderRadiusCalc(vec3 borderR, vec2 pos){
 		float x = borderR.x + pos.x - borderWidthMod.x;
 		float y = borderR.x - pos.y;
 		float r = sqrt(x*x + y*y);
-		result.x = min(r + borderWidthMod.x, result.x);
+		result.x = max(r - borderR.x + borderWidthMod.x, result.x);
 		result.z = min(x / r, result.z);
 		result.w = min(y / r, result.w);
 	}
@@ -54,7 +54,7 @@ vec4 borderRadiusCalc(vec3 borderR, vec2 pos){
 		float x = borderR.z - pos.x;
 		float y = borderR.z + pos.y - borderWidthMod.y;
 		float r = sqrt(x*x + y*y);
-		result.y = min(r + borderWidthMod.y, result.y);
+		result.y = max(r - borderR.z + borderWidthMod.y, result.y);
 		result.z = min(x / r, result.z);
 		result.w = min(y / r, result.w);
 	}
@@ -72,19 +72,28 @@ vec2 draw(vec2 mask){
 		varBorder.x = borderValue.x;
 		varBorder.y = borderValue.y;
 		
-		float leftRadius = 0.0;//mix(borderW.x, borderW.w, borderValue.z);
-		float topRadius = 0.0;//mix(borderW.w, borderW.x, borderValue.w);
+		float halfWidth = borderWidthMod.x / 2;
+		float halfHeight = borderWidthMod.y / 2;
 		
-		float rightRadius = 0.0;//mix(borderW.x, borderW.y, borderValue.w);
-		float bottomRadius = 0.0;//mix(borderW.y, borderW.z, borderValue.w);
+		if(varBorder.x < halfWidth && varBorder.y < halfHeight){
+			
+			if(borderValue.z < 1.0){
+				float radius = mix(borderW.x, borderW.w, borderValue.z);
+				borderW.x = radius;
+				borderW.w = radius;
+			}
+			float left = smoothstep(borderW.w - width, borderW.w + width, varBorder.x);
+			float right = smoothstep(borderW.x - width, borderW.x + width, varBorder.y);
+			mask.x = min(left, right);
+		}else if(varBorder.x < halfWidth && varBorder.y >= halfHeight){
+
+			float left = smoothstep(borderW.y - width, borderW.y + width, borderWidthMod.y - varBorder.y);
+			float right = smoothstep(borderW.w - width, borderW.w + width, varBorder.x);
+			mask.x = min(left, right);
+		}else if(varBorder.x >= halfWidth && varBorder.y < halfHeight){
+			mask.x = 0.7;
+		}
 		
-		float ailizedLeft = smoothstep(leftRadius - width, leftRadius + width, varBorder.x);
-		float ailizedTop = smoothstep(topRadius - width, topRadius + width, varBorder.y);
-		
-		float ailizedRight = smoothstep(rightRadius - width, rightRadius + width, borderWidthMod.x - varBorder.x);
-		float ailizedBottom = smoothstep(bottomRadius - width, bottomRadius + width, borderWidthMod.y - varBorder.y);
-		
-		mask.x = min(min(min(ailizedLeft, ailizedTop), ailizedRight), ailizedBottom);
 	}else{
 		vec4 borderValue = borderRadiusCalc(borderRadius.yzw, varBorder);
 		varBorder.x = borderValue.x;
@@ -105,11 +114,9 @@ vec2 draw(vec2 mask){
 		mask.x = min(min(min(ailizedLeft, ailizedTop), ailizedRight), ailizedBottom);
 	}
 	
-	if(varBorder.x < 0.0 || varBorder.y < 0.0){
+	if(varBorder.x < 0.0 || varBorder.y < 0.0 || varBorder.x > borderWidthMod.x || varBorder.y > borderWidthMod.y){
 		mask.y = 0.0;
 	}
-	
-	mask.x = varBorder.y;
 
 	return mask;
 }
