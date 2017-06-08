@@ -25,6 +25,12 @@ float height(float r, float d){
 	return sqrt(r*r - d*d);
 }
 
+float ellipseRadius(float width, float height, float theta){
+	float sin = sin(theta);
+	float cos = cos(theta);
+	return (width*height)/sqrt(width*width*sin*sin + height*height*cos*cos);
+}
+
 vec4 borderRadiusCalc(vec3 borderR, vec2 pos){
 	borderR *= 2*pixWidth;
 	

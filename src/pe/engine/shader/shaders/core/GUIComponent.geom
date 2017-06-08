@@ -28,10 +28,7 @@ void main() {
 	vec4 vertex1 = gl_in[1].gl_Position;
 	vec4 vertex2 = gl_in[2].gl_Position;
 	
-	float isTopValue = 0.0;
-	if(gs_in[0].isTop > 0.5f){
-		isTopValue = 1.0;
-	}
+	float isTopValue = gs_in[0].isTop;
 	
 	vec2 borderWMod = vec2(0.0, 0.0);
 	float dist = 0.0;
