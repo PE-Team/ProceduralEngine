@@ -80,7 +80,7 @@ public abstract class GUIComponent {
 		program.setDefaultFragOutValue("color", 0);
 		
 		program.setAttribIndex(0, "position");
-		program.setAttribIndex(1, "borderVec");
+		program.setAttribIndex(1, "texCoord");
 
 		program.compile();
 		program.compileStatus();

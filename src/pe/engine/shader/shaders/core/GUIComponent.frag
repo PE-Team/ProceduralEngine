@@ -1,7 +1,7 @@
 #version 330 core
 #extension GL_OES_standard_derivatives : enable
 
-in vec2 border;
+in vec2 texCoord;
 
 flat in vec2 borderWidthMod;
 
@@ -21,34 +21,34 @@ float ellipseRadius(float width, float height, float theta){
 	return (width*height)/sqrt(width*width*sin*sin + height*height*cos*cos);
 }
 
-float ailizeBorder(float borderW, float dimension, float ailizedWidth, float borderPart){
-	float min = (borderW - ailizedWidth) / dimension;
-	float max = (borderW + ailizedWidth) / dimension;
-	return smoothstep(min, max, borderPart);
-}
-
 float ailizeBorderRadius(float borderR, float ailizedWidth, vec2 border){
-	float x = border.x * width - borderR;
-	float y = border.y * height - borderR;
+	float x = borderR - border.x;
+	float y = borderR - border.y;
 	float r = sqrt(x*x + y*y);
-	float margin = 0.02;
-	return smoothstep(0, margin, r);
+	float radius = 1 - smoothstep(borderR - ailizedWidth, borderR + ailizedWidth, r);
+	vec2 side = step(borderR, border);
+	return max(max(side.x, side.y), radius);
 }
 
 vec2 draw(vec2 mask){
 	float aWidth = 1.5;
-	vec2 varBorder = border;
+	vec2 border = (vec2(1.0) - texCoord);
+	border.x *= width;
+	border.y *= height;
 	
-	float top = ailizeBorder(borderWidth.x, height, aWidth, 1.0 - varBorder.y);
-	float right = ailizeBorder(borderWidth.y, width, aWidth, varBorder.x);
-	float bottom = ailizeBorder(borderWidth.z, height, aWidth, varBorder.y);
-	float left = ailizeBorder(borderWidth.w, width, aWidth, 1.0 - varBorder.x);
+	float top = smoothstep(borderWidth.x - aWidth, borderWidth.x + aWidth, border.y);
+	float right = smoothstep(borderWidth.y - aWidth, borderWidth.y + aWidth, width - border.x);
+	float bottom = smoothstep(borderWidth.z - aWidth, borderWidth.z + aWidth, height - border.y);
+	float left = smoothstep(borderWidth.w - aWidth, borderWidth.w + aWidth, border.x);
 	
 	mask.x = min(min(min(top, right), bottom), left);
 	
-	float topLeft = ailizeBorderRadius(borderRadius.x, aWidth, vec2(1.0) - varBorder);
+	float topLeft = ailizeBorderRadius(borderRadius.x, aWidth, border);
+	float topRight = ailizeBorderRadius(borderRadius.y, aWidth, vec2(width - border.x, border.y));
+	float bottomRight = ailizeBorderRadius(borderRadius.z, aWidth, vec2(width - border.x, height - border.y));
+	float bottomLeft = ailizeBorderRadius(borderRadius.w, aWidth, vec2(border.x, height - border.y));
 	
-	mask.y = topLeft;
+	mask.y = min(min(min(topLeft, topRight), bottomRight), bottomLeft);;
 
 	return mask;
 }

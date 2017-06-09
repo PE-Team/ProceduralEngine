@@ -1,10 +1,10 @@
 #version 330 core
 
 layout (location = 0) in vec2 position;
-layout (location = 1) in vec2 borderVec;
+layout (location = 1) in vec2 texCoord;
 
 out VS_OUT {
-	vec2 border;
+	vec2 texCoord;
 } vs_out;
 
 uniform mat3 transformation;
@@ -17,5 +17,5 @@ vec4 finalVertex(vec2 vec){
 void main() {
 	gl_Position = finalVertex(position);
 	
-	vs_out.border = borderVec;
+	vs_out.texCoord = texCoord;
 }

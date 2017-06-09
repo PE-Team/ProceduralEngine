@@ -4,10 +4,10 @@ layout (triangles) in;
 layout (triangle_strip, max_vertices = 3) out;
 
 in VS_OUT {
-	vec2 border;
+	vec2 texCoord;
 } gs_in[];
 
-out vec2 border;
+out vec2 texCoord;
 
 flat out vec2 borderWidthMod;
 
@@ -30,20 +30,20 @@ void main() {
 	float dist = 0.0;
 	
 	dist = distToLine(vertex0, vertex1, vertex2);
-	border = gs_in[0].border;
-	borderWMod += border;
+	texCoord = gs_in[0].texCoord;
+	borderWMod += texCoord;
 	gl_Position = vertex0;
 	EmitVertex();
 	
 	dist = distToLine(vertex1, vertex0, vertex2);
-	border = gs_in[1].border;
-	borderWMod += border;
+	texCoord = gs_in[1].texCoord;
+	borderWMod += texCoord;
 	gl_Position = vertex1;
 	EmitVertex();
 	
 	dist = distToLine(vertex2, vertex1, vertex0);
-	border = gs_in[2].border;
-	borderWMod += border;
+	texCoord = gs_in[2].texCoord;
+	borderWMod += texCoord;
 	borderWidthMod = borderWMod;
 	gl_Position = vertex2;
 	EmitVertex();
