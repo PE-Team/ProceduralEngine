@@ -38,10 +38,10 @@ public abstract class GUIComponent {
 	protected static ShaderProgram shaderProgram = null;
 	
 	protected void initMeshProperties()	{
-		Vec2f v0Border = Vec2f.ZERO;
-		Vec2f v1Border = new Vec2f(1, 0);
-		Vec2f v2Border = Vec2f.ZERO;
-		Vec2f v3Border = new Vec2f(0, 1);
+		Vec2f v0Border = new Vec2f(1, 1);
+		Vec2f v1Border = new Vec2f(0, 1);
+		Vec2f v2Border = new Vec2f(0, 0);
+		Vec2f v3Border = new Vec2f(1, 0);
 		
 		FloatBuffer borderVectors = BufferUtils.createFloatBuffer(8); // dim * # of vectors = 2 * 4
 		v0Border.putInBuffer(borderVectors);
@@ -50,14 +50,6 @@ public abstract class GUIComponent {
 		v3Border.putInBuffer(borderVectors);
 		borderVectors.flip();
 		mesh.addShaderAttrib(2, borderVectors);
-		
-		FloatBuffer isTopBool = BufferUtils.createFloatBuffer(4);
-		isTopBool.put(1.0f);
-		isTopBool.put(0.0f);
-		isTopBool.put(0.0f);
-		isTopBool.put(0.0f);
-		isTopBool.flip();
-		mesh.addShaderAttrib(1, isTopBool);
 
 		mesh.setWireframe(false);
 	}
@@ -89,7 +81,6 @@ public abstract class GUIComponent {
 		
 		program.setAttribIndex(0, "position");
 		program.setAttribIndex(1, "borderVec");
-		program.setAttribIndex(2, "isTopValue");
 
 		program.compile();
 		program.compileStatus();
@@ -147,6 +138,8 @@ public abstract class GUIComponent {
 		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformFloat("screenRatio", ratio);
 		shaderProgram.setUniformFloat("pixWidth", pixWidth);
+		shaderProgram.setUniformInt("width", width);
+		shaderProgram.setUniformInt("height", height);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
 		shaderProgram.setUniformVec4f("borderWidth", borderWidth);
 		shaderProgram.setUniformColor("borderColor", borderColor);
