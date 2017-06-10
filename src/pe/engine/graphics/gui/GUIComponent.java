@@ -18,8 +18,8 @@ import pe.util.shapes.Polygon;
 
 public abstract class GUIComponent {
 
-	protected int width = 0;
-	protected int height = 0;
+	protected float width = 0;
+	protected float height = 0;
 	protected Vec2f position = Vec2f.ZERO;
 	protected Vec2f center = Vec2f.ZERO;
 	protected float rotation;
@@ -32,6 +32,14 @@ public abstract class GUIComponent {
 	protected Polygon shape = null;
 	protected Mesh mesh = null;
 	protected GUI gui = null;
+	
+	protected int widthUnit = PE.GUI_UNIT_RPIXELS;
+	protected int heightUnit = PE.GUI_UNIT_RPIXELS;
+	protected int[] positionUnit = {PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS};
+	protected int[] centerUnit = {PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS};
+	protected int rotationUnit = PE.ANGLE_UNIT_DEGREES;
+	protected int[] borderWidthUnit = {PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS};
+	protected int[] borderRadiusUnit = {PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS};
 
 	protected ShaderProgram program;
 
@@ -138,8 +146,8 @@ public abstract class GUIComponent {
 		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformFloat("screenRatio", ratio);
 		shaderProgram.setUniformFloat("pixWidth", pixWidth);
-		shaderProgram.setUniformInt("width", width);
-		shaderProgram.setUniformInt("height", height);
+		shaderProgram.setUniformFloat("width", width);
+		shaderProgram.setUniformFloat("height", height);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
 		shaderProgram.setUniformVec4f("borderWidth", borderWidth);
 		shaderProgram.setUniformColor("borderColor", borderColor);

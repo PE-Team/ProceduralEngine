@@ -8,8 +8,8 @@ flat in vec2 borderWidthMod;
 out vec4 color;
 
 uniform float pixWidth;
-uniform int width;
-uniform int height;
+uniform float width;
+uniform float height;
 uniform vec4 backgroundColor;
 uniform vec4 borderColor;
 uniform vec4 borderWidth;
@@ -35,7 +35,7 @@ float ailizeElliseRadius(float width, float height, float borderR, float ailized
 }
 
 vec2 draw(vec2 mask){
-	float aWidth = 1.5;
+	float aWidth = 1.0;
 	vec2 border = (vec2(1.0) - texCoord);
 	border.x *= width;
 	border.y *= height;
