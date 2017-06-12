@@ -2,6 +2,8 @@ package pe.engine.graphics.main;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 
+import pe.engine.main.PE;
+
 public class WindowSizeChangeHandler implements GLFWFramebufferSizeCallbackI{
 	
 	private Window window;
@@ -15,8 +17,8 @@ public class WindowSizeChangeHandler implements GLFWFramebufferSizeCallbackI{
 		if (window.getID() != windowID)
 			return;
 
-		window.setWidth(width);
-		window.setHeight(height);
+		window.setWidth(width, PE.GUI_UNIT_PIXELS);
+		window.setHeight(height, PE.GUI_UNIT_PIXELS);
 		window.generateOrthoProjection();
 	}
 }

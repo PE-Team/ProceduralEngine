@@ -14,6 +14,7 @@ public class PE {
 	 * CHARSET_LETTERS charset
 	 */
 
+	// @formatter:off
 																// ID: NULL = 18337
 	public static final int NULL = 183370; 						//  Version = 0
 
@@ -60,6 +61,8 @@ public class PE {
 																// ID: ANGUN = 6771857
 	public static final int ANGLE_UNIT_DEGREES = 67718570; 		//   Version = 0
 	public static final int ANGLE_UNIT_RADIANS = 67718571;		//   Version = 1
+	
+	// @formatter:on
 
 	/**
 	 * Converts the given rotation to degress based on the units of the given
@@ -96,13 +99,13 @@ public class PE {
 	 *            The value to convert to pixels.
 	 * @param valueUnit
 	 *            The units the given value is in.
-	 * @param percentMax
+	 * @param maxWidth
 	 *            The value returned with given value is in percent and at 100%.
 	 *            Other values scale linearly to this.
 	 * @param rpixRatio
 	 *            The ratio to multiply the given value by to convert from rpx
 	 *            to px.
-	 *            
+	 * 
 	 * @return The amount of pixels represented by value.
 	 * 
 	 * @since 1.0
@@ -119,101 +122,134 @@ public class PE {
 		throw new IllegalArgumentException(
 				"An invalid unit was given.\nMake sure the units is either in pixels (px), percent (%), or relative pixels (rpx)");
 	}
-	
 
 	/**
-	 * Converts the given vector of values to pixels based on its units and the values of
-	 * <code>maxWidth</code> and <code>rpixRatio</code>. <code>maxWidth</code>
-	 * corresponds the the value returned when <code>value</code> = 100%.
-	 * <code>rpixRatio</code> is multiplied by the given value when the value is
-	 * in <code>rpx</code>.
+	 * Converts the given vector of values to pixels based on its units and the
+	 * values of <code>maxWidth</code> and <code>rpixRatio</code>.
+	 * <code>maxWidth</code> corresponds the the value returned when
+	 * <code>value</code> = 100%. <code>rpixRatio</code> is multiplied by the
+	 * given value when the value is in <code>rpx</code>.
 	 * 
 	 * @param values
 	 *            The values to convert to pixels.
 	 * @param valueUnits
 	 *            The units the given value is in.
-	 * @param percentMax
+	 * @param maxWidth
 	 *            The value returned with given value is in percent and at 100%.
 	 *            Other values scale linearly to this.
 	 * @param rpixRatio
 	 *            The ratio to multiply the given value by to convert from rpx
 	 *            to px.
-	 *            
+	 * 
 	 * @return The amount of pixels represented by the values.
 	 * 
 	 * @since 1.0
 	 */
 	public static Vec2f toPixels(Vec2f values, int[] valueUnits, float maxWidth, float rpixRatio) {
-		if(valueUnits.length != 2)
+		if (valueUnits.length != 2)
 			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
+
 		float x = toPixels(values.x, valueUnits[0], maxWidth, rpixRatio);
 		float y = toPixels(values.y, valueUnits[1], maxWidth, rpixRatio);
 		return new Vec2f(x, y);
 	}
-	
+
 	/**
-	 * Converts the given vector of values to pixels based on its units and the values of
-	 * <code>maxWidth</code> and <code>rpixRatio</code>. <code>maxWidth</code>
-	 * corresponds the the value returned when <code>value</code> = 100%.
-	 * <code>rpixRatio</code> is multiplied by the given value when the value is
-	 * in <code>rpx</code>.
+	 * Converts the given vector of values to pixels based on its units and the
+	 * values of <code>maxWidth</code> and <code>rpixRatio</code>.
+	 * <code>maxWidth</code> corresponds the the value returned when
+	 * <code>value</code> = 100%. <code>rpixRatio</code> is multiplied by the
+	 * given value when the value is in <code>rpx</code>.
 	 * 
 	 * @param values
 	 *            The values to convert to pixels.
 	 * @param valueUnits
 	 *            The units the given value is in.
-	 * @param percentMax
+	 * @param maxWidth
 	 *            The value returned with given value is in percent and at 100%.
 	 *            Other values scale linearly to this.
 	 * @param rpixRatio
 	 *            The ratio to multiply the given value by to convert from rpx
 	 *            to px.
-	 *            
+	 * 
 	 * @return The amount of pixels represented by the values.
 	 * 
 	 * @since 1.0
 	 */
 	public static Vec3f toPixels(Vec3f values, int[] valueUnits, float maxWidth, float rpixRatio) {
-		if(valueUnits.length != 3)
+		if (valueUnits.length != 3)
 			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
+
 		float x = toPixels(values.x, valueUnits[0], maxWidth, rpixRatio);
 		float y = toPixels(values.y, valueUnits[1], maxWidth, rpixRatio);
 		float z = toPixels(values.z, valueUnits[2], maxWidth, rpixRatio);
 		return new Vec3f(x, y, z);
 	}
-	
+
 	/**
-	 * Converts the given vector of values to pixels based on its units and the values of
-	 * <code>maxWidth</code> and <code>rpixRatio</code>. <code>maxWidth</code>
-	 * corresponds the the value returned when <code>value</code> = 100%.
-	 * <code>rpixRatio</code> is multiplied by the given value when the value is
-	 * in <code>rpx</code>.
+	 * Converts the given vector of values to pixels based on its units and the
+	 * values of <code>maxWidth</code> and <code>rpixRatio</code>.
+	 * <code>maxWidth</code> corresponds the the value returned when
+	 * <code>value</code> = 100%. <code>rpixRatio</code> is multiplied by the
+	 * given value when the value is in <code>rpx</code>.
 	 * 
 	 * @param values
 	 *            The values to convert to pixels.
 	 * @param valueUnits
 	 *            The units the given value is in.
-	 * @param percentMax
+	 * @param maxWidth
 	 *            The value returned with given value is in percent and at 100%.
 	 *            Other values scale linearly to this.
 	 * @param rpixRatio
 	 *            The ratio to multiply the given value by to convert from rpx
 	 *            to px.
-	 *            
+	 * 
 	 * @return The amount of pixels represented by the values.
 	 * 
 	 * @since 1.0
 	 */
 	public static Vec4f toPixels(Vec4f values, int[] valueUnits, float maxWidth, float rpixRatio) {
-		if(valueUnits.length != 4)
+		if (valueUnits.length != 4)
 			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
+
 		float x = toPixels(values.x, valueUnits[0], maxWidth, rpixRatio);
 		float y = toPixels(values.y, valueUnits[1], maxWidth, rpixRatio);
 		float z = toPixels(values.y, valueUnits[2], maxWidth, rpixRatio);
 		float w = toPixels(values.y, valueUnits[3], maxWidth, rpixRatio);
+		return new Vec4f(x, y, z, w);
+	}
+
+	/**
+	 * Converts the given vector of values to pixels based on its units and the
+	 * values of <code>maxWidth</code> and <code>rpixRatio</code>.
+	 * <code>maxWidth</code> corresponds the the value returned when
+	 * <code>value</code> = 100%. <code>rpixRatio</code> is multiplied by the
+	 * given value when the value is in <code>rpx</code>.
+	 * 
+	 * @param values
+	 *            The values to convert to pixels.
+	 * @param valueUnits
+	 *            The units the given value is in.
+	 * @param maxWidth
+	 *            The values returned with given value is in percent and at
+	 *            100%. Other values scale linearly to this. Each value
+	 *            corresponds to its element in <code>values</code>.
+	 * @param rpixRatio
+	 *            The ratio to multiply the given value by to convert from rpx
+	 *            to px.
+	 * 
+	 * @return The amount of pixels represented by the values.
+	 * 
+	 * @since 1.0
+	 */
+	public static Vec4f toPixels(Vec4f values, int[] valueUnits, Vec4f maxWidth, float rpixRatio) {
+		if (valueUnits.length != 4)
+			throw new IllegalArgumentException("There must be the same number of units as values.");
+
+		float x = toPixels(values.x, valueUnits[0], maxWidth.x, rpixRatio);
+		float y = toPixels(values.y, valueUnits[1], maxWidth.y, rpixRatio);
+		float z = toPixels(values.y, valueUnits[2], maxWidth.z, rpixRatio);
+		float w = toPixels(values.y, valueUnits[3], maxWidth.w, rpixRatio);
 		return new Vec4f(x, y, z, w);
 	}
 }

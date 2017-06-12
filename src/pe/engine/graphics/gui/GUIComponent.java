@@ -136,27 +136,39 @@ public abstract class GUIComponent {
 
 	public void render() {
 		shaderProgram.use();
-		float rot = PE.toDegrees(rotation, rotationUnit);
-		float ratio = gui.getWindow().getWidth() * 1f / gui.getWindow().getHeight();
-		float pixWidth = 2f/gui.getWindow().getWidth();
-		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
-		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rot).translate(center.mul(-1)).translate(position);
+		float rpixRatio = gui.getWindow().getRPixRatio();
+		float windowWidth = gui.getWindow().getWidth();
+		float windowHeight = gui.getWindow().getHeight();
+		float ratio = windowWidth / windowHeight;
+		float pixWidth = 2f/windowWidth;
+		
+		float rotationDeg = PE.toDegrees(rotation, rotationUnit);
+		float widthPix = PE.toPixels(width, widthUnit, windowWidth, rpixRatio);
+		float heightPix = PE.toPixels(height, heightUnit, windowHeight, rpixRatio);
+		Vec4f borderWidthMax = new Vec4f(heightPix, widthPix, heightPix, widthPix);
+		Vec4f borderWidthPix = PE.toPixels(borderWidth, borderWidthUnit, borderWidthMax, rpixRatio);
+		float borderRadiusMax = heightPix > widthPix ? widthPix : heightPix;
+		Vec4f borderRadiusPix = PE.toPixels(borderRadius, borderRadiusUnit, borderRadiusMax, rpixRatio);
+		
+		Vec2f scale = new Vec2f(widthPix/shape.getWidth(), heightPix/shape.getHeight());
+		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotationDeg).translate(center.mul(-1)).translate(position);
 		Mat4f projection = gui.getWindow().getOrthoProjection();
 		
 		shaderProgram.setUniformMat3f("transformation", transformation);
 		shaderProgram.setUniformMat4f("projection", projection);
 		shaderProgram.setUniformFloat("screenRatio", ratio);
 		shaderProgram.setUniformFloat("pixWidth", pixWidth);
-		shaderProgram.setUniformFloat("width", width);
-		shaderProgram.setUniformFloat("height", height);
+		shaderProgram.setUniformFloat("width", widthPix);
+		shaderProgram.setUniformFloat("height", heightPix);
 		shaderProgram.setUniformColor("backgroundColor", backgroundColor);
-		shaderProgram.setUniformVec4f("borderWidth", borderWidth);
+		shaderProgram.setUniformVec4f("borderWidth", borderWidthPix);
 		shaderProgram.setUniformColor("borderColor", borderColor);
-		shaderProgram.setUniformVec4f("borderRadius", borderRadius);
+		shaderProgram.setUniformVec4f("borderRadius", borderRadiusPix);
 		
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		mesh.render();
+		GL11.glDisable(GL11.GL_BLEND);
 
 		shaderProgram.stop();
 	}
