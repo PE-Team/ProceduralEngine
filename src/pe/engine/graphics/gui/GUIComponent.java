@@ -136,10 +136,11 @@ public abstract class GUIComponent {
 
 	public void render() {
 		shaderProgram.use();
+		float rot = PE.toDegrees(rotation, rotationUnit);
 		float ratio = gui.getWindow().getWidth() * 1f / gui.getWindow().getHeight();
 		float pixWidth = 2f/gui.getWindow().getWidth();
 		Vec2f scale = new Vec2f(width/shape.getWidth(), height/shape.getHeight());
-		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rotation).translate(center.mul(-1)).translate(position);
+		Mat3f transformation = new Mat3f().scale(scale).translate(center.mul(-1)).rotate(rot).translate(center.mul(-1)).translate(position);
 		Mat4f projection = gui.getWindow().getOrthoProjection();
 		
 		shaderProgram.setUniformMat3f("transformation", transformation);

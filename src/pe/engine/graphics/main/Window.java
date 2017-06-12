@@ -2,8 +2,8 @@ package pe.engine.graphics.main;
 
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.glfw.GLFW;
-import org.lwjgl.glfw.GLFWFramebufferSizeCallbackI;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWVidMode;
 import org.lwjgl.opengl.GL;
@@ -17,10 +17,17 @@ import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 import pe.util.math.Mat4f;
 
-public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI {
+public class Window implements DisposableResource{
 
-	private int width;
-	private int height;
+	private int monitorWidth;
+	private int monitorHeight;
+	private float rpixScale;
+	private float width;
+	private float height;
+	private int positionX;
+	private int positionY;
+	private WindowSizeChangeHandler sizeChangeHandler;
+	private WindowPositionChangeHandler posChangeHandler;
 	private String title;
 	private long id;
 	private boolean vsync;
@@ -30,6 +37,10 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 	public Window(int width, int height, String title, boolean vsync, boolean resizeable, boolean border) {
 		this.width = width;
 		this.height = height;
+		this.positionX = 200;
+		this.positionY = 200;
+		this.sizeChangeHandler = new WindowSizeChangeHandler(this);
+		this.posChangeHandler = new WindowPositionChangeHandler(this);
 		this.orthoProjection = Mat4f.getOrthographicMatrix(0, width, height, 0, -1, 1);
 		this.title = title;
 		this.vsync = vsync;
@@ -69,15 +80,15 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 		}
 
 		// Center the window
-		GLFWVidMode vidMode = GLFW.glfwGetVideoMode(GLFW.glfwGetPrimaryMonitor());
-		GLFW.glfwSetWindowPos(id, (vidMode.width() - 640) / 2, (vidMode.height() - 480) / 2);
+		GLFW.glfwSetWindowPos(id, positionX, positionY);
 
 		show();
 		GL.createCapabilities();
 
 		setVSync(vsync);
 
-		GLFW.glfwSetFramebufferSizeCallback(id, this);
+		GLFW.glfwSetFramebufferSizeCallback(id, sizeChangeHandler);
+		GLFW.glfwSetWindowPosCallback(id, posChangeHandler);
 
 		Resources.add(this);
 	}
@@ -156,7 +167,7 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 	 * 
 	 * @since 1.0
 	 */
-	public int getWidth() {
+	public float getWidth() {
 		return width;
 	}
 
@@ -170,7 +181,7 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 	 * 
 	 * @since 1.0
 	 */
-	public int getHeight() {
+	public float getHeight() {
 		return height;
 	}
 
@@ -188,14 +199,40 @@ public class Window implements DisposableResource, GLFWFramebufferSizeCallbackI 
 	public Mat4f getOrthoProjection() {
 		return orthoProjection;
 	}
-
-	@Override
-	public void invoke(long window, int newWidth, int newHeight) {
-		if (window != id)
-			return;
-
-		this.width = newWidth;
-		this.height = newHeight;
-		this.orthoProjection = Mat4f.getOrthographicMatrix(0, width, height, 0, -1, 1);
+	
+	/**
+	 * Sets the position of the window.
+	 * 
+	 * @param posX	The x pixel position of the window.
+	 * @param posY	The y pixel position of the window.
+	 * 
+	 * @since 1.0
+	 */
+	public void setPosition(int posX, int posY){
+		this.positionX = posX;
+		this.positionY = posY;
+	}
+	
+	public void generateOrthoProjection(){
+		//Mat4f.getOrthographicMatrix(0, width, height, 0, -1, 1);
+	}
+	
+	public void setWidth(float width){
+		this.width = width;
+	}
+	
+	public void setHeight(float height){
+		this.height = height;
+	}
+	
+	public void generateMonitorStats(){
+		IntBuffer pysicalSize = BufferUtils.createIntBuffer(2);
+		
+		long monitor = GLFW.glfwGetWindowMonitor(id);
+		GLFW.glfwGetMonitorPhysicalSize(monitor, pysicalSize, pysicalSize);
+		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
+		this.monitorWidth = videoMode.width();
+		this.monitorHeight = videoMode.height();
+		this.rpixScale = monitorWidth * 1f/pysicalSize.get(0);
 	}
 }
