@@ -7,6 +7,8 @@ import pe.engine.data.VertexArrayObject;
 import pe.engine.graphics.gui.Divider;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.main.Window;
+import pe.engine.graphics.main.WindowPositionHandler;
+import pe.engine.graphics.main.WindowFrameSizeHandler;
 import pe.engine.input.KeyHandler;
 import pe.engine.main.InitializationProcesses;
 import pe.engine.main.PE;
@@ -24,21 +26,29 @@ public class RenderingThread implements Runnable {
 
 			InitializationProcesses.glInit("Rendering Thread");
 
-			timer = new Timer(0.5f);
+			timer = new Timer(0.016f);
 			timer.start();
 
 			KeyHandler keyHandler = new KeyHandler();
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_ESCAPE);
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_F4);
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_F4);
+			
+			WindowFrameSizeHandler sizeHandler = new WindowFrameSizeHandler();
+			
+			WindowPositionHandler posHandler = new WindowPositionHandler();
 
 			Vec2f windowSize = new Vec2f(1400f, 800f);
 			int[] sizeUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
-			Vec2f windowPosition = new Vec2f(0f, 0f);
-			int[] positionUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
+			Vec2f windowPosition = new Vec2f(0.5f, 0.5f);
+			int[] positionUnits = {PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT};
+			Vec2f windowCenter = new Vec2f(0.5f, 0.5f);
+			int[] centerUnits = {PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT};
 			
-			Window window = new Window(windowSize, sizeUnits, windowPosition, positionUnits, "Test", true, true, true);
+			Window window = new Window(windowSize, sizeUnits, windowPosition, positionUnits, windowCenter, centerUnits, "Test", true, true, true);
 			window.setKeyHandler(keyHandler);
+			window.setFrameSizeHandler(sizeHandler);
+			window.setPositionHandler(posHandler);
 			window.show();
 			
 			VertexArrayObject vertexArrayObject = new VertexArrayObject();
@@ -51,11 +61,10 @@ public class RenderingThread implements Runnable {
 			gui.addComponent(div1);
 			//gui.addComponent(div2);
 			
-
+			GL11.glClearColor(0, 0, 0, 1);
 			while (MasterThread.isRunning()) {
 				if (timer.delayPassed()) {
 					//MasterThread.println("Rendering Thread", "I am Rendering some stuff. Look at me!");
-					GL11.glClearColor(0, 0, 0, 1);
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 					
 					gui.render();

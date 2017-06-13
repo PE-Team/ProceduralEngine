@@ -1,34 +1,28 @@
 package pe.engine.graphics.gui;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
 import pe.engine.graphics.main.Window;
 
 public class GUI {
 
-	private List<GUIComponent> widgets;
 	private Window window = null;
+	private Divider root;
 	
 	public GUI(){
-		widgets = new ArrayList<GUIComponent>();
+		root = new Divider();
+		root.setGUI(this);
 	}
 	
 	public void render(){
-		for(GUIComponent widget:widgets){
-			widget.render();
-		}
+		root.renderChildren();
 	}
 	
 	public void addComponent(GUIComponent component){
-		widgets.add(component);
+		root.addChild(component);
 		component.setGUI(this);
 	}
 	
 	public void removeComponent(GUIComponent component){
-		widgets.remove(component);
+		root.removeChild(component);
 		component.setGUI(null);
 	}
 	

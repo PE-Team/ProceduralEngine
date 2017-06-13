@@ -40,15 +40,15 @@ vec2 draw(vec2 mask){
 	border.x *= width;
 	border.y *= height;
 	
-	vec2 topLeftBorder = border;
-	vec2 topRightBorder = vec2(width - border.x, border.y);
-	vec2 bottomRightBorder = vec2(width - border.x, height - border.y);
-	vec2 bottomLeftBorder = vec2(border.x, height - border.y);
+	vec2 topLeftBorder = vec2(width - border.x, border.y);
+	vec2 topRightBorder = border;
+	vec2 bottomRightBorder = vec2(border.x, height - border.y);
+	vec2 bottomLeftBorder = vec2(width - border.x, height - border.y);
 	
 	float top = smoothstep(borderWidth.x - aWidth, borderWidth.x + aWidth, border.y);
-	float right = smoothstep(borderWidth.y - aWidth, borderWidth.y + aWidth, width - border.x);
+	float right = smoothstep(borderWidth.y - aWidth, borderWidth.y + aWidth, border.x);
 	float bottom = smoothstep(borderWidth.z - aWidth, borderWidth.z + aWidth, height - border.y);
-	float left = smoothstep(borderWidth.w - aWidth, borderWidth.w + aWidth, border.x);
+	float left = smoothstep(borderWidth.w - aWidth, borderWidth.w + aWidth, width - border.x);
 	
 	float topLeftInside = ailizeElliseRadius(borderRadius.x - borderWidth.w, borderRadius.x - borderWidth.x, borderRadius.x, aWidth, topLeftBorder);
 	float topRightInside = ailizeElliseRadius(borderRadius.y - borderWidth.y, borderRadius.y - borderWidth.x, borderRadius.y, aWidth, topRightBorder);
@@ -76,6 +76,4 @@ void main() {
 	
 	color = mix(borderC, fillC, colorMask.x);
 	color.w *= colorMask.y;
-	
-	color = vec4(1.0);
 }
