@@ -76,4 +76,6 @@ void main() {
 	
 	color = mix(borderC, fillC, colorMask.x);
 	color.w *= colorMask.y;
+	
+	color = vec4(1.0);
 }

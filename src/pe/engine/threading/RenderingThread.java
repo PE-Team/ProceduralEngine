@@ -9,8 +9,10 @@ import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.main.Window;
 import pe.engine.input.KeyHandler;
 import pe.engine.main.InitializationProcesses;
+import pe.engine.main.PE;
 import pe.util.Timer;
 import pe.util.color.Color;
+import pe.util.math.Vec2f;
 
 public class RenderingThread implements Runnable {
 
@@ -30,7 +32,12 @@ public class RenderingThread implements Runnable {
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_F4);
 			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_F4);
 
-			Window window = new Window(200, 150, "Test", true, true, true);
+			Vec2f windowSize = new Vec2f(1400f, 800f);
+			int[] sizeUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
+			Vec2f windowPosition = new Vec2f(0f, 0f);
+			int[] positionUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
+			
+			Window window = new Window(windowSize, sizeUnits, windowPosition, positionUnits, "Test", true, true, true);
 			window.setKeyHandler(keyHandler);
 			window.show();
 			
@@ -57,9 +64,9 @@ public class RenderingThread implements Runnable {
 				}
 			}
 		} catch (Exception e) {
-			MasterThread.println("Rendering Thread",
+			MasterThread.errln("Rendering Thread",
 					"An Exception has Occured Which Will Cause the Main Thread to Shutdown");
-			e.printStackTrace(MasterThread.getConsoleStream());
+			e.printStackTrace(MasterThread.getConsoleErrStream());
 			MasterThread.shutdown();
 		}
 	}

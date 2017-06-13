@@ -6,6 +6,8 @@ import pe.engine.main.PE;
 
 public class WindowSizeChangeHandler implements GLFWFramebufferSizeCallbackI{
 	
+	private static final int[] sizeUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
+	
 	private Window window;
 	
 	public WindowSizeChangeHandler(Window window){
@@ -17,8 +19,6 @@ public class WindowSizeChangeHandler implements GLFWFramebufferSizeCallbackI{
 		if (window.getID() != windowID)
 			return;
 
-		window.setWidth(width, PE.GUI_UNIT_PIXELS);
-		window.setHeight(height, PE.GUI_UNIT_PIXELS);
-		window.generateOrthoProjection();
+		window.setSize(width, height, sizeUnits);
 	}
 }

@@ -2,23 +2,15 @@ package pe.engine.threading;
 
 import java.io.PrintStream;
 
-import org.lwjgl.glfw.GLFW;
-
 import pe.engine.error.ErrorHandler;
-import pe.engine.graphics.gui.Divider;
-import pe.engine.graphics.gui.GUI;
-import pe.engine.graphics.main.Window;
-import pe.engine.graphics.objects.StaticMesh2D;
-import pe.engine.input.KeyHandler;
 import pe.engine.main.InitializationProcesses;
 import pe.util.Timer;
 import pe.util.Util;
-import pe.util.color.Color;
-import pe.util.math.Vec2f;
 
 public class MasterThread {
 
-	private static PrintStream console = System.out;
+	private static PrintStream consolePrint = System.out;
+	private static PrintStream consoleErr = System.err;
 
 	/**
 	 * Creates a new object with a Print Stream which errors are printed to.
@@ -65,7 +57,7 @@ public class MasterThread {
 
 		} catch (Exception e) {
 			println("Master Thread", "An Exception has Occured Which Will Cause the Main Thread to Shutdown");
-			e.printStackTrace(console);
+			e.printStackTrace(consolePrint);
 			shutdown();
 		}
 
@@ -206,13 +198,23 @@ public class MasterThread {
 		return errorHandler;
 	}
 	
-	public static PrintStream getConsoleStream(){
-		return console;
+	public static PrintStream getConsolePrintStream(){
+		return consolePrint;
+	}
+	
+	public static PrintStream getConsoleErrStream(){
+		return consoleErr;
 	}
 
 	public static synchronized void println(String source, String msg) {
 		String time = String.format("[%f", managerPrintCycle.getTime());
 		String src = String.format("%s]:", source);
-		console.println(String.format("%s\t%s", Util.alignStrings(time, "", src, 40), msg));
+		consolePrint.println(String.format("%s\t%s", Util.alignStrings(time, "", src, 40), msg));
+	}
+	
+	public static synchronized void errln(String source, String msg) {
+		String time = String.format("[%f", managerPrintCycle.getTime());
+		String src = String.format("%s]:", source);
+		consoleErr.println(String.format("%s\t%s", Util.alignStrings(time, "", src, 40), msg));
 	}
 }

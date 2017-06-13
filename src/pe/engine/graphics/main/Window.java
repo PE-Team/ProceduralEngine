@@ -20,32 +20,19 @@ import pe.util.math.Vec2f;
 
 public class Window implements DisposableResource {
 
-	private int monitorWidth;
-	private int monitorHeight;
+	private Vec2f monitorSize;
 	private float rpixRatio;
-	private float width = 1;
-	private int widthUnit = PE.GUI_UNIT_RPIXELS;
-	private float height = 1;
-	private int heightUnit = PE.GUI_UNIT_RPIXELS;
+	private Vec2f size = new Vec2f(1, 1);
 	private Vec2f position = Vec2f.ZERO;
-	private int[] positionUnits = {PE.GUI_UNIT_RPIXELS, PE.GUI_UNIT_RPIXELS};
 	private WindowSizeChangeHandler sizeChangeHandler;
 	private WindowPositionChangeHandler posChangeHandler;
 	private String title = "NULL";
 	private long id;
 	private boolean vsync = true;
-	private GUI gui;
+	private GUI gui = new GUI();
 	private Mat4f orthoProjection;
 
-	public Window(int width, int height, String title, boolean vsync, boolean resizeable, boolean border) {
-		this.width = width;
-		this.height = height;
-		this.position = new Vec2f(5, 5);
-		this.sizeChangeHandler = new WindowSizeChangeHandler(this);
-		this.posChangeHandler = new WindowPositionChangeHandler(this);
-		this.title = title;
-		this.vsync = vsync;
-		this.gui = new GUI();
+	public Window(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, String title, boolean vsync, boolean resizeable, boolean border) {
 
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
@@ -54,9 +41,6 @@ public class Window implements DisposableResource {
 			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 2);
 			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_PROFILE, GLFW.GLFW_OPENGL_CORE_PROFILE);
 			GLFW.glfwWindowHint(GLFW.GLFW_OPENGL_FORWARD_COMPAT, GLFW.GLFW_TRUE);
-		} else if (GLVersion.isAfter(PE.GL_VERSION_21)) {
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MAJOR, 2);
-			GLFW.glfwWindowHint(GLFW.GLFW_CONTEXT_VERSION_MINOR, 1);
 		} else {
 			throw new RuntimeException("OpenGL Version " + GLVersion.versionName()
 					+ " is not supported.\nPlease change to another version or update your graphics driver.");
@@ -79,36 +63,27 @@ public class Window implements DisposableResource {
 			GLFW.glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-
-		generateMonitorStats();
-		generateOrthoProjection();
-		updatePosition();
-		updateSize();
-
-		show();
+		GLFW.glfwMakeContextCurrent(id);
 		GL.createCapabilities();
-
+		
+		generateMonitorStats();
+		setSize(size, sizeUnits);
+		generateOrthoProjection();
+		setPosition(position, positionUnits);
 		setVSync(vsync);
 
 		GLFW.glfwSetFramebufferSizeCallback(id, sizeChangeHandler);
 		GLFW.glfwSetWindowPosCallback(id, posChangeHandler);
 
 		Resources.add(this);
+		show();
 	}
 
-	public void setKeyHandler(GLFWKeyCallback keyHandler) {
-		GLFW.glfwSetKeyCallback(id, keyHandler);
+	public void addComponent(GUIComponent component) {
+		gui.addComponent(component);
 	}
 
-	public void show() {
-		GLFW.glfwMakeContextCurrent(id);
-	}
-
-	public boolean shouldClose() {
-		return GLFW.glfwWindowShouldClose(id);
-	}
-
-	public void buffersToFrameSize(IntBuffer width, IntBuffer height) {
+	public void putSizeInBuffer(IntBuffer width, IntBuffer height) {
 		GLFW.glfwGetFramebufferSize(id, width, height);
 	}
 
@@ -116,62 +91,19 @@ public class Window implements DisposableResource {
 		GLFW.glfwDestroyWindow(id);
 	}
 
-	public void setTitle(String title) {
-		GLFW.glfwSetWindowTitle(id, title);
-		this.title = title;
+	public void generateMonitorStats() {
+		IntBuffer pysicalSize = BufferUtils.createIntBuffer(2);
+
+		// long monitor = GLFW.glfwGetWindowMonitor(id);
+		long monitor = GLFW.glfwGetPrimaryMonitor();
+		GLFW.glfwGetMonitorPhysicalSize(monitor, pysicalSize, pysicalSize);
+		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
+		this.monitorSize = new Vec2f(videoMode.width(), videoMode.height());
+		this.rpixRatio = monitorSize.x * 1f / pysicalSize.get(0);
 	}
 
-	public String getTitle() {
-		return title;
-	}
-
-	public long getID() {
-		return id;
-	}
-
-	public void update() {
-		GLFW.glfwSwapBuffers(id);
-		GLFW.glfwPollEvents();
-	}
-
-	public void setVSync(boolean vsync) {
-		this.vsync = vsync;
-		if (vsync) {
-			GLFW.glfwSwapInterval(1);
-		} else {
-			GLFW.glfwSwapInterval(0);
-		}
-	}
-
-	public void addComponent(GUIComponent component) {
-		gui.addComponent(component);
-	}
-
-	/**
-	 * Returns the value of <code>vsync</code>. Is true if vsync is enabled and
-	 * false if it is not.
-	 * 
-	 * @return whether VSync is enabled for this window or not
-	 * 
-	 * @see #vsync
-	 * 
-	 * @since 1.0
-	 */
-	public boolean isVSynced() {
-		return vsync;
-	}
-
-	/**
-	 * Returns the width of this <code>Window</code> object in pixels.
-	 * 
-	 * @return The width of this window.
-	 * 
-	 * @see #width
-	 * 
-	 * @since 1.0
-	 */
-	public float getWidth() {
-		return width;
+	public void generateOrthoProjection() {
+		this.orthoProjection = Mat4f.getOrthographicMatrix(0, size.x, size.y, 0, -1, 1);
 	}
 
 	/**
@@ -185,7 +117,36 @@ public class Window implements DisposableResource {
 	 * @since 1.0
 	 */
 	public float getHeight() {
-		return height;
+		return size.y;
+	}
+
+	/**
+	 * Returns the height of this <code>Window</code> object in the units given.
+	 * 
+	 * @param units
+	 *            The units to convert the height to.
+	 * 
+	 * @return The height of this window.
+	 * 
+	 * @see #height
+	 * 
+	 * @since 1.0
+	 */
+	public float getHeight(int units) {
+		return PE.convertFromPix(size.y, units, monitorSize.y, rpixRatio);
+	}
+
+	/**
+	 * Gets the OpenGL long ID for the window.
+	 * 
+	 * @return The id for this window.
+	 * 
+	 * @see #id
+	 * 
+	 * @since 1.0
+	 */
+	public long getID() {
+		return id;
 	}
 
 	/**
@@ -202,36 +163,146 @@ public class Window implements DisposableResource {
 	public Mat4f getOrthoProjection() {
 		return orthoProjection;
 	}
-	
-	public void setPosition(float posX, float posY){
-		this.position.x = posX;
-		this.position.y = posY;
-	}
-	
-	public void setPosition(Vec2f position){
-		this.position = position;
-	}
 
 	/**
-	 * Sets the position of the window with the given units.
+	 * Returns the relative pixel ratio for this window in its monitor.
 	 * 
-	 * @param posX
-	 *            The x pixel position of the window.
-	 * @param posXUnit
-	 *            The units for the x position.
-	 * @param posY
-	 *            The y pixel position of the window.
-	 * @param posYUnit
-	 *            The units for the y position.
+	 * @return The rpix ratio for this window.
+	 * 
+	 * @see #rpixRatio
 	 * 
 	 * @since 1.0
 	 */
-	public void setPosition(Vec2f position, int posXUnit, int posYUnit) {
-		this.position = position;
-		this.positionUnits[0] = posXUnit;
-		this.positionUnits[1] = posYUnit;
+	public float getRPixRatio() {
+		return rpixRatio;
+	}
 
+	public String getTitle() {
+		return title;
+	}
+
+	/**
+	 * Returns the width of this <code>Window</code> object in pixels.
+	 * 
+	 * @return The width of this window.
+	 * 
+	 * @see #width
+	 * 
+	 * @since 1.0
+	 */
+	public float getWidth() {
+		return size.x;
+	}
+	
+	/**
+	 * Returns the width of this <code>Window</code> object in the units given.
+	 * 
+	 * @param units
+	 *            The units to convert the width to.
+	 * 
+	 * @return The width of this window.
+	 * 
+	 * @see #width
+	 * 
+	 * @since 1.0
+	 */
+	public float getWidth(int units) {
+		return PE.convertFromPix(size.x, units, monitorSize.x, rpixRatio);
+	}
+
+	/**
+	 * Returns the value of <code>vsync</code>. Is true if vsync is enabled and
+	 * false if it is not.
+	 * 
+	 * @return whether VSync is enabled for this window or not
+	 * 
+	 * @see #vsync
+	 * 
+	 * @since 1.0
+	 */
+	public boolean isVSynced() {
+		return vsync;
+	}
+
+	public void setHeight(float height, int units) {
+		this.size.x = PE.toPixels(height, units, monitorSize.y, rpixRatio);
+		
+		updateSize();
+	}
+
+	public void setKeyHandler(GLFWKeyCallback keyHandler) {
+		GLFW.glfwSetKeyCallback(id, keyHandler);
+	}
+
+	public void setPosition(float posX, float posY, int[] positionUnits) {
+		if (positionUnits.length != 2)
+			throw new IllegalArgumentException("There must be the same number of units as values.");
+		
+		this.position.x = posX;
+		this.position.y = posY;
+		
 		updatePosition();
+	}
+
+	public void setPosition(Vec2f position, int[] positionUnits) {
+		if (positionUnits.length != 2)
+			throw new IllegalArgumentException("There must be the same number of units as values.");
+		
+		this.position = PE.toPixels(position, positionUnits, monitorSize, rpixRatio);
+		
+		updatePosition();
+	}
+
+	public void setSize(Vec2f size, int[] sizeUnits) {
+		if (sizeUnits.length != 2)
+			throw new IllegalArgumentException("There must be the same number of units as values.");
+		
+		this.size = PE.toPixels(size, sizeUnits, monitorSize, rpixRatio);
+
+		updateSize();
+	}
+
+	public void setSize(float width, float height, int[] sizeUnits) {
+		if (sizeUnits.length != 2)
+			throw new IllegalArgumentException("There must be the same number of units as values.");
+		
+		this.size.x = PE.toPixels(width, sizeUnits[0], monitorSize.x, rpixRatio);
+		this.size.y = PE.toPixels(height, sizeUnits[1], monitorSize.y, rpixRatio);
+
+		updateSize();
+	}
+
+	public void setTitle(String title) {
+		GLFW.glfwSetWindowTitle(id, title);
+		this.title = title;
+	}
+
+	public void setVSync(boolean vsync) {
+		this.vsync = vsync;
+		if (vsync) {
+			GLFW.glfwSwapInterval(1);
+		} else {
+			GLFW.glfwSwapInterval(0);
+		}
+	}
+
+	public void setWidth(float width, int widthUnits) {
+		this.size.x = PE.toPixels(width, widthUnits, monitorSize.x, rpixRatio);
+		
+		updateSize();
+	}
+
+	public boolean shouldClose() {
+		return GLFW.glfwWindowShouldClose(id);
+	}
+
+	public void show() {
+		GLFW.glfwMakeContextCurrent(id);
+	}
+
+	public void update() {
+		GLFW.glfwSwapBuffers(id);
+		GLFW.glfwPollEvents();
 	}
 
 	/**
@@ -242,66 +313,12 @@ public class Window implements DisposableResource {
 	 * @since 1.0
 	 */
 	public void updatePosition() {
-		int xPix = (int) PE.toPixels(position.x, positionUnits[0], monitorWidth, rpixRatio);
-		int yPix = (int) PE.toPixels(position.y, positionUnits[1], monitorHeight, rpixRatio);
-
-		GLFW.glfwSetWindowPos(id, xPix, yPix);
-	}
-	
-	/**
-	 * Returns the relative pixel ratio for this window in its monitor.
-	 * 
-	 * @return The rpix ratio for this window.
-	 * 
-	 * @see #rpixRatio
-	 * 
-	 * @since 1.0
-	 */
-	public float getRPixRatio(){
-		return rpixRatio;
+		GLFW.glfwSetWindowPos(id, (int) position.x, (int) position.y);
+		generateMonitorStats();
 	}
 
-	public void generateOrthoProjection() {
-		float widthPix = PE.toPixels(width, widthUnit, monitorWidth, rpixRatio);
-		float heightPix = PE.toPixels(height, heightUnit, monitorHeight, rpixRatio);
-		
-		this.orthoProjection = Mat4f.getOrthographicMatrix(0, widthPix, heightPix, 0, -1, 1);
-	}
-
-	public void setWidth(float width, int units) {
-		this.width = width;
-		this.widthUnit = units;
-	}
-
-	public void setHeight(float height, int units) {
-		this.height = height;
-		this.heightUnit = units;
-	}
-	
-	public void setSize(float width, int widthUnits, float height, int heightUnits){
-		this.width = width;
-		this.widthUnit = widthUnits;
-		this.height = height;
-		this.heightUnit = heightUnits;
-		
-		updateSize();
-	}
-	
-	public void updateSize(){
-		int widthPix = (int) PE.toPixels(width, widthUnit, monitorWidth, rpixRatio);
-		int heightPix = (int) PE.toPixels(height, heightUnit, monitorHeight, rpixRatio);
-		GLFW.glfwSetWindowSize(id, widthPix, heightPix);
-	}
-
-	public void generateMonitorStats() {
-		IntBuffer pysicalSize = BufferUtils.createIntBuffer(2);
-		
-		//long monitor = GLFW.glfwGetWindowMonitor(id);
-		long monitor = GLFW.glfwGetPrimaryMonitor();
-		GLFW.glfwGetMonitorPhysicalSize(monitor, pysicalSize, pysicalSize);
-		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
-		this.monitorWidth = videoMode.width();
-		this.monitorHeight = videoMode.height();
-		this.rpixRatio = monitorWidth * 1f / pysicalSize.get(0);
+	public void updateSize() {
+		GLFW.glfwSetWindowSize(id, (int) size.x, (int) size.y);
+		generateOrthoProjection();
 	}
 }

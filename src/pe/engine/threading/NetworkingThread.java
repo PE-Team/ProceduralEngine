@@ -21,7 +21,7 @@ public class NetworkingThread implements Runnable {
 		} catch (Exception e) {
 			MasterThread.println("Networking Thread",
 					"An Exception has Occured Which Will Cause the Main Thread to Shutdown");
-			e.printStackTrace(MasterThread.getConsoleStream());
+			e.printStackTrace(MasterThread.getConsolePrintStream());
 			MasterThread.shutdown();
 		}
 	}
