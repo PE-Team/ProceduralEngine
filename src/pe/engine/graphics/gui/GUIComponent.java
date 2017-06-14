@@ -10,6 +10,7 @@ import org.lwjgl.opengl.GL11;
 import pe.engine.graphics.objects.Mesh;
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
+import pe.engine.main.UnitConversions;
 import pe.engine.shader.main.Shader;
 import pe.engine.shader.main.ShaderProgram;
 import pe.util.color.Color;
@@ -166,27 +167,27 @@ public abstract class GUIComponent {
 		if (parent == null)
 			return gui.getWindow().getSizePix();
 
-		return PE.toPixels(size, sizeUnits, parent.getSizePix(rpixRatio), rpixRatio);
+		return UnitConversions.toPixels(size, sizeUnits, parent.getSizePix(rpixRatio), rpixRatio);
 	}
 
 	public Vec2f getCenterPix(float rpixRatio, Vec2f sizePix) {
-		return PE.toPixels(center, centerUnits, sizePix, rpixRatio);
+		return UnitConversions.toPixels(center, centerUnits, sizePix, rpixRatio);
 	}
 
 	public float getRotationDeg() {
-		return PE.toDegrees(rotation, rotationUnits);
+		return UnitConversions.toDegrees(rotation, rotationUnits);
 	}
 
 	public Vec2f getPositionPix(float rpixRatio, Vec2f maxPosition) {
-		return PE.toPixels(position, positionUnits, maxPosition, rpixRatio);
+		return UnitConversions.toPixels(position, positionUnits, maxPosition, rpixRatio);
 	}
 
 	public Vec4f getBorderWidthPix(float rpixRatio, Vec2f maxBorderWidth) {
-		return PE.toPixels(borderWidth, borderWidthUnits, maxBorderWidth, rpixRatio);
+		return UnitConversions.toPixels(borderWidth, borderWidthUnits, maxBorderWidth, rpixRatio);
 	}
 
 	public Vec4f getBorderRadiusPix(float rpixRatio, Vec2f maxBorderRadius) {
-		return PE.toPixels(borderRadius, borderRadiusUnits, maxBorderRadius, rpixRatio);
+		return UnitConversions.toPixels(borderRadius, borderRadiusUnits, maxBorderRadius, rpixRatio);
 	}
 
 	public void render() {
