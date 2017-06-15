@@ -14,7 +14,7 @@ public class StaticMesh2D extends Mesh {
 		super(PE.STATIC_MESH_2D, indices.length, vertices.length, 2);
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			vao.use();
+			vao.bind();
 
 			FloatBuffer vertecesBuffer = stack.mallocFloat(2 * vertices.length);
 			for (Vec2f vertex : vertices) {

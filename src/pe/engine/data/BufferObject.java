@@ -10,7 +10,7 @@ public abstract class BufferObject implements DisposableResource {
 
 	protected int id;
 
-	public abstract void use();
+	public abstract void bind();
 
 	public void unbind(){
 		GLVersion.checkAfter(PE.GL_VERSION_30);

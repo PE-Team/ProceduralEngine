@@ -14,7 +14,7 @@ public class StaticMesh3D extends Mesh {
 		super(PE.STATIC_MESH_3D, indices.length, vertices.length, 3);
 
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			vao.use();
+			vao.bind();
 
 			FloatBuffer vertecesBuffer = stack.mallocFloat(3 * vertices.length);
 			for (Vec3f vertex : vertices) {

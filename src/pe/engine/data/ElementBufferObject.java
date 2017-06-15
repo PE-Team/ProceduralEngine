@@ -16,7 +16,7 @@ public class ElementBufferObject extends BufferObject {
 		Resources.add(this);
 	}
 
-	public void use() {
+	public void bind() {
 		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, id);
 	}
 

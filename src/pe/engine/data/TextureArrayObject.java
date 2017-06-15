@@ -1,35 +1,33 @@
 package pe.engine.data;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.ArrayList;
+import java.util.List;
 
 import pe.engine.graphics.objects.Texture;
 
 public class TextureArrayObject{
 
-	Set<Texture> textures  = null;
+	List<Texture> textures  = null;
 	
 	public TextureArrayObject(){
-		textures = new HashSet<Texture>();
+		textures = new ArrayList<Texture>();
 	}
 	
-	public void use(){
+	public void bind(){
 		for(Texture texture:textures){
-			texture.use();
+			texture.forceBind();
 		}
 	}
 	
 	public void unbind(){
 		for(Texture texture:textures){
-			texture.unbind();
+			texture.forceUnbind();
 		}
 	}
 	
 	public void load(){
 		for(Texture texture:textures){
-			texture.use();
 			texture.load();
-			texture.unbind();
 		}
 	}
 	
@@ -45,10 +43,13 @@ public class TextureArrayObject{
 	}
 	
 	public void remove(int textureLocation){
-		for(Texture texture:textures){
-			if(texture.getLocation() == textureLocation){
-				remove(texture);
-			}
+		Texture texture = textures.remove(textureLocation);
+		texture.unload();
+		
+		int location = 0;
+		for(Texture tex:textures){
+			tex.setLocation(location);
+			location++;
 		}
 	}
 	
@@ -63,7 +64,11 @@ public class TextureArrayObject{
 		}
 	}
 	
-	public Set<Texture> getTextures(){
+	public void setPath(String path, int textureLocation){
+		textures.get(textureLocation).setPath(path);
+	}
+	
+	public List<Texture> getTextures(){
 		return textures;
 	}
 	

@@ -23,7 +23,7 @@ public class Model {
 	}
 
 	public void render() {
-		shaderProgram.use();
+		shaderProgram.start();
 		mesh.render();
 		shaderProgram.stop();
 	}

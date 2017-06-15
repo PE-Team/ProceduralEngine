@@ -22,7 +22,7 @@ public class VertexArrayObject implements DisposableResource{
 		Resources.add(this);
 	}
 	
-	public void use(){
+	public void bind(){
 		GL30.glBindVertexArray(id);
 	}
 	
@@ -37,7 +37,7 @@ public class VertexArrayObject implements DisposableResource{
 	public int addVBO(int dimension, FloatBuffer data){
 		int location = vbos;
 		VertexBufferObject vbo = new VertexBufferObject(dimension);
-		vbo.use();
+		vbo.bind();
 		vbo.setData(data);
 		vbo.setLocation(location);
 		enableVBOLocation(vbos);
@@ -50,7 +50,7 @@ public class VertexArrayObject implements DisposableResource{
 			throw new IllegalArgumentException("Cannot put a VBO at a location farther than the number of VBOs in the VAO.");
 		
 		VertexBufferObject vbo = new VertexBufferObject(dimension);
-		vbo.use();
+		vbo.bind();
 		vbo.setData(data);
 		vbo.setLocation(location);
 		enableVBOLocation(vbos);
@@ -58,7 +58,7 @@ public class VertexArrayObject implements DisposableResource{
 	
 	public void addEBO(IntBuffer indices){
 		ebo = new ElementBufferObject();
-		ebo.use();
+		ebo.bind();
 		ebo.setData(indices);
 	}
 

@@ -29,7 +29,7 @@ public abstract class Mesh {
 	
 	public void setVertexData(Vec2f[] vertices){
 		try (MemoryStack stack = MemoryStack.stackPush()) {
-			vao.use();
+			vao.bind();
 
 			FloatBuffer vertecesBuffer = stack.mallocFloat(dimension * vertices.length);
 			for (Vec2f vertex : vertices) {
@@ -64,13 +64,13 @@ public abstract class Mesh {
 	}
 	
 	public void addShaderAttrib(int dimension, FloatBuffer data){
-		vao.use();
+		vao.bind();
 		vao.addVBO(dimension, data);
 		vao.unbind();
 	}
 	
 	public void render() {
-		vao.use();
+		vao.bind();
 		if(wireframe)
 			GL11.glPolygonMode(GL11.GL_FRONT_AND_BACK, GL11.GL_LINE);
 		GL11.glDrawElements(GL11.GL_TRIANGLES, indicesCount, GL11.GL_UNSIGNED_INT, 0);

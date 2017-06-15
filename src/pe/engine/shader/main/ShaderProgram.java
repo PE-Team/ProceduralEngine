@@ -283,7 +283,7 @@ public class ShaderProgram implements DisposableResource {
 		return id;
 	}
 
-	public void use() {
+	public void start() {
 		GL20.glUseProgram(id);
 	}
 

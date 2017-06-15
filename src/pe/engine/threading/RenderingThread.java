@@ -52,7 +52,7 @@ public class RenderingThread implements Runnable {
 			window.show();
 			
 			VertexArrayObject vertexArrayObject = new VertexArrayObject();
-			vertexArrayObject.use();
+			vertexArrayObject.bind();
 
 			GUI gui = new GUI();
 			gui.setWindow(window);

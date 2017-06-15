@@ -21,7 +21,8 @@ public class VertexBufferObject extends BufferObject {
 		Resources.add(this);
 	}
 
-	public void use() {
+	@Override
+	public void bind() {
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, id);
 	}
 

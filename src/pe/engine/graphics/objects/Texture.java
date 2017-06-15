@@ -1,19 +1,21 @@
 package pe.engine.graphics.objects;
 
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
+import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
 import pe.engine.data.DisposableResource;
 import pe.engine.data.Resources;
 import pe.engine.main.PE;
+import pe.util.color.Color;
 
 public abstract class Texture implements DisposableResource{
 
@@ -21,84 +23,6 @@ public abstract class Texture implements DisposableResource{
 	protected int glDim;
 	protected String path;
 	protected int location;
-
-	protected void initializeTexture(String path, int dimension, int textureWrapX, int textureWrapY, int textureWrapZ,
-			boolean pixelatedFilter, boolean generateMipMap, int mipMapFilter) {
-		this.id = GL11.glGenTextures();
-		this.path = path;
-
-		int glTexFilter = getGLTextureFilter(pixelatedFilter);
-		int glMipMapFilter = getGLMipMapFilter(mipMapFilter);
-
-		switch (dimension) {
-		case 1:
-		case PE.TEXTURE_1D:
-			
-			this.glDim = GL11.GL_TEXTURE_1D;
-			
-			GL11.glBindTexture(glDim, id);
-			
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_WRAP_S, getGLTextureWrap(textureWrapX));
-
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glTexFilter);
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glTexFilter);
-
-			if (generateMipMap) {
-				GL30.glGenerateMipmap(glDim);
-				GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glMipMapFilter);
-				GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glMipMapFilter);
-			}
-
-			break;
-		case 2:
-		case PE.TEXTURE_2D:
-			
-			this.glDim = GL11.GL_TEXTURE_2D;
-			
-			GL11.glBindTexture(glDim, id);
-
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_WRAP_S, getGLTextureWrap(textureWrapX));
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_WRAP_T, getGLTextureWrap(textureWrapY));
-
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glTexFilter);
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glTexFilter);
-
-			if (generateMipMap) {
-				GL30.glGenerateMipmap(glDim);
-				GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glMipMapFilter);
-				GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glMipMapFilter);
-			}
-
-			break;
-		case 3:
-		case PE.TEXTURE_3D:
-			
-			this.glDim = GL12.GL_TEXTURE_3D;
-			
-			GL11.glBindTexture(glDim, id);
-
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_WRAP_S, getGLTextureWrap(textureWrapX));
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_WRAP_T, getGLTextureWrap(textureWrapY));
-			GL11.glTexParameteri(glDim, GL12.GL_TEXTURE_WRAP_R, getGLTextureWrap(textureWrapZ));
-
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glTexFilter);
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glTexFilter);
-
-			if (generateMipMap) {
-				GL30.glGenerateMipmap(glDim);
-				GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glMipMapFilter);
-				GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glMipMapFilter);
-			}
-
-			break;
-		default:
-			throw new IllegalArgumentException("Textures with a dimension of '" + dimension + "' are not supported.");
-		}
-
-		unbind();
-		
-		Resources.add(this, this);
-	}
 	
 	public int getLocation(){
 		return location;
@@ -106,42 +30,64 @@ public abstract class Texture implements DisposableResource{
 	
 	public void setLocation(int location){
 		if(location < 0 || location > 30)
-			throw new IllegalArgumentException("The location for the texture must be between 0 and 16 (inclusive).");
+			throw new IllegalArgumentException("The location for the texture must be between 0 and 30 (inclusive).");
 		
 		this.location = location;
 	}
 	
-	public void use(){
+	public void bind(){
+		if(path == null)
+			return;
+		
+		forceBind();
+	}
+	
+	public void forceBind(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + location);
 		GL11.glBindTexture(glDim, id);
 	}
 	
 	public void unbind(){
+		if(path == null)
+			return;
+		
+		forceUnbind();
+	}
+	
+	public void forceUnbind(){
 		GL13.glActiveTexture(GL13.GL_TEXTURE0 + location);
 		GL11.glBindTexture(glDim, 0);
 	}
 	
 	public void load(){
-		try (MemoryStack stack = MemoryStack.stackPush()) {
-			IntBuffer widthBuffer = stack.mallocInt(1);
-			IntBuffer heightBuffer = stack.mallocInt(1);
-			IntBuffer compBuffer = stack.mallocInt(1);
+		if(path == null){
+			/* Create a Clear texture */
+			FloatBuffer fb = BufferUtils.createFloatBuffer(4);
+			Color.CLEAR.putInBuffer4(fb);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, fb);
+			
+		}else{
+			/* Try to load the texture from the path */
+			try (MemoryStack stack = MemoryStack.stackPush()) {
+				IntBuffer widthBuffer = stack.mallocInt(1);
+				IntBuffer heightBuffer = stack.mallocInt(1);
+				IntBuffer compBuffer = stack.mallocInt(1);
 
-			STBImage.stbi_set_flip_vertically_on_load(true);
-			ByteBuffer image = STBImage.stbi_load(path, widthBuffer, heightBuffer, compBuffer, 4);
-			if (image == null) {
-				throw new RuntimeException(
-						"Failed to load a texture file!" + System.lineSeparator() + STBImage.stbi_failure_reason());
+				STBImage.stbi_set_flip_vertically_on_load(true);
+				ByteBuffer image = STBImage.stbi_load(path, widthBuffer, heightBuffer, compBuffer, 4);
+				if (image == null) {
+					throw new RuntimeException(
+							"Failed to load a texture file!" + System.lineSeparator() + STBImage.stbi_failure_reason());
+				}
+				
+				int width = widthBuffer.get();
+				int height = heightBuffer.get();
+				GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, image);
 			}
-			
-			int width = widthBuffer.get();
-			int height = heightBuffer.get();
-			
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, image);
 		}
 	}
 
-	private int getGLMipMapFilter(int mipMapFilter) {
+	protected static int getGLMipMapFilter(int mipMapFilter) {
 		switch (mipMapFilter) {
 		case PE.MIPMAP_FILTER_BILINEAR:
 			return GL11.GL_LINEAR_MIPMAP_NEAREST;
@@ -155,13 +101,23 @@ public abstract class Texture implements DisposableResource{
 		throw new IllegalArgumentException("The given texture wrap option is not supported");
 	}
 
-	private int getGLTextureFilter(boolean pixelatedFilter) {
+	protected static int getGLTextureFilter(boolean pixelatedFilter) {
 		if (pixelatedFilter)
 			return GL11.GL_NEAREST;
 		return GL11.GL_LINEAR;
 	}
+	
+	public void setPath(String path){
+		this.path = path;
+	}
+	
+	public abstract void setTextureWrap(int... textureWrapVars);
+	
+	public abstract void setTextureFilter(boolean pixelatedFilter);
+	
+	public abstract void generateMipMap(int mipMapFilter);
 
-	private int getGLTextureWrap(int textureWrap) {
+	protected static int getGLTextureWrap(int textureWrap) {
 		switch (textureWrap) {
 		case PE.TEXTURE_WRAP_BORDER:
 			return GL13.GL_CLAMP_TO_BORDER;
