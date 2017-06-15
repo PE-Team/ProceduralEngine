@@ -9,6 +9,8 @@ import org.lwjgl.opengl.GL30;
 
 import pe.engine.data.DisposableResource;
 import pe.engine.data.Resources;
+import pe.engine.data.TextureArrayObject;
+import pe.engine.graphics.objects.Texture;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 import pe.util.color.Color;
@@ -24,11 +26,11 @@ public class ShaderProgram implements DisposableResource {
 	private int id;
 	private boolean compiled = false;
 	private byte attachedTypes = 0b0000;
-	
+
 	private FloatBuffer bufferVec2f = BufferUtils.createFloatBuffer(2);
 	private FloatBuffer bufferVec3f = BufferUtils.createFloatBuffer(3);
 	private FloatBuffer bufferVec4f = BufferUtils.createFloatBuffer(4);
-	
+
 	private FloatBuffer bufferMat2f = BufferUtils.createFloatBuffer(4);
 	private FloatBuffer bufferMat3f = BufferUtils.createFloatBuffer(9);
 	private FloatBuffer bufferMat4f = BufferUtils.createFloatBuffer(16);
@@ -90,8 +92,8 @@ public class ShaderProgram implements DisposableResource {
 					"A Fragment Shader has not been added to this Shader Program so there is not default Fragment out value to set.");
 		GL30.glBindFragDataLocation(id, value, name);
 	}
-	
-	public void setAttribIndex(int index, String name){
+
+	public void setAttribIndex(int index, String name) {
 		GL20.glBindAttribLocation(id, index, name);
 	}
 
@@ -110,7 +112,7 @@ public class ShaderProgram implements DisposableResource {
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform1i(uniformId, value);
 	}
-	
+
 	/**
 	 * Sets the value of the uniform with the specified <code>name</code> in the
 	 * currently used shader.
@@ -126,7 +128,7 @@ public class ShaderProgram implements DisposableResource {
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform1f(uniformId, value);
 	}
-	
+
 	/**
 	 * Sets the value of the uniform with the specified <code>name</code> in the
 	 * currently used shader.
@@ -191,7 +193,7 @@ public class ShaderProgram implements DisposableResource {
 		int uniformId = GL20.glGetUniformLocation(id, name);
 		GL20.glUniform4fv(uniformId, color.putInBuffer4C(bufferVec4f));
 	}
-	
+
 	/**
 	 * Sets the value of the uniform with the specified <code>name</code> in the
 	 * currently used shader.
@@ -238,6 +240,43 @@ public class ShaderProgram implements DisposableResource {
 	public void setUniformMat4f(String name, Mat4f matrix) {
 		int uniformID = GL20.glGetUniformLocation(id, name);
 		GL20.glUniformMatrix4fv(uniformID, false, matrix.putInBufferC(bufferMat4f));
+	}
+
+	/**
+	 * Pairs the given texture with the shader variable name.
+	 * 
+	 * @param name
+	 *            The name of the uniform in the shader file.
+	 * @param texture
+	 *            The texture to set the uniform to.
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformTexture(String name, Texture texture) {
+		int uniformID = GL20.glGetUniformLocation(id, name);
+		GL20.glUniform1i(uniformID, texture.getLocation());
+	}
+
+	/**
+	 * Pairs all of the textures in a <code>TextureArrayObject</code> with its
+	 * respective uniform name. The index of the uniform name in
+	 * <code>name</code> should be the same as the location of the texture it
+	 * corresponds with.
+	 * 
+	 * @param name
+	 *            An array of the uniform names in the shader file.
+	 * @param tao
+	 *            The <code>TextureArrayObject</code> whose textures are to be
+	 *            paired with their uniforms.
+	 */
+	public void setUniformTextureArrayObject(String[] name, TextureArrayObject tao) {
+		if (name.length != tao.length())
+			throw new IllegalArgumentException(
+					"There must be an equal amount of names and textures in order to set their uniforms.");
+
+		for (Texture texture : tao.getTextures()) {
+			setUniformTexture(name[texture.getLocation()], texture);
+		}
 	}
 
 	public int getID() {
