@@ -56,6 +56,23 @@ public abstract class GUIComponent {
 			int[] centerUnits, float rotation, int rotationUnits, Color backgroundColor, Vec4f borderWidth,
 			int[] borderWidthUnits, Color borderColor, Vec4f borderRadius, int[] borderRadiusUnits, String text,
 			Color textColor, Polygon shape) {
+		this.size = size;
+		this.sizeUnits = sizeUnits;
+		this.position = position;
+		this.positionUnits = positionUnits;
+		this.center = center;
+		this.centerUnits = centerUnits;
+		this.rotation = rotation;
+		this.rotationUnits = rotationUnits;
+		this.backgroundColor = backgroundColor;
+		this.borderWidth = borderWidth;
+		this.borderWidthUnits = borderWidthUnits;
+		this.borderColor = borderColor;
+		this.borderRadius = borderRadius;
+		this.borderRadiusUnits = borderRadiusUnits;
+		this.text = text;
+		this.textColor = textColor;
+		this.shape = shape;
 		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
 
 		initMeshProperties();
