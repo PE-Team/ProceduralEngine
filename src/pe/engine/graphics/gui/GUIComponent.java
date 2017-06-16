@@ -8,6 +8,7 @@ import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
 import pe.engine.data.TextureArrayObject;
+import pe.engine.data.TextureSwapArray;
 import pe.engine.graphics.objects.Mesh;
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
@@ -38,7 +39,7 @@ public abstract class GUIComponent {
 	protected Color textColor = Color.CLEAR;
 	protected Polygon shape = null;
 	protected Mesh mesh = null;
-	protected TextureArrayObject tao;
+	protected TextureSwapArray tsa = null;
 	protected GUI gui = null;
 	protected GUIComponent parent = null;
 	protected List<GUIComponent> children = new ArrayList<GUIComponent>();

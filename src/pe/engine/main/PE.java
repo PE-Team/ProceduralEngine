@@ -15,6 +15,8 @@ public class PE {
 	 */
 
 	// @formatter:off
+																		// MAX_ID = 2147483647 (10 digits)
+	
 																		// ID: NULL = 18337
 	public static final int NULL = 183370; 								//  Version = 0
 
@@ -74,6 +76,14 @@ public class PE {
 	public static final int GUI_UNIT_PIXELS = 67733970; 				//   Version = 0
 	public static final int GUI_UNIT_RPIXELS = 67733971; 				//   Version = 1
 	public static final int GUI_UNIT_PERCENT = 67733972; 				//   Version = 2
+	
+																		// ID: GUIEV = 10147989
+	public static final int GUI_EVENT_ON_PRESS = 101479890; 			//   Version = 0
+	public static final int GUI_EVENT_ON_RELEASE = 101479891; 			//   Version = 1
+	public static final int GUI_EVENT_ON_CLICK = 101479892; 			//   Version = 2
+	public static final int GUI_EVENT_ON_DRAG = 101479893; 				//   Version = 3
+	public static final int GUI_EVENT_ON_HOVER = 101479894; 			//   Version = 4
+	public static final int GUI_EVENT_ON_TYPE = 101479895; 				//   Version = 5
 
 																		// ID: ANGUN = 6771857
 	public static final int ANGLE_UNIT_DEGREES = 67718570; 				//   Version = 0

@@ -12,12 +12,12 @@ import org.lwjgl.opengl.GL14;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.BufferObject;
 import pe.engine.data.Resources;
 import pe.engine.main.PE;
 import pe.util.color.Color;
 
-public abstract class Texture implements DisposableResource{
+public abstract class Texture extends BufferObject{
 
 	protected int id;
 	protected int glDim;
