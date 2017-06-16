@@ -1,4 +1,4 @@
-package pe.engine.input;
+package pe.engine.graphics.main.handlers;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -10,23 +10,23 @@ import pe.engine.data.DisposableResource;
 import pe.engine.data.Resources;
 import pe.engine.threading.MasterThread;
 
-public class KeyHandler extends GLFWKeyCallback implements DisposableResource {
+public class WindowKeyHandler extends GLFWKeyCallback implements WindowEventHandler, DisposableResource {
 
 	/* key[keyCode] */
-	private boolean[] keys = new boolean[65536];
+	private WindowHandler windowHandler;
 	private Set<Set<Integer>> shutdownKeys = new HashSet<Set<Integer>>();
 
-	public KeyHandler() {
+	public WindowKeyHandler() {
 		Resources.add(this);
 	}
 
 	public void invoke(long window, int key, int scancode, int action, int mods) {
-		keys[key] = (action != GLFW.GLFW_RELEASE);
+		windowHandler.setKeyState(key, action != GLFW.GLFW_RELEASE);
 
 		for (Set<Integer> hotKeys : shutdownKeys) {
 			boolean shutdown = true;
 			for (int hotKey : hotKeys) {
-				if (!keys[hotKey]) {
+				if (!windowHandler.getKeyState(hotKey)) {
 					shutdown = false;
 					break;
 				}
@@ -40,7 +40,7 @@ public class KeyHandler extends GLFWKeyCallback implements DisposableResource {
 	}
 
 	public boolean getKey(int keyCode) {
-		return keys[keyCode];
+		return windowHandler.getKeyState(keyCode);
 	}
 
 	public void dispose() {
@@ -69,5 +69,10 @@ public class KeyHandler extends GLFWKeyCallback implements DisposableResource {
 			hotKeys.add(key);
 		}
 		shutdownKeys.add(hotKeys);
+	}
+
+	@Override
+	public void setWindowHanlder(WindowHandler windowHandler) {
+		this.windowHandler = windowHandler;
 	}
 }

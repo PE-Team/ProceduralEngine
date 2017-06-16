@@ -1,6 +1,7 @@
 package pe.engine.graphics.gui;
 
 import pe.engine.graphics.main.Window;
+import pe.engine.graphics.main.handlers.WindowHandler;
 
 public class GUI {
 
@@ -32,5 +33,9 @@ public class GUI {
 	
 	public Window getWindow(){
 		return window;
+	}
+	
+	public void invokeMouseEvent(WindowHandler windowHandler){
+		root.invokeMouseEvent(windowHandler);
 	}
 }

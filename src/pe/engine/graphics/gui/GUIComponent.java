@@ -7,8 +7,8 @@ import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
-import pe.engine.data.TextureArrayObject;
 import pe.engine.data.TextureSwapArray;
+import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.objects.Mesh;
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
@@ -155,6 +155,10 @@ public abstract class GUIComponent {
 	}
 
 	protected void onType() {
+	}
+	
+	protected void invokeMouseEvent(WindowHandler windowHandler){
+		
 	}
 
 	public void setRotation(float degrees) {

@@ -7,9 +7,10 @@ import pe.engine.data.VertexArrayObject;
 import pe.engine.graphics.gui.Divider;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.main.Window;
-import pe.engine.graphics.main.WindowPositionHandler;
-import pe.engine.graphics.main.WindowFrameSizeHandler;
-import pe.engine.input.KeyHandler;
+import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
+import pe.engine.graphics.main.handlers.WindowHandler;
+import pe.engine.graphics.main.handlers.WindowKeyHandler;
+import pe.engine.graphics.main.handlers.WindowPositionHandler;
 import pe.engine.main.InitializationProcesses;
 import pe.engine.main.PE;
 import pe.util.Timer;
@@ -29,15 +30,6 @@ public class RenderingThread implements Runnable {
 			timer = new Timer(0.016f);
 			timer.start();
 
-			KeyHandler keyHandler = new KeyHandler();
-			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_ESCAPE);
-			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_F4);
-			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_F4);
-			
-			WindowFrameSizeHandler sizeHandler = new WindowFrameSizeHandler();
-			
-			WindowPositionHandler posHandler = new WindowPositionHandler();
-
 			Vec2f windowSize = new Vec2f(1400f, 800f);
 			int[] sizeUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
 			Vec2f windowPosition = new Vec2f(0.5f, 0.5f);
@@ -46,6 +38,19 @@ public class RenderingThread implements Runnable {
 			int[] centerUnits = {PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT};
 			
 			Window window = new Window(windowSize, sizeUnits, windowPosition, positionUnits, windowCenter, centerUnits, "Test", true, true, true);
+			
+			WindowHandler windowHandler = new WindowHandler();
+
+			WindowKeyHandler keyHandler = new WindowKeyHandler();
+			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_ESCAPE);
+			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_LEFT_ALT, GLFW.GLFW_KEY_F4);
+			keyHandler.addShutdownHotkeys(GLFW.GLFW_KEY_RIGHT_ALT, GLFW.GLFW_KEY_F4);
+			
+			WindowFrameSizeHandler sizeHandler = new WindowFrameSizeHandler();
+			
+			WindowPositionHandler posHandler = new WindowPositionHandler();
+			
+			window.setWindowHandler(windowHandler);
 			window.setKeyHandler(keyHandler);
 			window.setFrameSizeHandler(sizeHandler);
 			window.setPositionHandler(posHandler);

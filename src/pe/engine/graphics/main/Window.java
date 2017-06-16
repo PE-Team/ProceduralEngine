@@ -13,7 +13,10 @@ import pe.engine.data.DisposableResource;
 import pe.engine.data.Resources;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.gui.GUIComponent;
-import pe.engine.input.KeyHandler;
+import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
+import pe.engine.graphics.main.handlers.WindowHandler;
+import pe.engine.graphics.main.handlers.WindowKeyHandler;
+import pe.engine.graphics.main.handlers.WindowPositionHandler;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 import pe.engine.main.UnitConversions;
@@ -22,14 +25,16 @@ import pe.util.math.Vec2f;
 
 public class Window implements DisposableResource {
 
-	private Vec2f monitorSize; // Always in pixels
-	private float rpixRatio;
+	private WindowHandler windowHandler;
+	private Vec2f monitorSize = Vec2f.ZERO; // Always in pixels
+	private Vec2f mousePosition = Vec2f.ZERO;
+	private float rpixRatio = 1;
 	private Vec2f size = new Vec2f(1, 1);
 	private Vec2f position = Vec2f.ZERO;
 	private Vec2f center = Vec2f.ZERO;
 	private long id;
-	private GUI gui = new GUI();
-	private Mat4f orthoProjection;
+	private GUI gui = null;
+	private Mat4f orthoProjection = null;
 
 	private int[] sizeUnits = { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS };
 	private int[] positionUnits = { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS };
@@ -82,6 +87,9 @@ public class Window implements DisposableResource {
 
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
+		
+		this.gui = new GUI();
+		
 		update();
 	}
 
@@ -292,18 +300,32 @@ public class Window implements DisposableResource {
 
 		updateSize();
 	}
+	
+	public void setWindowHandler(WindowHandler windowHandler){
+		this.windowHandler = windowHandler;
+	}
 
-	public void setKeyHandler(KeyHandler keyHandler) {
+	public void setKeyHandler(WindowKeyHandler keyHandler) {
+		keyHandler.setWindowHanlder(windowHandler);
 		GLFW.glfwSetKeyCallback(id, keyHandler);
+	}
+	
+	public void fireMouseEvents(WindowHandler windowHandler){
+		gui.invokeMouseEvent(windowHandler);
+	}
+	
+	public void setMousePositionValues(float posX, float posY){
+		this.mousePosition.x = posX;
+		this.mousePosition.y = posY;
 	}
 
 	public void setFrameSizeHandler(WindowFrameSizeHandler sizeHandler) {
-		sizeHandler.setWindow(this);
+		sizeHandler.setWindowHanlder(windowHandler);
 		GLFW.glfwSetFramebufferSizeCallback(id, sizeHandler);
 	}
 
 	public void setPositionHandler(WindowPositionHandler posHandler) {
-		posHandler.setWindow(this);
+		posHandler.setWindowHanlder(windowHandler);
 		GLFW.glfwSetWindowPosCallback(id, posHandler);
 	}
 	

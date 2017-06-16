@@ -149,13 +149,17 @@ public class TextureSwapArray {
 	 * @since 1.0
 	 */
 	public void swap(int key) {
+		TextureArrayObject nextTextureArray = textureArrays.get(key);
+		if(currentTAO.equals(nextTextureArray))
+			return;
+		
 		if (currentTAO != null) {
 			currentTAO.unbind();
 			if (autoUnload) {
 				currentTAO.unload();
 			}
 		}
-		currentTAO = textureArrays.get(key);
+		currentTAO = nextTextureArray;
 
 		if (autoUnload) {
 			currentTAO.load();
