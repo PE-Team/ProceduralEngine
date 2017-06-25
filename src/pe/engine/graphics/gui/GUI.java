@@ -2,14 +2,15 @@ package pe.engine.graphics.gui;
 
 import pe.engine.graphics.main.Window;
 import pe.engine.graphics.main.handlers.WindowHandler;
+import pe.engine.graphics.main.handlers.WindowInputEvent;
 
 public class GUI {
 
 	private Window window = null;
-	private Divider root;
+	private Root root;
 	
 	public GUI(){
-		root = new Divider();
+		root = new Root();
 		root.setGUI(this);
 	}
 	
@@ -29,13 +30,14 @@ public class GUI {
 	
 	public void setWindow(Window window){
 		this.window = window;
+		window.setGUI(this);
 	}
 	
 	public Window getWindow(){
 		return window;
 	}
 	
-	public void invokeMouseEvent(WindowHandler windowHandler){
-		root.invokeMouseEvent(windowHandler);
+	public void invokeInputEvent(WindowInputEvent e){
+		root.invokeInputEvent(e, false);
 	}
 }

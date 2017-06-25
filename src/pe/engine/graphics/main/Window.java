@@ -12,11 +12,14 @@ import org.lwjgl.system.MemoryUtil;
 import pe.engine.data.DisposableResource;
 import pe.engine.data.Resources;
 import pe.engine.graphics.gui.GUI;
-import pe.engine.graphics.gui.GUIComponent;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
 import pe.engine.graphics.main.handlers.WindowHandler;
+import pe.engine.graphics.main.handlers.WindowInputEvent;
 import pe.engine.graphics.main.handlers.WindowKeyHandler;
+import pe.engine.graphics.main.handlers.WindowMouseButtonHandler;
+import pe.engine.graphics.main.handlers.WindowMousePositionHandler;
 import pe.engine.graphics.main.handlers.WindowPositionHandler;
+import pe.engine.graphics.main.handlers.WindowScrollHandler;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 import pe.engine.main.UnitConversions;
@@ -88,13 +91,11 @@ public class Window implements DisposableResource {
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 		
-		this.gui = new GUI();
-		
 		update();
 	}
-
-	public void addComponent(GUIComponent component) {
-		gui.addComponent(component);
+	
+	public void setGUI(GUI gui){
+		this.gui = gui;
 	}
 
 	public void putSizeInBuffer(IntBuffer width, IntBuffer height) {
@@ -303,6 +304,7 @@ public class Window implements DisposableResource {
 	
 	public void setWindowHandler(WindowHandler windowHandler){
 		this.windowHandler = windowHandler;
+		windowHandler.setWindow(this);
 	}
 
 	public void setKeyHandler(WindowKeyHandler keyHandler) {
@@ -310,13 +312,28 @@ public class Window implements DisposableResource {
 		GLFW.glfwSetKeyCallback(id, keyHandler);
 	}
 	
-	public void fireMouseEvents(WindowHandler windowHandler){
-		gui.invokeMouseEvent(windowHandler);
+	public void fireInputEvent(WindowInputEvent e){
+		gui.invokeInputEvent(e);
 	}
 	
 	public void setMousePositionValues(float posX, float posY){
 		this.mousePosition.x = posX;
 		this.mousePosition.y = posY;
+	}
+	
+	public void setScrollHandler(WindowScrollHandler scrollHandler){
+		scrollHandler.setWindowHanlder(windowHandler);
+		GLFW.glfwSetScrollCallback(id, scrollHandler);
+	}
+	
+	public void setMouseButtonHandler(WindowMouseButtonHandler mouseButtonHandler){
+		mouseButtonHandler.setWindowHanlder(windowHandler);
+		GLFW.glfwSetMouseButtonCallback(id, mouseButtonHandler);
+	}
+	
+	public void setMousePositionHandler(WindowMousePositionHandler mousePosHandler){
+		mousePosHandler.setWindowHanlder(windowHandler);
+		GLFW.glfwSetCursorPosCallback(id, mousePosHandler);
 	}
 
 	public void setFrameSizeHandler(WindowFrameSizeHandler sizeHandler) {
@@ -493,6 +510,8 @@ public class Window implements DisposableResource {
 	public void update() {
 		GLFW.glfwSwapBuffers(id);
 		GLFW.glfwPollEvents();
+		if(windowHandler != null)
+			windowHandler.update();
 	}
 
 	/**

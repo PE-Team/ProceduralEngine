@@ -4,11 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 import pe.engine.graphics.objects.Texture;
+import pe.engine.main.PE;
 
 public class TextureSwapArray {
 
 	private Map<Integer, TextureArrayObject> textureArrays;
-	private TextureArrayObject currentTAO = null;
+	private int currentTAO = PE.NULL;
 	private boolean autoUnload = false;
 
 	public TextureSwapArray() {
@@ -95,7 +96,7 @@ public class TextureSwapArray {
 	}
 
 	/**
-	 * Removes the given key and all values associated with it.
+	 * Removes the given key and the <code>Texture Object Array</code> associated with it.
 	 * 
 	 * @param key
 	 *            The key and values associated with it to remove.
@@ -125,7 +126,7 @@ public class TextureSwapArray {
 	 * @since 1.0
 	 */
 	public void bind() {
-		currentTAO.bind();
+		textureArrays.get(currentTAO).bind();
 	}
 
 	/**
@@ -134,7 +135,7 @@ public class TextureSwapArray {
 	 * @since 1.0
 	 */
 	public void unbind() {
-		currentTAO.unbind();
+		textureArrays.get(currentTAO).unbind();
 	}
 
 	/**
@@ -149,22 +150,44 @@ public class TextureSwapArray {
 	 * @since 1.0
 	 */
 	public void swap(int key) {
-		TextureArrayObject nextTextureArray = textureArrays.get(key);
-		if(currentTAO.equals(nextTextureArray))
+		if (currentTAO == key)
 			return;
-		
-		if (currentTAO != null) {
-			currentTAO.unbind();
+
+		TextureArrayObject currentTextureArray = textureArrays.get(currentTAO);
+		if (currentTAO != PE.NULL) {
+			currentTextureArray.unbind();
 			if (autoUnload) {
-				currentTAO.unload();
+				currentTextureArray.unload();
 			}
 		}
-		currentTAO = nextTextureArray;
+
+		currentTAO = key;
+		currentTextureArray = textureArrays.get(currentTAO);
 
 		if (autoUnload) {
-			currentTAO.load();
+			currentTextureArray.load();
 		}
 
-		currentTAO.bind();
+		currentTextureArray.bind();
+	}
+
+	/**
+	 * Toggles between using the TAO bound to <code>key1</code> or the TAO bound
+	 * to <code>key2</code>. If the current TAO is neither keys, then it will
+	 * automatically be bound to <code>key1</code>.
+	 * 
+	 * @param key1
+	 *            The first key to toggle between. The default key.
+	 * @param key2
+	 *            The second key to toggle between.
+	 * 
+	 * @since 1.0
+	 */
+	public void toggle(int key1, int key2) {
+		if (this.currentTAO == key1) {
+			swap(key2);
+		} else {
+			swap(key1);
+		}
 	}
 }

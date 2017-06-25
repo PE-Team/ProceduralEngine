@@ -31,6 +31,10 @@ public class MasterThread {
 	private static boolean running = false;
 
 	public static void main(String[] args) {
+		main();
+	}
+	
+	public static void main(){
 		try {
 			Timer shutdownTimer = new Timer(6);
 

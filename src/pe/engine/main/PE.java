@@ -1,9 +1,5 @@
 package pe.engine.main;
 
-import pe.util.math.Vec2f;
-import pe.util.math.Vec3f;
-import pe.util.math.Vec4f;
-
 public class PE {
 
 	/*
@@ -71,6 +67,31 @@ public class PE {
 	public static final int GL_VERSION_43 = 901410314; 					//   Version = 14
 	public static final int GL_VERSION_44 = 901410315; 					//   Version = 15
 	public static final int GL_VERSION_45 = 901410316; 					//   Version = 16
+	
+	
+																		// ID: MSEVT = 9530079
+	public static final int MOUSE_ACTION_PRESS = 95300790; 				//   Version = 0
+	public static final int MOUSE_ACTION_RELEASE = 95300791; 			//   Version = 1
+	public static final int MOUSE_ACTION_DRAG = 95300792; 				//   Version = 2
+	public static final int MOUSE_ACTION_HOVER = 95300793; 				//   Version = 3
+	public static final int MOUSE_ACTION_SCROLL = 95300794;				//   Version = 4
+	public static final int MOUSE_ACTION_MIN = MOUSE_ACTION_PRESS; 		//   Version = Version 0
+	public static final int MOUSE_ACTION_MAX = MOUSE_ACTION_SCROLL;		//   Version = Version 4
+	
+																		// ID: MSBTN = 6751043
+	public static final int MOUSE_BUTTON_1 = 67510430; 					//   Version = 0
+	public static final int MOUSE_BUTTON_2 = 67510431; 					//   Version = 1
+	public static final int MOUSE_BUTTON_3 = 67510432; 					//   Version = 2
+	public static final int MOUSE_BUTTON_4 = 67510433; 					//   Version = 3
+	public static final int MOUSE_BUTTON_5 = 67510434; 					//   Version = 4
+	public static final int MOUSE_BUTTON_6 = 67510435; 					//   Version = 5
+	public static final int MOUSE_BUTTON_7 = 67510436; 					//   Version = 6
+	public static final int MOUSE_BUTTON_8 = 67510437; 					//   Version = 7
+	public static final int MOUSE_BUTTON_LEFT = MOUSE_BUTTON_1;			//   Version = Version 0
+	public static final int MOUSE_BUTTON_MIDDLE = MOUSE_BUTTON_2;		//   Version = Version 1
+	public static final int MOUSE_BUTTON_RIGHT = MOUSE_BUTTON_3;		//   Version = Version 2
+	public static final int MOUSE_BUTTON_MIN = MOUSE_BUTTON_1;			//   Version = Version 0
+	public static final int MOUSE_BUTTON_MAX = MOUSE_BUTTON_8;			//   Version = Version 7
 
 																		// ID: GUIUN = 6773397
 	public static final int GUI_UNIT_PIXELS = 67733970; 				//   Version = 0

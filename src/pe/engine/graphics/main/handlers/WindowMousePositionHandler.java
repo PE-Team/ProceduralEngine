@@ -15,7 +15,9 @@ public class WindowMousePositionHandler extends GLFWCursorPosCallback implements
 	
 	@Override
 	public void invoke(long window, double posX, double posY) {
-		windowHandler.setMousePositionValue((float) posX, (float) posY);
+		float xPos = (float) posX;
+		float yPos = (float) posY;
+		windowHandler.setMousePositionValue(xPos, yPos);
 	}
 
 	@Override

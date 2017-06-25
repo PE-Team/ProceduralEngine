@@ -1,11 +1,43 @@
 package pe.engine.main;
 
+import org.lwjgl.glfw.GLFW;
+
 import pe.util.math.Vec2f;
 import pe.util.math.Vec3f;
 import pe.util.math.Vec4f;
 
 public class UnitConversions {
-	
+
+	/**
+	 * Converts the given mouse button from <code>PE</code> to what is used in
+	 * <code>GLFW</code>.
+	 * 
+	 * @param PE_MouseButton
+	 *            The <code>PE</code> mouse button.
+	 *            
+	 * @return The <code>GLFW</code> mouse button.
+	 * 
+	 * @since 1.0
+	 */
+	public static int toGLFWMouseButton(int PE_MouseButton) {
+		return PE_MouseButton - PE.MOUSE_BUTTON_MIN + GLFW.GLFW_MOUSE_BUTTON_1;
+	}
+
+	/**
+	 * Converts the given mouse button from <code>GLFW</code> to what is used in
+	 * <code>PE</code>.
+	 * 
+	 * @param GLFW_MouseButton
+	 *            The <code>GLFW</code> mouse button.
+	 *            
+	 * @return The <code>PE</code> mouse button.
+	 * 
+	 * @since 1.0
+	 */
+	public static int toPEMouseButton(int GLFW_MouseButton) {
+		return GLFW_MouseButton - GLFW.GLFW_MOUSE_BUTTON_1 + PE.MOUSE_BUTTON_MIN;
+	}
+
 	/**
 	 * Converts the given rotation to degress based on the units of the given
 	 * rotation.
@@ -25,6 +57,30 @@ public class UnitConversions {
 			return rotation;
 		case PE.ANGLE_UNIT_RADIANS:
 			return (float) Math.toDegrees(rotation);
+		}
+		throw new IllegalArgumentException(
+				"An invalid rotation unit of measurement was given.\nMake sure the rotation is in degrees or radians.");
+	}
+	
+	/**
+	 * Converts the given rotation to radians based on the units of the given
+	 * rotation.
+	 * 
+	 * @param rotation
+	 *            The rotation in the given units.
+	 * @param rotationUnit
+	 *            The given units for the rotation.
+	 * 
+	 * @return The rotation in radians.
+	 * 
+	 * @since 1.0
+	 */
+	public static float toRadians(float rotation, int rotationUnit) {
+		switch (rotationUnit) {
+		case PE.ANGLE_UNIT_DEGREES:
+			return (float) Math.toRadians(rotation);
+		case PE.ANGLE_UNIT_RADIANS:
+			return rotation;
 		}
 		throw new IllegalArgumentException(
 				"An invalid rotation unit of measurement was given.\nMake sure the rotation is in degrees or radians.");

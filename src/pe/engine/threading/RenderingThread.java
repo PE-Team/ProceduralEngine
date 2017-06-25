@@ -10,7 +10,10 @@ import pe.engine.graphics.main.Window;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
 import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.main.handlers.WindowKeyHandler;
+import pe.engine.graphics.main.handlers.WindowMouseButtonHandler;
+import pe.engine.graphics.main.handlers.WindowMousePositionHandler;
 import pe.engine.graphics.main.handlers.WindowPositionHandler;
+import pe.engine.graphics.main.handlers.WindowScrollHandler;
 import pe.engine.main.InitializationProcesses;
 import pe.engine.main.PE;
 import pe.util.Timer;
@@ -50,10 +53,20 @@ public class RenderingThread implements Runnable {
 			
 			WindowPositionHandler posHandler = new WindowPositionHandler();
 			
+			WindowMouseButtonHandler mouseButtonHandler = new WindowMouseButtonHandler();
+			
+			WindowMousePositionHandler mousePosHandler = new WindowMousePositionHandler();
+			
+			WindowScrollHandler scrollHandler = new WindowScrollHandler();
+			
 			window.setWindowHandler(windowHandler);
 			window.setKeyHandler(keyHandler);
 			window.setFrameSizeHandler(sizeHandler);
 			window.setPositionHandler(posHandler);
+			window.setMouseButtonHandler(mouseButtonHandler);
+			window.setMousePositionHandler(mousePosHandler);
+			window.setScrollHandler(scrollHandler);
+			
 			window.show();
 			
 			VertexArrayObject vertexArrayObject = new VertexArrayObject();
