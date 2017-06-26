@@ -6,11 +6,11 @@ import java.util.Set;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWKeyCallback;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.threading.MasterThread;
 
-public class WindowKeyHandler extends GLFWKeyCallback implements WindowEventHandler, DisposableResource {
+public class WindowKeyHandler extends GLFWKeyCallback implements WindowEventHandlerI, DisposableResourceI {
 
 	/* key[keyCode] */
 	private WindowHandler windowHandler;

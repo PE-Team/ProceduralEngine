@@ -3,11 +3,11 @@ package pe.engine.graphics.main.handlers;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.main.UnitConversions;
 
-public class WindowMouseButtonHandler extends GLFWMouseButtonCallback implements WindowEventHandler, DisposableResource{
+public class WindowMouseButtonHandler extends GLFWMouseButtonCallback implements WindowEventHandlerI, DisposableResourceI{
 	
 	private WindowHandler windowHandler;
 	

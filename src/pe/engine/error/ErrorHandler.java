@@ -7,10 +7,10 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.system.APIUtil;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 
-public class ErrorHandler extends GLFWErrorCallback implements DisposableResource{
+public class ErrorHandler extends GLFWErrorCallback implements DisposableResourceI{
 	
 	private Map<Integer, String> ERROR_CODES = APIUtil.apiClassTokens((field, value) -> 0x10000 < value && value < 0x20000, null, GLFW.class);
 	private PrintStream stream;

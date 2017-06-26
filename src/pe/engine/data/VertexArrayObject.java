@@ -9,7 +9,7 @@ import org.lwjgl.opengl.GL30;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 
-public class VertexArrayObject implements DisposableResource{
+public class VertexArrayObject implements DisposableResourceI{
 	
 	private int id;
 	private ElementBufferObject ebo = null;

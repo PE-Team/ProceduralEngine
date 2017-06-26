@@ -2,12 +2,12 @@ package pe.engine.graphics.main.handlers;
 
 import org.lwjgl.glfw.GLFWWindowPosCallback;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.main.PE;
 import pe.util.math.Vec2f;
 
-public class WindowPositionHandler extends GLFWWindowPosCallback implements WindowEventHandler, DisposableResource{
+public class WindowPositionHandler extends GLFWWindowPosCallback implements WindowEventHandlerI, DisposableResourceI{
 	
 	private static final int[] positionUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
 	

@@ -7,7 +7,7 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.data.TextureArrayObject;
 import pe.engine.graphics.objects.Texture;
@@ -21,7 +21,7 @@ import pe.util.math.Vec2f;
 import pe.util.math.Vec3f;
 import pe.util.math.Vec4f;
 
-public class ShaderProgram implements DisposableResource {
+public class ShaderProgram implements DisposableResourceI {
 
 	private int id;
 	private boolean compiled = false;

@@ -6,7 +6,7 @@ import org.lwjgl.opengl.GL30;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 
-public abstract class BufferObject implements DisposableResource {
+public abstract class BufferObject implements DisposableResourceI {
 
 	protected int id;
 

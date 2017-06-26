@@ -235,7 +235,6 @@ public abstract class GUIComponent {
 
 		if (Util.isInRectangle(positionPix, sizePix, centerPix, rotationDeg, e.getPosition())) {
 			int action = e.getAction();
-			int button = e.getButton();
 			boolean isDisposed = false;
 
 			if (action == PE.MOUSE_ACTION_PRESS)

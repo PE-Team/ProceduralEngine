@@ -8,12 +8,12 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL32;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
 
-public class Shader implements DisposableResource{
+public class Shader implements DisposableResourceI{
 	
 	private int type;
 	private String path;

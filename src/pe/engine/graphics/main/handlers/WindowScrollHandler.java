@@ -2,10 +2,10 @@ package pe.engine.graphics.main.handlers;
 
 import org.lwjgl.glfw.GLFWScrollCallback;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 
-public class WindowScrollHandler extends GLFWScrollCallback implements WindowEventHandler, DisposableResource{
+public class WindowScrollHandler extends GLFWScrollCallback implements WindowEventHandlerI, DisposableResourceI{
 	
 	private WindowHandler windowHandler;
 	

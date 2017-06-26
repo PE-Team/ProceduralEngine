@@ -2,10 +2,10 @@ package pe.engine.graphics.main.handlers;
 
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 
-public class WindowMousePositionHandler extends GLFWCursorPosCallback implements WindowEventHandler, DisposableResource{
+public class WindowMousePositionHandler extends GLFWCursorPosCallback implements WindowEventHandlerI, DisposableResourceI{
 
 	WindowHandler windowHandler;
 	

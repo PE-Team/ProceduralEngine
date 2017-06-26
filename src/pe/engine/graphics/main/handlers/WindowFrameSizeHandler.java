@@ -2,11 +2,11 @@ package pe.engine.graphics.main.handlers;
 
 import org.lwjgl.glfw.GLFWFramebufferSizeCallback;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.main.PE;
 
-public class WindowFrameSizeHandler extends GLFWFramebufferSizeCallback implements WindowEventHandler, DisposableResource{
+public class WindowFrameSizeHandler extends GLFWFramebufferSizeCallback implements WindowEventHandlerI, DisposableResourceI{
 	
 	private static final int[] sizeUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
 	

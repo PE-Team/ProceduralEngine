@@ -39,54 +39,6 @@ public class UnitConversions {
 	}
 
 	/**
-	 * Converts the given rotation to degress based on the units of the given
-	 * rotation.
-	 * 
-	 * @param rotation
-	 *            The rotation in the given units.
-	 * @param rotationUnit
-	 *            The given units for the rotation.
-	 * 
-	 * @return The rotation in degrees.
-	 * 
-	 * @since 1.0
-	 */
-	public static float toDegrees(float rotation, int rotationUnit) {
-		switch (rotationUnit) {
-		case PE.ANGLE_UNIT_DEGREES:
-			return rotation;
-		case PE.ANGLE_UNIT_RADIANS:
-			return (float) Math.toDegrees(rotation);
-		}
-		throw new IllegalArgumentException(
-				"An invalid rotation unit of measurement was given.\nMake sure the rotation is in degrees or radians.");
-	}
-	
-	/**
-	 * Converts the given rotation to radians based on the units of the given
-	 * rotation.
-	 * 
-	 * @param rotation
-	 *            The rotation in the given units.
-	 * @param rotationUnit
-	 *            The given units for the rotation.
-	 * 
-	 * @return The rotation in radians.
-	 * 
-	 * @since 1.0
-	 */
-	public static float toRadians(float rotation, int rotationUnit) {
-		switch (rotationUnit) {
-		case PE.ANGLE_UNIT_DEGREES:
-			return (float) Math.toRadians(rotation);
-		case PE.ANGLE_UNIT_RADIANS:
-			return rotation;
-		}
-		throw new IllegalArgumentException(
-				"An invalid rotation unit of measurement was given.\nMake sure the rotation is in degrees or radians.");
-	}
-
-	/**
 	 * Converts the given value to pixels based on its units and the values of
 	 * <code>maxWidth</code> and <code>rpixRatio</code>. <code>maxWidth</code>
 	 * corresponds the the value returned when <code>value</code> = 100%.

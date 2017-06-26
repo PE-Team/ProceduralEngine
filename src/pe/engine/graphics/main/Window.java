@@ -9,9 +9,10 @@ import org.lwjgl.opengl.GL;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.system.MemoryUtil;
 
-import pe.engine.data.DisposableResource;
+import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.graphics.gui.GUI;
+import pe.engine.graphics.gui.properties.RPixSourceI;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
 import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
@@ -26,7 +27,7 @@ import pe.engine.main.UnitConversions;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec2f;
 
-public class Window implements DisposableResource {
+public class Window implements RPixSourceI, DisposableResourceI{
 
 	private WindowHandler windowHandler;
 	private Vec2f monitorSize = Vec2f.ZERO; // Always in pixels

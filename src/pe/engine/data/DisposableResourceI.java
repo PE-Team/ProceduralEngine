@@ -1,6 +1,6 @@
 package pe.engine.data;
 
-public interface DisposableResource {
+public interface DisposableResourceI {
 	
 	public abstract void dispose();
 }
