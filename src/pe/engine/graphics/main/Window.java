@@ -13,6 +13,7 @@ import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.gui.properties.RPixSourceI;
+import pe.engine.graphics.gui.properties.Unit2Property;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
 import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
@@ -23,26 +24,21 @@ import pe.engine.graphics.main.handlers.WindowPositionHandler;
 import pe.engine.graphics.main.handlers.WindowScrollHandler;
 import pe.engine.main.GLVersion;
 import pe.engine.main.PE;
-import pe.engine.main.UnitConversions;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec2f;
 
 public class Window implements RPixSourceI, DisposableResourceI{
 
 	private WindowHandler windowHandler;
-	private Vec2f monitorSize = Vec2f.ZERO; // Always in pixels
-	private Vec2f mousePosition = Vec2f.ZERO;
+	private Unit2Property monitorSize = new Unit2Property(); // Always in pixels
+	private Unit2Property mousePosition = new Unit2Property();
 	private float rpixRatio = 1;
-	private Vec2f size = new Vec2f(1, 1);
-	private Vec2f position = Vec2f.ZERO;
-	private Vec2f center = Vec2f.ZERO;
+	private Unit2Property size = new Unit2Property(new Vec2f(1, 1), new int[]{ PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+	private Unit2Property position = new Unit2Property();
+	private Unit2Property center = new Unit2Property();
 	private long id;
 	private GUI gui = null;
 	private Mat4f orthoProjection = null;
-
-	private int[] sizeUnits = { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS };
-	private int[] positionUnits = { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS };
-	private int[] centerUnits = { PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT };
 
 	public Window(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center, int[] centerUnits, String title, boolean vsync,
 			boolean resizeable, boolean border) {
@@ -79,8 +75,15 @@ public class Window implements RPixSourceI, DisposableResourceI{
 
 		show();
 		GL.createCapabilities();
+		
+		this.monitorSize = new Unit2Property();
+		this.mousePosition = new Unit2Property();
+		this.size = new Unit2Property();
+		this.position = new Unit2Property();
+		this.center = new Unit2Property();
 
 		generateMonitorStats();
+		updateProperties();
 		setSize(size, sizeUnits);
 		generateOrthoProjection();
 		setPosition(position, positionUnits);
@@ -98,6 +101,13 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	public void setGUI(GUI gui){
 		this.gui = gui;
 	}
+	
+	public void updateProperties(){
+		mousePosition.setMaxValue(monitorSize).setRPixSource(this);
+		size.setMaxValue(monitorSize).setRPixSource(this);
+		position.setMaxValue(monitorSize).setRPixSource(this);
+		center.setMaxValue(size).setRPixSource(this);
+	}
 
 	public void putSizeInBuffer(IntBuffer width, IntBuffer height) {
 		GLFW.glfwGetFramebufferSize(id, width, height);
@@ -114,56 +124,18 @@ public class Window implements RPixSourceI, DisposableResourceI{
 		long monitor = GLFW.glfwGetPrimaryMonitor();
 		GLFW.glfwGetMonitorPhysicalSize(monitor, pysicalSize, pysicalSize);
 		GLFWVidMode videoMode = GLFW.glfwGetVideoMode(monitor);
-		this.monitorSize = new Vec2f(videoMode.width(), videoMode.height());
-		this.rpixRatio = monitorSize.x * 1f / pysicalSize.get(0);
+		this.monitorSize.set(new Vec2f(videoMode.width(), videoMode.height()));
+		this.rpixRatio = videoMode.width() * 1f / pysicalSize.get(0);
 	}
 
 	public void generateOrthoProjection() {
-		float widthPix = UnitConversions.toPixels(size.x, sizeUnits[0], monitorSize.x, rpixRatio);
-		float heightPix = UnitConversions.toPixels(size.y, sizeUnits[1], monitorSize.y, rpixRatio);
+		Vec2f sizePix = size.pixels();
 				
-		this.orthoProjection = Mat4f.getOrthographicMatrix(0, widthPix, heightPix, 0, -1, 1);
+		this.orthoProjection = Mat4f.getOrthographicMatrix(0, sizePix.x, sizePix.y, 0, -1, 1);
 	}
 
-	/**
-	 * Returns the height of this <code>Window</code> object in the units of
-	 * <code>sizeUnits</code>.
-	 * 
-	 * @return The height of this window.
-	 * 
-	 * @see #size
-	 * @see #sizeUnits
-	 * 
-	 * @since 1.0
-	 */
-	public float getHeight() {
-		return size.y;
-	}
-
-	/**
-	 * Returns the currently used units of the height of the window.
-	 * 
-	 * @return the units of the height for the window.
-	 */
-	public int getHeightUnits() {
-		return sizeUnits[1];
-	}
-
-	/**
-	 * Returns the height of this <code>Window</code> object in the units given.
-	 * 
-	 * @param units
-	 *            The units to convert the height to.
-	 * 
-	 * @return The height of this window.
-	 * 
-	 * @see #height
-	 * 
-	 * @since 1.0
-	 */
-	public float getHeight(int units) {
-		float pixValue = UnitConversions.toPixels(size.y, sizeUnits[1], monitorSize.y, rpixRatio);
-		return UnitConversions.convertFromPix(pixValue, units, monitorSize.y, rpixRatio);
+	public Unit2Property getSize() {
+		return size;
 	}
 
 	/**
@@ -206,58 +178,9 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	public float getRPixRatio() {
 		return rpixRatio;
 	}
-
-	/**
-	 * Returns the width of this <code>Window</code> object in the units of
-	 * <code>sizeUnits</code>.
-	 * 
-	 * @return The width of this window.
-	 * 
-	 * @see #size
-	 * @see #sizeUnits
-	 * 
-	 * @since 1.0
-	 */
-	public float getWidth() {
-		return size.x;
-	}
-
-	/**
-	 * Returns the width of this <code>Window</code> object in the units given.
-	 * 
-	 * @param units
-	 *            The units to convert the width to.
-	 * 
-	 * @return The width of this window.
-	 * 
-	 * @see #size
-	 * 
-	 * @since 1.0
-	 */
-	public float getWidth(int units) {
-		float pixValue = UnitConversions.toPixels(size.x, sizeUnits[0], monitorSize.x, rpixRatio);
-		return UnitConversions.convertFromPix(pixValue, units, monitorSize.x, rpixRatio);
-	}
-
-	/**
-	 * Returns the currently used units for the width of the Window.
-	 * 
-	 * @return The units for the width.
-	 * 
-	 * @see #sizeUnits
-	 * 
-	 * @since 1.0
-	 */
-	public int getWidthUnits() {
-		return sizeUnits[0];
-	}
-
-	public Vec2f getSizePix() {
-		return UnitConversions.toPixels(size, sizeUnits, monitorSize, rpixRatio);
-	}
 	
-	public Vec2f getCenterPix(){
-		return UnitConversions.toPixels(center, centerUnits, getSizePix(), rpixRatio);
+	public Unit2Property getCenter(){
+		return center;
 	}
 
 	/**
@@ -275,30 +198,8 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	 * @since 1.0
 	 */
 	public void setHeight(float height, int units) {
-		this.size.y = height;
-		this.sizeUnits[1] = units;
-
-		updateSize();
-	}
-
-	/**
-	 * Sets the height of the Window. Does not override the units for the
-	 * height, but instead converts from the units given to the currently
-	 * assigned units.
-	 * 
-	 * @param height
-	 *            The new height of the Window in the given units.
-	 * @param units
-	 *            The units for the given height.
-	 * 
-	 * @see #size
-	 * @see #sizeUnits
-	 * 
-	 * @since 1.0
-	 */
-	public void setHeightValue(float height, int units) {
-		float heightPix = UnitConversions.toPixels(height, units, monitorSize.y, rpixRatio);
-		size.y = UnitConversions.convertFromPix(heightPix, sizeUnits[1], monitorSize.y, rpixRatio);
+		this.size.getValue().y = height;
+		this.size.getUnits()[1] = units;
 
 		updateSize();
 	}
@@ -318,8 +219,8 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	}
 	
 	public void setMousePositionValues(float posX, float posY){
-		this.mousePosition.x = posX;
-		this.mousePosition.y = posY;
+		this.mousePosition.getValue().x = posX;
+		this.mousePosition.getValue().y = posY;
 	}
 	
 	public void setScrollHandler(WindowScrollHandler scrollHandler){
@@ -347,100 +248,32 @@ public class Window implements RPixSourceI, DisposableResourceI{
 		GLFW.glfwSetWindowPosCallback(id, posHandler);
 	}
 	
-	public void setCenter(Vec2f center, int[] centerUnits){
-		if (centerUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
-		this.center = center;
-		this.centerUnits = centerUnits;
+	public void setCenter(Vec2f center, int[] units){
+		this.center.set(center, units);
 		
 		updatePosition();
 	}
 	
 	public void setPosition(Vec2f position, int[] units) {
-		if (positionUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
-		this.position = position;
-		this.positionUnits = units;
+		this.position.set(position, units);
 
 		updatePosition();
 	}
 	
 	public void setPosition(float posX, float posY, int[] units) {
-		if (positionUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
-		this.position.x = posX;
-		this.position.y = posY;
-		this.positionUnits = units;
-
-		updatePosition();
-	}
-
-	public void setPositionValue(Vec2f position, int[] units) {
-		if (positionUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
-		Vec2f positionPix = UnitConversions.toPixels(position, units, monitorSize, rpixRatio);
-		this.position = UnitConversions.convertFromPix(positionPix, positionUnits, monitorSize, rpixRatio);
-
-		updatePosition();
-	}
-	
-	public void setPositionValue(float posX, float posY, int[] units) {
-		if (positionUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-		
-		float posXPix = UnitConversions.toPixels(posX, units[0], monitorSize.x, rpixRatio);
-		position.x = UnitConversions.convertFromPix(posXPix, positionUnits[0], monitorSize.x, rpixRatio);
-		
-		float posYPix = UnitConversions.toPixels(posY, units[1], monitorSize.y, rpixRatio);
-		position.y = UnitConversions.convertFromPix(posYPix, positionUnits[1], monitorSize.y, rpixRatio);
+		this.position.set(new Vec2f(posX, posY), units);
 
 		updatePosition();
 	}
 	
 	public void setSize(Vec2f size, int[] units) {
-		if (sizeUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-
-		this.size = size;
-		this.sizeUnits = units;
+		this.size.set(size, units);
 
 		updateSize();
 	}
 
 	public void setSize(float width, float height, int[] units) {
-		if (sizeUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-
-		this.size.x = width;
-		this.size.y = height;
-		this.sizeUnits = units;
-
-		updateSize();
-	}
-
-	public void setSizeValue(Vec2f size, int[] units) {
-		if (sizeUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-
-		Vec2f sizePix = UnitConversions.toPixels(size, units, monitorSize, rpixRatio);
-		this.size = UnitConversions.convertFromPix(sizePix, sizeUnits, monitorSize, rpixRatio);
-
-		updateSize();
-	}
-
-	public void setSizeValue(float width, float height, int[] units) {
-		if (sizeUnits.length != 2)
-			throw new IllegalArgumentException("There must be the same number of units as values.");
-
-		float widthPix = UnitConversions.toPixels(width, units[0], monitorSize.x, rpixRatio);
-		size.x = UnitConversions.convertFromPix(widthPix, sizeUnits[0], monitorSize.x, rpixRatio);
-		
-		float heightPix = UnitConversions.toPixels(height, units[1], monitorSize.y, rpixRatio);
-		size.y = UnitConversions.convertFromPix(heightPix, sizeUnits[1], monitorSize.y, rpixRatio);
+		this.size.set(new Vec2f(width, height), units);
 
 		updateSize();
 	}
@@ -472,30 +305,8 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	 * @since 1.0
 	 */
 	public void setWidth(float width, int units) {
-		this.size.x = width;
-		this.sizeUnits[0] = units;
-
-		updateSize();
-	}
-
-	/**
-	 * Sets the width of the Window. Does not override the units for the
-	 * width, but instead converts from the units given to the currently
-	 * assigned units.
-	 * 
-	 * @param height
-	 *            The new width of the Window in the given units.
-	 * @param units
-	 *            The units for the given width.
-	 * 
-	 * @see #size
-	 * @see #sizeUnits
-	 * 
-	 * @since 1.0
-	 */
-	public void setWidthValue(float width, int units) {
-		float widthPix = UnitConversions.toPixels(width, units, monitorSize.x, rpixRatio);
-		size.y = UnitConversions.convertFromPix(widthPix, sizeUnits[0], monitorSize.x, rpixRatio);
+		this.size.getValue().x = width;
+		this.size.getUnits()[1] = units;
 
 		updateSize();
 	}
@@ -523,14 +334,10 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	 * @since 1.0
 	 */
 	public void updatePosition() {
-		Vec2f sizePix = getSizePix();
-		int posX = (int) UnitConversions.toPixels(position.x, positionUnits[0], monitorSize.x, rpixRatio);
-		int posY = (int) UnitConversions.toPixels(position.y, positionUnits[1], monitorSize.y, rpixRatio);
+		Vec2f posPix = position.pixels();
+		Vec2f centerPix = center.pixels();
 		
-		int centerX = (int) UnitConversions.toPixels(center.x, centerUnits[0], sizePix.x, rpixRatio);
-		int centerY = (int) UnitConversions.toPixels(center.y, centerUnits[1], sizePix.y, rpixRatio);
-		
-		GLFW.glfwSetWindowPos(id, posX - centerX, posY - centerY);
+		GLFW.glfwSetWindowPos(id, (int) (posPix.x - centerPix.x), (int) (posPix.y - centerPix.y));
 		generateMonitorStats();
 	}
 
@@ -542,8 +349,9 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	 * @since 1.0
 	 */
 	public void updateSize() {
-		int width = (int) UnitConversions.toPixels(size.x, sizeUnits[0], monitorSize.x, rpixRatio);
-		int height = (int) UnitConversions.toPixels(size.y, sizeUnits[1], monitorSize.y, rpixRatio);
+		Vec2f sizePix = size.pixels();
+		int width = (int) sizePix.x;
+		int height = (int) sizePix.y;
 
 		GLFW.glfwSetWindowSize(id, width, height);
 		GL11.glViewport(0, 0, width, height);

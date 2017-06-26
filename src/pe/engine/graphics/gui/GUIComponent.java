@@ -9,11 +9,13 @@ import org.lwjgl.opengl.GL11;
 
 import pe.engine.data.TextureSwapArray;
 import pe.engine.graphics.gui.properties.RotationProperty;
+import pe.engine.graphics.gui.properties.Unit2Property;
+import pe.engine.graphics.gui.properties.Unit4Property;
+import pe.engine.graphics.main.Window;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
 import pe.engine.graphics.objects.Mesh;
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
-import pe.engine.main.UnitConversions;
 import pe.engine.shader.main.Shader;
 import pe.engine.shader.main.ShaderProgram;
 import pe.util.Util;
@@ -29,14 +31,14 @@ public abstract class GUIComponent {
 	protected static ShaderProgram shaderProgram = null;
 
 	// @formatter:off
-	protected Vec2f size = Vec2f.ZERO;
-	protected Vec2f position = Vec2f.ZERO;
-	protected Vec2f center = new Vec2f(0.5f, 0.5f);
+	protected Unit2Property size = new Unit2Property();
+	protected Unit2Property position = new Unit2Property();
+	protected Unit2Property center = new Unit2Property(new Vec2f(0.5f, 0.5f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
 	protected RotationProperty rotation = new RotationProperty();
 	protected Color backgroundColor = Color.CLEAR;
-	protected Vec4f borderWidth = Vec4f.ZERO;			// {TOP, RIGHT, BOTTOM, LEFT}
+	protected Unit4Property borderWidth = new Unit4Property();			// {TOP, RIGHT, BOTTOM, LEFT}
 	protected Color borderColor = Color.CLEAR;
-	protected Vec4f borderRadius = Vec4f.ZERO;			// {TOP-LEFT, TOP-RIGHT, BOTTOM-RIGHT, BOTTOM-LEFT}
+	protected Unit4Property borderRadius = new Unit4Property();			// {TOP-LEFT, TOP-RIGHT, BOTTOM-RIGHT, BOTTOM-LEFT}
 	protected String text = "";
 	protected Color textColor = Color.CLEAR;
 	protected Polygon shape = null;
@@ -46,31 +48,20 @@ public abstract class GUIComponent {
 	protected GUI gui = null;
 	protected GUIComponent parent = null;
 	protected List<GUIComponent> children = new ArrayList<GUIComponent>();
-	
-	protected int[] sizeUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
-	protected int[] positionUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
-	protected int[] centerUnits = {PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT};
-	protected int[] borderWidthUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
-	protected int[] borderRadiusUnits = {PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
 	// @formatter:on
 
 	public GUIComponent(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center,
 			int[] centerUnits, float rotation, Color backgroundColor, Vec4f borderWidth, int[] borderWidthUnits,
 			Color borderColor, Vec4f borderRadius, int[] borderRadiusUnits, String text, Color textColor,
 			Polygon shape) {
-		this.size = size;
-		this.sizeUnits = sizeUnits;
-		this.position = position;
-		this.positionUnits = positionUnits;
-		this.center = center;
-		this.centerUnits = centerUnits;
+		this.size.set(size, sizeUnits);
+		this.position.set(position, positionUnits);
+		this.center.set(center, centerUnits);
 		this.rotation = new RotationProperty(rotation, PE.ANGLE_UNIT_DEGREES);
 		this.backgroundColor = backgroundColor;
-		this.borderWidth = borderWidth;
-		this.borderWidthUnits = borderWidthUnits;
+		this.borderWidth.set(borderWidth, borderWidthUnits);
 		this.borderColor = borderColor;
-		this.borderRadius = borderRadius;
-		this.borderRadiusUnits = borderRadiusUnits;
+		this.borderRadius.set(borderRadius, borderRadiusUnits);
 		this.text = text;
 		this.textColor = textColor;
 		this.shape = shape;
@@ -138,6 +129,18 @@ public abstract class GUIComponent {
 
 	public void setGUI(GUI gui) {
 		this.gui = gui;
+		
+		updateProperties();
+	}
+	
+	private void updateProperties(){
+		Window window = gui.getWindow();
+		
+		this.size.setMaxValue(parent.getSize()).setRPixSource(window);
+		this.position.setMaxValue(parent.getSize()).setRPixSource(window);
+		this.center.setMaxValue(size).setRPixSource(window);
+		this.borderWidth.setMaxValue(size).setRPixSource(window);
+		this.borderRadius.setMaxValue(size).setRPixSource(window);
 	}
 
 	/**
@@ -223,12 +226,11 @@ public abstract class GUIComponent {
 	}
 
 	protected boolean invokeSelfInputEvent(WindowInputEvent e, boolean disposed) {
-		float rpixRatio = gui.getWindow().getRPixRatio();
 
-		Vec2f sizePix = getSizePix(rpixRatio);
-		Vec2f centerPix = getCenterPix(rpixRatio, sizePix);
-		float rotationDeg = getRotation();
-		Vec2f positionPix = getPositionPix(rpixRatio);
+		Vec2f sizePix = size.pixels();
+		Vec2f centerPix = center.pixels();
+		float rotationDeg = rotation.degrees();
+		Vec2f positionPix = position.pixels();
 
 		if (disposed)
 			return true;
@@ -266,8 +268,8 @@ public abstract class GUIComponent {
 		this.rotation.set(degrees);
 	}
 
-	public float getRotation() {
-		return rotation.degrees();
+	public RotationProperty getRotation() {
+		return rotation;
 	}
 
 	public void rotate(float degrees) {
@@ -288,42 +290,35 @@ public abstract class GUIComponent {
 		this.parent = parent;
 	}
 
-	public Vec2f getSizePix(float rpixRatio) {
-		if (parent == null)
-			return gui.getWindow().getSizePix();
-
-		return UnitConversions.toPixels(size, sizeUnits, parent.getSizePix(rpixRatio), rpixRatio);
+	public Unit2Property getSize() {
+		return size;
 	}
 
-	public Vec2f getCenterPix(float rpixRatio, Vec2f sizePix) {
-		return UnitConversions.toPixels(center, centerUnits, sizePix, rpixRatio);
+	public Unit2Property getCenter() {
+		return center;
 	}
 
-	public Vec2f getPositionPix(float rpixRatio) {
-		if (parent == null)
-			return gui.getWindow().getSizePix();
-
-		return UnitConversions.toPixels(position, positionUnits, parent.getSizePix(rpixRatio), rpixRatio);
+	public Unit2Property getPosition() {
+		return position;
 	}
 
-	public Vec4f getBorderWidthPix(float rpixRatio, Vec2f maxBorderWidth) {
-		return UnitConversions.toPixels(borderWidth, borderWidthUnits, maxBorderWidth, rpixRatio);
+	public Unit4Property getBorderWidth() {
+		return borderWidth;
 	}
 
-	public Vec4f getBorderRadiusPix(float rpixRatio, Vec2f maxBorderRadius) {
-		return UnitConversions.toPixels(borderRadius, borderRadiusUnits, maxBorderRadius, rpixRatio);
+	public Unit4Property getBorderRadius() {
+		return borderRadius;
 	}
 
 	public void render() {
 		shaderProgram.start();
-		float rpixRatio = gui.getWindow().getRPixRatio();
 
-		Vec2f sizePix = getSizePix(rpixRatio);
-		Vec2f centerPix = getCenterPix(rpixRatio, sizePix);
-		float rotationDeg = getRotation();
-		Vec2f positionPix = getPositionPix(rpixRatio);
-		Vec4f borderWidthPix = getBorderWidthPix(rpixRatio, Vec2f.mul(sizePix, 0.5f));
-		Vec4f borderRadiusPix = getBorderRadiusPix(rpixRatio, sizePix);
+		Vec2f sizePix = size.pixels();
+		Vec2f centerPix = center.pixels();
+		float rotationDeg = rotation.degrees();
+		Vec2f positionPix = position.pixels();
+		Vec4f borderWidthPix = borderWidth.pixels();
+		Vec4f borderRadiusPix = borderRadius.pixels();
 
 		Vec2f scale = new Vec2f(sizePix.x / shape.getWidth(), sizePix.y / shape.getHeight());
 		Mat3f transformation = new Mat3f().scale(scale).translate(centerPix.mul(-1)).rotate(rotationDeg)

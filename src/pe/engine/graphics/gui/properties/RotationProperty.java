@@ -1,7 +1,7 @@
 package pe.engine.graphics.gui.properties;
 
+import pe.engine.data.UnitConversions;
 import pe.engine.main.PE;
-import pe.util.math.Maths;
 
 public class RotationProperty {
 
@@ -32,34 +32,14 @@ public class RotationProperty {
 		
 		switch(units){
 		case PE.ANGLE_UNIT_DEGREES:
-			this.rotation = toDeg(this.rotation, this.units);
+			this.rotation = UnitConversions.toDeg(this.rotation, this.units);
 			break;
 		case PE.ANGLE_UNIT_RADIANS:
-			this.rotation = toRad(this.rotation, this.units);
+			this.rotation = UnitConversions.toRad(this.rotation, this.units);
 			break;
 		}
 		
 		this.units = units;
-	}
-	
-	private static float toDeg(float value, int units){
-		switch(units){
-		case PE.ANGLE_UNIT_DEGREES:
-			return value;
-		case PE.ANGLE_UNIT_RADIANS:
-			return Maths.toDeg(value);
-		}
-		throw new IllegalArgumentException("The units given are not valid. Must be one of: Degrees, Radians.");
-	}
-	
-	private static float toRad(float value, int units){
-		switch(units){
-		case PE.ANGLE_UNIT_DEGREES:
-			return Maths.toRad(value);
-		case PE.ANGLE_UNIT_RADIANS:
-			return value;
-		}
-		throw new IllegalArgumentException("The units given are not valid. Must be one of: Degrees, Radians.");
 	}
 	
 	public void set(float rotation){
@@ -72,11 +52,11 @@ public class RotationProperty {
 	}
 	
 	public float degrees(){
-		return toDeg(rotation, units);
+		return UnitConversions.toDeg(rotation, units);
 	}
 	
 	public float radians(){
-		return toRad(rotation, units);
+		return UnitConversions.toRad(rotation, units);
 	}
 	
 	public float getRotation(){
