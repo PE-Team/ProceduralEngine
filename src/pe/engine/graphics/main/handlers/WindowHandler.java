@@ -13,7 +13,7 @@ public class WindowHandler {
 
 	// @formatter:off
 	private Window window;
-	private Vec2f mousePosition = Vec2f.ZERO;
+	private Vec2f mousePosition = Vec2f.zero();
 	private boolean[] keys = new boolean[65536];		// Pressed = true, Released = false
 	private boolean[] mouseButtons = new boolean[8]; 	// Pressed = true, Released = false
 	
@@ -106,8 +106,8 @@ public class WindowHandler {
 		return window == null || windowID != window.getID();
 	}
 
-	public void setSizeValue(float width, float height, int[] units) {
-		window.setSizeValue(width, height, units);
+	public void setSize(float width, float height, int[] units) {
+		window.setSize(width, height, units);
 	}
 
 	public void updateWindow() {
@@ -118,7 +118,7 @@ public class WindowHandler {
 		return window;
 	}
 
-	public void setPositionValue(float posX, float posY, int[] units) {
-		window.setPositionValue(posX, posY, units);
+	public void setPosition(float posX, float posY, int[] units) {
+		window.setPosition(posX, posY, units);
 	}
 }

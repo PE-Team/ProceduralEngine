@@ -6,14 +6,30 @@ import pe.util.math.Vec2f;
 import pe.util.math.Vec4f;
 
 public class Unit4Property {
-
+	
 	private RPixSourceI rpixSource = null;
 	private Unit4Property maxValue = null;
 	private Vec4f value;
 	private int[] units;
 	
+	public static Unit4Property createZeroPixel(){
+		return new Unit4Property(Vec4f.zero(), new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS});
+	}
+	
+	public static Unit4Property createZeroPercent(){
+		return new Unit4Property(Vec4f.zero(), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	}
+	
+	public static Unit4Property createHalfPercent(){
+		return new Unit4Property(new Vec4f(0.5f, 0.5f, 0.5f, 0.5f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	}
+	
+	public static Unit4Property createFullPercent(){
+		return new Unit4Property(new Vec4f(1.0f, 1.0f, 1.0f, 1.0f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	}
+	
 	public Unit4Property(){
-		this.value = Vec4f.ZERO;
+		this.value = Vec4f.zero();
 		this.units = new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
 	}
 	
@@ -115,7 +131,7 @@ public class Unit4Property {
 	}
 	
 	private static Vec4f toPixels(Vec4f value, int[] units, Unit4Property maxValue, float rpixRatio){
-		Vec4f maxValuePix = maxValue.pixels();
+		Vec4f maxValuePix = maxValue.getMaxValue() == null ? Vec4f.zero() : maxValue.pixels();
 		
 		return new Vec4f(
 				UnitConversions.toPixels(value.x, units[0], maxValuePix.x, rpixRatio),
@@ -126,7 +142,7 @@ public class Unit4Property {
 	}
 	
 	private static Vec4f toPercent(Vec4f value, int[] units, Unit4Property maxValue, float rpixRatio){
-		Vec4f maxValuePix = maxValue.pixels();
+		Vec4f maxValuePix = maxValue.getMaxValue() == null ? Vec4f.zero() : maxValue.pixels();
 		
 		return new Vec4f(
 				UnitConversions.toPercent(value.x, units[0], maxValuePix.x, rpixRatio),
@@ -137,7 +153,7 @@ public class Unit4Property {
 	}
 	
 	private static Vec4f toRPixels(Vec4f value, int[] units, Unit4Property maxValue, float rpixRatio){
-		Vec4f maxValuePix = maxValue.pixels();
+		Vec4f maxValuePix = maxValue.getMaxValue() == null ? Vec4f.zero() : maxValue.pixels();
 		
 		return new Vec4f(
 				UnitConversions.toRPixels(value.x, units[0], maxValuePix.x, rpixRatio),
@@ -152,7 +168,7 @@ public class Unit4Property {
 	}
 	
 	public Vec4f pixels(){
-		return this.pixels(this.maxValue, this.rpixSource.getRPixRatio());
+		return this.pixels(this.maxValue, (rpixSource == null ? 0 : rpixSource.getRPixRatio()) );
 	}
 	
 	public Vec4f percent(Unit4Property maxValue, float rpixRatio){
@@ -160,7 +176,7 @@ public class Unit4Property {
 	}
 	
 	public Vec4f percent(){
-		return this.percent(this.maxValue, this.rpixSource.getRPixRatio());
+		return this.percent(this.maxValue, (rpixSource == null ? 0 : rpixSource.getRPixRatio()) );
 	}
 	
 	public Vec4f rpixels(Unit4Property maxValue, float rpixRatio){
@@ -168,7 +184,7 @@ public class Unit4Property {
 	}
 	
 	public Vec4f rpixels(){
-		return this.rpixels(this.maxValue, this.rpixSource.getRPixRatio());
+		return this.rpixels(this.maxValue, (rpixSource == null ? 0 : rpixSource.getRPixRatio()) );
 	}
 	
 	public void set(Vec4f value){
@@ -191,7 +207,7 @@ public class Unit4Property {
 	
 	public Unit4Property setMaxValue(Unit2Property maxValue){
 		Vec2f maxValueVec = maxValue.getValue();
-		Vec4f maxVal = Vec4f.ZERO;
+		Vec4f maxVal = Vec4f.zero();
 		maxVal.x = maxValueVec.x;
 		maxVal.y = maxValueVec.y;
 		maxVal.z = maxValueVec.x;
@@ -209,6 +225,10 @@ public class Unit4Property {
 		this.maxValue = maxValue;
 		
 		return this;
+	}
+	
+	public Unit4Property getMaxValue(){
+		return maxValue;
 	}
 	
 	public Vec4f getValue(){

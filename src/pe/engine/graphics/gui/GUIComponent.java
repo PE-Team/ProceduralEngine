@@ -31,14 +31,14 @@ public abstract class GUIComponent {
 	protected static ShaderProgram shaderProgram = null;
 
 	// @formatter:off
-	protected Unit2Property size = new Unit2Property();
-	protected Unit2Property position = new Unit2Property();
-	protected Unit2Property center = new Unit2Property(new Vec2f(0.5f, 0.5f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	protected Unit2Property size = Unit2Property.createFullPercent();
+	protected Unit2Property position = Unit2Property.createZeroPixel();
+	protected Unit2Property center = Unit2Property.createHalfPercent();
 	protected RotationProperty rotation = new RotationProperty();
 	protected Color backgroundColor = Color.CLEAR;
-	protected Unit4Property borderWidth = new Unit4Property();			// {TOP, RIGHT, BOTTOM, LEFT}
+	protected Unit4Property borderWidth = Unit4Property.createZeroPixel();		// {TOP, RIGHT, BOTTOM, LEFT}
 	protected Color borderColor = Color.CLEAR;
-	protected Unit4Property borderRadius = new Unit4Property();			// {TOP-LEFT, TOP-RIGHT, BOTTOM-RIGHT, BOTTOM-LEFT}
+	protected Unit4Property borderRadius = Unit4Property.createZeroPixel();	// {TOP-LEFT, TOP-RIGHT, BOTTOM-RIGHT, BOTTOM-LEFT}
 	protected String text = "";
 	protected Color textColor = Color.CLEAR;
 	protected Polygon shape = null;
@@ -133,7 +133,7 @@ public abstract class GUIComponent {
 		updateProperties();
 	}
 	
-	private void updateProperties(){
+	protected void updateSelfProperties(){
 		Window window = gui.getWindow();
 		
 		this.size.setMaxValue(parent.getSize()).setRPixSource(window);
@@ -141,6 +141,14 @@ public abstract class GUIComponent {
 		this.center.setMaxValue(size).setRPixSource(window);
 		this.borderWidth.setMaxValue(size).setRPixSource(window);
 		this.borderRadius.setMaxValue(size).setRPixSource(window);
+	}
+	
+	public void updateProperties(){
+		updateSelfProperties();
+		
+		for(GUIComponent child:children){
+			child.updateProperties();
+		}
 	}
 
 	/**
@@ -156,6 +164,7 @@ public abstract class GUIComponent {
 	 */
 	protected boolean onPress(WindowInputEvent e) {
 		System.out.println("PRESSING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_PRESS);
 		return true;
 	}
 
@@ -172,6 +181,7 @@ public abstract class GUIComponent {
 	 */
 	protected boolean onRelease(WindowInputEvent e) {
 		System.out.println("RELEASING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_RELEASE);
 		return true;
 	}
 
@@ -189,25 +199,31 @@ public abstract class GUIComponent {
 	 */
 	protected boolean onClick(WindowInputEvent e) {
 		System.out.println("CLICKING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_CLICK);
 		return true;
 	}
 
 	protected boolean onScroll(WindowInputEvent e) {
 		System.out.println("SCROLLING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_SCROLL);
 		return true;
 	}
 
 	protected boolean onDrag(WindowInputEvent e) {
 		System.out.println("DRAGGING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_DRAG);
 		return false;
 	}
 
 	protected boolean onHover(WindowInputEvent e) {
 		System.out.println("HOVERING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_HOVER);
 		return false;
 	}
 
 	protected boolean onType(WindowInputEvent e) {
+		System.out.println("TYPING WOKRING!");
+		tsa.swap(PE.GUI_EVENT_ON_TYPE);
 		return false;
 	}
 

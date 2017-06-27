@@ -1,7 +1,6 @@
 package pe.engine.graphics.gui;
 
 import pe.engine.graphics.main.Window;
-import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
 
 public class GUI {
@@ -15,7 +14,7 @@ public class GUI {
 	}
 	
 	public void render(){
-		root.renderChildren();
+		root.render();
 	}
 	
 	public void addComponent(GUIComponent component){
@@ -31,6 +30,7 @@ public class GUI {
 	public void setWindow(Window window){
 		this.window = window;
 		window.setGUI(this);
+		root.updateProperties();
 	}
 	
 	public Window getWindow(){

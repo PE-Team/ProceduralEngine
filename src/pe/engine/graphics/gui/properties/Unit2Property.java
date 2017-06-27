@@ -11,8 +11,24 @@ public class Unit2Property {
 	private Vec2f value;
 	private int[] units;
 	
+	public static Unit2Property createZeroPixel(){
+		return new Unit2Property(Vec2f.zero(), new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS});
+	}
+	
+	public static Unit2Property createZeroPercent(){
+		return new Unit2Property(Vec2f.zero(), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	}
+	
+	public static Unit2Property createHalfPercent(){
+		return new Unit2Property(new Vec2f(0.5f, 0.5f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	}
+	
+	public static Unit2Property createFullPercent(){
+		return new Unit2Property(new Vec2f(1.0f, 1.0f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT});
+	}
+	
 	public Unit2Property(){
-		this.value = Vec2f.ZERO;
+		this.value = Vec2f.zero();
 		this.units = new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS};
 	}
 	
@@ -84,7 +100,7 @@ public class Unit2Property {
 	}
 	
 	private static Vec2f toPixels(Vec2f value, int[] units, Unit2Property maxValue, float rpixRatio){
-		Vec2f maxValuePix = maxValue.pixels();
+		Vec2f maxValuePix = maxValue == null ? Vec2f.zero() : maxValue.pixels();
 		
 		return new Vec2f(
 				UnitConversions.toPixels(value.x, units[0], maxValuePix.x, rpixRatio),
@@ -93,7 +109,7 @@ public class Unit2Property {
 	}
 	
 	private static Vec2f toPercent(Vec2f value, int[] units, Unit2Property maxValue, float rpixRatio){
-		Vec2f maxValuePix = maxValue.pixels();
+		Vec2f maxValuePix = maxValue == null ? Vec2f.zero() : maxValue.pixels();
 		
 		return new Vec2f(
 				UnitConversions.toPercent(value.x, units[0], maxValuePix.x, rpixRatio),
@@ -102,7 +118,7 @@ public class Unit2Property {
 	}
 	
 	private static Vec2f toRPixels(Vec2f value, int[] units, Unit2Property maxValue, float rpixRatio){
-		Vec2f maxValuePix = maxValue.pixels();
+		Vec2f maxValuePix = maxValue == null ? Vec2f.zero() : maxValue.pixels();
 		
 		return new Vec2f(
 				UnitConversions.toRPixels(value.x, units[0], maxValuePix.x, rpixRatio),
@@ -115,8 +131,7 @@ public class Unit2Property {
 	}
 	
 	public Vec2f pixels(){
-		System.out.println(maxValue);
-		return this.pixels(this.maxValue, this.rpixSource.getRPixRatio());
+		return this.pixels(this.maxValue, (rpixSource == null ? 0 : rpixSource.getRPixRatio()) );
 	}
 	
 	public Vec2f percent(Unit2Property maxValue, float rpixRatio){
@@ -124,7 +139,7 @@ public class Unit2Property {
 	}
 	
 	public Vec2f percent(){
-		return this.percent(this.maxValue, this.rpixSource.getRPixRatio());
+		return this.percent(this.maxValue, (rpixSource == null ? 0 : rpixSource.getRPixRatio()) );
 	}
 	
 	public Vec2f rpixels(Unit2Property maxValue, float rpixRatio){
@@ -132,7 +147,7 @@ public class Unit2Property {
 	}
 	
 	public Vec2f rpixels(){
-		return this.rpixels(this.maxValue, this.rpixSource.getRPixRatio());
+		return this.rpixels(this.maxValue, (rpixSource == null ? 0 : rpixSource.getRPixRatio()) );
 	}
 	
 	public void set(Vec2f value){
@@ -157,6 +172,10 @@ public class Unit2Property {
 		this.maxValue = maxValue;
 		
 		return this;
+	}
+	
+	public Unit2Property getMaxValue(){
+		return maxValue;
 	}
 	
 	public Vec2f getValue(){

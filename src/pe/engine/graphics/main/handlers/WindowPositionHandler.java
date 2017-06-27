@@ -22,8 +22,8 @@ public class WindowPositionHandler extends GLFWWindowPosCallback implements Wind
 		if(windowHandler.isNotWindow(windowID))
 			return;
 		
-		Vec2f windowCenter = windowHandler.getWindow().getCenterPix();
-		windowHandler.setPositionValue(posX + windowCenter.x, posY + windowCenter.y, positionUnits);
+		Vec2f windowCenter = windowHandler.getWindow().getCenter().pixels();
+		windowHandler.setPosition(posX + windowCenter.x, posY + windowCenter.y, positionUnits);
 	}
 
 	@Override

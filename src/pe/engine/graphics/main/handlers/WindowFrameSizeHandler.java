@@ -21,7 +21,7 @@ public class WindowFrameSizeHandler extends GLFWFramebufferSizeCallback implemen
 		if(windowHandler.isNotWindow(windowID))
 			return;
 
-		windowHandler.setSizeValue(width, height, sizeUnits);
+		windowHandler.setSize(width, height, sizeUnits);
 		windowHandler.updateWindow();
 	}
 

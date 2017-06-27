@@ -105,6 +105,7 @@ public class PE {
 	public static final int GUI_EVENT_ON_DRAG = 101479893; 				//   Version = 3
 	public static final int GUI_EVENT_ON_HOVER = 101479894; 			//   Version = 4
 	public static final int GUI_EVENT_ON_TYPE = 101479895; 				//   Version = 5
+	public static final int GUI_EVENT_ON_SCROLL = 101479896; 			//   Version = 6
 
 																		// ID: ANGUN = 6771857
 	public static final int ANGLE_UNIT_DEGREES = 67718570; 				//   Version = 0

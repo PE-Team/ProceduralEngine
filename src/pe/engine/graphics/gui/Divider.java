@@ -29,7 +29,7 @@ public class Divider extends GUIComponent {
 		super(
 				new Vec2f(0.5f, 0.25f),
 				new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT},
-				Vec2f.ZERO,
+				new Vec2f(posX, posY),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				new Vec2f(0.5f, 0.5f),
 				new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT},

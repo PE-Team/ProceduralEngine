@@ -30,12 +30,12 @@ import pe.util.math.Vec2f;
 public class Window implements RPixSourceI, DisposableResourceI{
 
 	private WindowHandler windowHandler;
-	private Unit2Property monitorSize = new Unit2Property(); // Always in pixels
-	private Unit2Property mousePosition = new Unit2Property();
+	private Unit2Property monitorSize = Unit2Property.createZeroPixel(); // Always in pixels
+	private Unit2Property mousePosition = Unit2Property.createZeroPixel();
 	private float rpixRatio = 1;
-	private Unit2Property size = new Unit2Property(new Vec2f(1, 1), new int[]{ PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
-	private Unit2Property position = new Unit2Property();
-	private Unit2Property center = new Unit2Property();
+	private Unit2Property size = Unit2Property.createHalfPercent();
+	private Unit2Property position = Unit2Property.createHalfPercent();
+	private Unit2Property center = Unit2Property.createHalfPercent();
 	private long id;
 	private GUI gui = null;
 	private Mat4f orthoProjection = null;
@@ -75,12 +75,6 @@ public class Window implements RPixSourceI, DisposableResourceI{
 
 		show();
 		GL.createCapabilities();
-		
-		this.monitorSize = new Unit2Property();
-		this.mousePosition = new Unit2Property();
-		this.size = new Unit2Property();
-		this.position = new Unit2Property();
-		this.center = new Unit2Property();
 
 		generateMonitorStats();
 		updateProperties();
@@ -256,7 +250,7 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	
 	public void setPosition(Vec2f position, int[] units) {
 		this.position.set(position, units);
-
+		
 		updatePosition();
 	}
 	
