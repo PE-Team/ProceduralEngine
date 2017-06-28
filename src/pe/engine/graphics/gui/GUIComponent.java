@@ -7,6 +7,7 @@ import java.util.List;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 
+import pe.engine.data.TextureArrayObject;
 import pe.engine.data.TextureSwapArray;
 import pe.engine.graphics.gui.properties.RotationProperty;
 import pe.engine.graphics.gui.properties.Unit2Property;
@@ -18,6 +19,7 @@ import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
 import pe.engine.shader.main.Shader;
 import pe.engine.shader.main.ShaderProgram;
+import pe.engine.shader.shaders.core.CoreShaderPaths;
 import pe.util.Util;
 import pe.util.color.Color;
 import pe.util.math.Mat3f;
@@ -28,6 +30,11 @@ import pe.util.shapes.Polygon;
 
 public abstract class GUIComponent {
 
+	protected static final String[] TAO_UNIFORM_NAMES = { "foregroundTexture", "backgroundTexture" };
+	
+	protected static final int FOREGROUND_TEXTURE_INDEX = 0;
+	protected static final int BACKGROUND_TEXTURE_INDEX = 1;
+	
 	protected static ShaderProgram shaderProgram = null;
 
 	// @formatter:off
@@ -66,9 +73,11 @@ public abstract class GUIComponent {
 		this.textColor = textColor;
 		this.shape = shape;
 		this.mesh = new StaticMesh2D(shape.getVertices(), shape.getIndices());
+		this.tsa = new TextureSwapArray();
 
 		initMeshProperties();
 		initShaderProgram();
+		initTextures();
 	}
 
 	protected void initMeshProperties() {
@@ -93,17 +102,15 @@ public abstract class GUIComponent {
 		if (shaderProgram != null)
 			return;
 
-		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, "src/pe/engine/shader/shaders/core/GUIComponent.vertx");
+		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, CoreShaderPaths.GUI_COMPONENT_VERTEX);
 		vertexShader.compile();
 		vertexShader.compileStatus();
 
-		Shader geometryShader = new Shader(PE.SHADER_TYPE_GEOMETRY,
-				"src/pe/engine/shader/shaders/core/GUIComponent.geom");
+		Shader geometryShader = new Shader(PE.SHADER_TYPE_GEOMETRY, CoreShaderPaths.GUI_COMPONENT_GEOMETRY);
 		geometryShader.compile();
 		geometryShader.compileStatus();
 
-		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT,
-				"src/pe/engine/shader/shaders/core/GUIComponent.frag");
+		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT, CoreShaderPaths.GUI_COMPONENT_FRAGMENT);
 		fragmentShader.compile();
 		fragmentShader.compileStatus();
 
@@ -123,30 +130,53 @@ public abstract class GUIComponent {
 		shaderProgram = program;
 	}
 
+	protected void initTextures() {
+		TextureArrayObject taoDefault = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoPress = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoRelease = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoClick = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoDrag = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoHover = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoType = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoScroll = TextureArrayObject.fillStaticTexture2DClear(2);
+		
+		tsa.add(taoDefault, PE.GUI_EVENT_DEFAULT);
+		tsa.add(taoPress, PE.GUI_EVENT_ON_PRESS);
+		tsa.add(taoRelease, PE.GUI_EVENT_ON_RELEASE);
+		tsa.add(taoClick, PE.GUI_EVENT_ON_CLICK);
+		tsa.add(taoDrag, PE.GUI_EVENT_ON_DRAG);
+		tsa.add(taoHover, PE.GUI_EVENT_ON_HOVER);
+		tsa.add(taoType, PE.GUI_EVENT_ON_TYPE);
+		tsa.add(taoScroll, PE.GUI_EVENT_ON_SCROLL);
+		
+		tsa.autoUnload(true);
+		tsa.swap(PE.GUI_EVENT_DEFAULT);
+	}
+
 	public GUIComponent() {
 
 	};
 
 	public void setGUI(GUI gui) {
 		this.gui = gui;
-		
+
 		updateProperties();
 	}
-	
-	protected void updateSelfProperties(){
+
+	protected void updateSelfProperties() {
 		Window window = gui.getWindow();
-		
+
 		this.size.setMaxValue(parent.getSize()).setRPixSource(window);
 		this.position.setMaxValue(parent.getSize()).setRPixSource(window);
 		this.center.setMaxValue(size).setRPixSource(window);
 		this.borderWidth.setMaxValue(size).setRPixSource(window);
 		this.borderRadius.setMaxValue(size).setRPixSource(window);
 	}
-	
-	public void updateProperties(){
+
+	public void updateProperties() {
 		updateSelfProperties();
-		
-		for(GUIComponent child:children){
+
+		for (GUIComponent child : children) {
 			child.updateProperties();
 		}
 	}
@@ -257,20 +287,20 @@ public abstract class GUIComponent {
 
 			if (action == PE.MOUSE_ACTION_PRESS)
 				isDisposed = isDisposed | onPress(e);
-			
+
 			if (action == PE.MOUSE_ACTION_RELEASE)
 				isDisposed = isDisposed | onRelease(e);
-			
+
 			if (action == PE.MOUSE_ACTION_RELEASE
 					&& Util.isInRectangle(positionPix, sizePix, centerPix, rotationDeg, e.getDelta()))
 				isDisposed = isDisposed | onClick(e);
-			
+
 			if (action == PE.MOUSE_ACTION_SCROLL)
 				isDisposed = isDisposed | onScroll(e);
-			
+
 			if (action == PE.MOUSE_ACTION_DRAG && e.getWindowHandler().getMouseButtonState(PE.MOUSE_BUTTON_LEFT))
 				isDisposed = isDisposed | onDrag(e);
-			
+
 			if (action == PE.MOUSE_ACTION_HOVER)
 				isDisposed = isDisposed | onHover(e);
 
@@ -328,6 +358,7 @@ public abstract class GUIComponent {
 
 	public void render() {
 		shaderProgram.start();
+		tsa.bind();
 
 		Vec2f sizePix = size.pixels();
 		Vec2f centerPix = center.pixels();
@@ -349,12 +380,14 @@ public abstract class GUIComponent {
 		shaderProgram.setUniformVec4f("borderWidth", borderWidthPix);
 		shaderProgram.setUniformColor("borderColor", borderColor);
 		shaderProgram.setUniformVec4f("borderRadius", borderRadiusPix);
+		shaderProgram.setUniformTAO(TAO_UNIFORM_NAMES, tsa.get());
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		mesh.render();
 		GL11.glDisable(GL11.GL_BLEND);
 
+		tsa.unbind();
 		shaderProgram.stop();
 
 		renderChildren();

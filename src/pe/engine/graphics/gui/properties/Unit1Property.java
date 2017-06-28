@@ -2,24 +2,24 @@ package pe.engine.graphics.gui.properties;
 
 import pe.engine.main.PE;
 
-public class FloatProperty {
+public class Unit1Property {
 
 	private RPixSourceI rpixSource = null;
-	private FloatProperty maxValue = null;
+	private Unit1Property maxValue = null;
 	private float value;
 	private int units;
 	
-	public FloatProperty(){
+	public Unit1Property(){
 		this.value = 0;
 		this.units = PE.GUI_UNIT_PIXELS;
 	}
 	
-	public FloatProperty(float value, int units){
+	public Unit1Property(float value, int units){
 		this.value = value;
 		this.units = units;
 	}
 	
-	public FloatProperty(float value, int units, FloatProperty maxValue, RPixSourceI rpixSource){
+	public Unit1Property(float value, int units, Unit1Property maxValue, RPixSourceI rpixSource){
 		this.value = value;
 		this.units = units;
 		this.maxValue = maxValue;

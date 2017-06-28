@@ -96,7 +96,8 @@ public class TextureSwapArray {
 	}
 
 	/**
-	 * Removes the given key and the <code>Texture Object Array</code> associated with it.
+	 * Removes the given key and the <code>Texture Object Array</code>
+	 * associated with it.
 	 * 
 	 * @param key
 	 *            The key and values associated with it to remove.
@@ -169,6 +170,32 @@ public class TextureSwapArray {
 		}
 
 		currentTextureArray.bind();
+	}
+
+	/**
+	 * Returns the TextureArrayObject which is currently swapped in. The TAO
+	 * will still need to be bound to be used.
+	 * 
+	 * @return The currently used TAO.
+	 * 
+	 * @since 1.0
+	 */
+	public TextureArrayObject get() {
+		return textureArrays.get(currentTAO);
+	}
+
+	/**
+	 * Returns the TextureArrayObject bound to the given key.
+	 * 
+	 * @param key
+	 *            The key for the TAO.
+	 * 
+	 * @return The currently used TAO.
+	 * 
+	 * @since 1.0
+	 */
+	public TextureArrayObject get(int key) {
+		return textureArrays.get(key);
 	}
 
 	/**

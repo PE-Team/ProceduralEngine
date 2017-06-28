@@ -9,6 +9,8 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
+import org.lwjgl.opengl.GL21;
+import org.lwjgl.opengl.GL30;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
 
@@ -63,8 +65,12 @@ public abstract class Texture extends BufferObject{
 		if(path == null){
 			/* Create a Clear texture */
 			FloatBuffer fb = BufferUtils.createFloatBuffer(4);
-			Color.CLEAR.putInBuffer4(fb);
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, fb);
+			//Color.GREEN.putInBuffer4(fb);
+			//fb.put(0.1f).put(1.0f).put(1.0f).put(1.0f);
+			//fb.flip();
+			ByteBuffer bb = BufferUtils.createByteBuffer(4);
+			Color.GREEN.putInBuffer4Byte(bb);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bb);
 			
 		}else{
 			/* Try to load the texture from the path */

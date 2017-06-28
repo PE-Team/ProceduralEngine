@@ -7,13 +7,14 @@ flat in vec2 borderWidthMod;
 
 out vec4 color;
 
-uniform float pixWidth;
 uniform float width;
 uniform float height;
 uniform vec4 backgroundColor;
 uniform vec4 borderColor;
 uniform vec4 borderWidth;
 uniform vec4 borderRadius;
+uniform sampler2D foregroundTexture;
+uniform sampler2D backgroundTexture;
 
 float ailizeBorderRadius(float borderR, float ailizedWidth, vec2 border){
 	float x = borderR - border.x;
@@ -24,7 +25,7 @@ float ailizeBorderRadius(float borderR, float ailizedWidth, vec2 border){
 	return max(max(side.x, side.y), radius);
 }
 
-float ailizeElliseRadius(float width, float height, float borderR, float ailizedWidth, vec2 border){
+float ailizeEllipseRadius(float width, float height, float borderR, float ailizedWidth, vec2 border){
 	float x = borderR - border.x;
 	float y = borderR - border.y;
 	float r = sqrt(x*x + y*y);
@@ -50,10 +51,10 @@ vec2 draw(vec2 mask){
 	float bottom = smoothstep(borderWidth.z - aWidth, borderWidth.z + aWidth, height - border.y);
 	float left = smoothstep(borderWidth.w - aWidth, borderWidth.w + aWidth, width - border.x);
 	
-	float topLeftInside = ailizeElliseRadius(borderRadius.x - borderWidth.w, borderRadius.x - borderWidth.x, borderRadius.x, aWidth, topLeftBorder);
-	float topRightInside = ailizeElliseRadius(borderRadius.y - borderWidth.y, borderRadius.y - borderWidth.x, borderRadius.y, aWidth, topRightBorder);
-	float bottomRightInside = ailizeElliseRadius(borderRadius.z - borderWidth.y, borderRadius.z - borderWidth.z, borderRadius.z, aWidth, bottomRightBorder);
-	float bottomLeftInside = ailizeElliseRadius(borderRadius.w - borderWidth.w, borderRadius.w - borderWidth.z, borderRadius.w, aWidth, bottomLeftBorder);
+	float topLeftInside = ailizeEllipseRadius(borderRadius.x - borderWidth.w, borderRadius.x - borderWidth.x, borderRadius.x, aWidth, topLeftBorder);
+	float topRightInside = ailizeEllipseRadius(borderRadius.y - borderWidth.y, borderRadius.y - borderWidth.x, borderRadius.y, aWidth, topRightBorder);
+	float bottomRightInside = ailizeEllipseRadius(borderRadius.z - borderWidth.y, borderRadius.z - borderWidth.z, borderRadius.z, aWidth, bottomRightBorder);
+	float bottomLeftInside = ailizeEllipseRadius(borderRadius.w - borderWidth.w, borderRadius.w - borderWidth.z, borderRadius.w, aWidth, bottomLeftBorder);
 	
 	mask.x = min(min(min(min(min(min(min(top, right), bottom), left), topLeftInside), topRightInside), bottomRightInside), bottomLeftInside);
 	
@@ -67,13 +68,31 @@ vec2 draw(vec2 mask){
 	return mask;
 }
 
+float calcDimTexCoord(float texCoord, float width, float borderR, float borderL){
+	return (texCoord * (width - borderR - borderL) + borderR) / width;
+}
+
+vec2 calcBackgroundTexCoords(vec2 texCoord, float width, float height, vec4 border){
+	return vec2(
+		calcDimTexCoord(texCoord.x, width, border.w, border.y),
+		calcDimTexCoord(texCoord.y, height, border.z, border.x)
+	);
+}
+
 void main() {
-	vec4 fillC = backgroundColor;
-	vec4 borderC = borderColor;
 	vec2 colorMask = vec2(1.0, 1.0);
+	vec2 backgroundTexCoord = calcBackgroundTexCoords(texCoord, width, height, borderWidth);
+	
+	vec4 backgroundTextureColor = texture(backgroundTexture, backgroundTexCoord);
+	vec4 foregroundTextureColor = texture(foregroundTexture, texCoord);
+	
+	vec4 fillC = mix(backgroundColor, backgroundTextureColor, backgroundTextureColor.w);
+	vec4 borderC = borderColor;
 	
 	colorMask = draw(colorMask);
 	
 	color = mix(borderC, fillC, colorMask.x);
+	color = mix(color, foregroundTextureColor, foregroundTextureColor.w);
+	
 	color.w *= colorMask.y;
 }

@@ -258,6 +258,35 @@ public class ShaderProgram implements DisposableResourceI {
 	}
 
 	/**
+	 * Pairs all the textures located in a TextureArrayObject with their uniform
+	 * variables. The strings in <code>names</code> must match up to the
+	 * ordering of the Textures in the TAO. The TAO is iterated through and uses
+	 * <code>setUniformTexture()</code> to set the uniform, so the ordering in
+	 * the TAO does not matter, only that it coincides with the ordering of
+	 * <code>names</code>.
+	 * 
+	 * @param names
+	 *            The names of the uniforms to set the textures of. Must be in
+	 *            the same ordering as the TAO.
+	 * @param tao
+	 *            The array of textures to set the uniform variables to. Must be
+	 *            in the same ordering as the given uniform names.
+	 * 
+	 * @see #setUniformTexture(String, Texture)
+	 * 
+	 * @since 1.0
+	 */
+	public void setUniformTAO(String[] names, TextureArrayObject tao) {
+		if (names.length != tao.length())
+			throw new IllegalArgumentException(
+					"There must be an equal number of uniform names to textures in the TAO.");
+
+		for (int i = 0; i < names.length; i++) {
+			setUniformTexture(names[i], tao.getTexture(i));
+		}
+	}
+
+	/**
 	 * Pairs all of the textures in a <code>TextureArrayObject</code> with its
 	 * respective uniform name. The index of the uniform name in
 	 * <code>name</code> should be the same as the location of the texture it

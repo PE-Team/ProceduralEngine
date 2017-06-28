@@ -1,5 +1,9 @@
 package pe.engine.graphics.gui;
 
+import pe.engine.data.TextureArrayObject;
+import pe.engine.graphics.gui.textures.core.CoreTexturePaths;
+import pe.engine.graphics.objects.Texture;
+import pe.engine.graphics.objects.Texture2D;
 import pe.engine.main.PE;
 import pe.util.color.Color;
 import pe.util.math.Vec2f;
@@ -45,5 +49,13 @@ public class Divider extends GUIComponent {
 				new Rectangle(1, 1)
 				);
 		// @formatter:on
+		
+		Texture backgroundTexture = new Texture2D(CoreTexturePaths.BACKGROUND_TEST);
+		backgroundTexture.bind();
+		backgroundTexture.load();
+		backgroundTexture.unbind();
+		
+		TextureArrayObject tao = tsa.get(PE.GUI_EVENT_DEFAULT);
+		tao.set(backgroundTexture, BACKGROUND_TEXTURE_INDEX);
 	}
 }
