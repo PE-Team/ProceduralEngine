@@ -6,4 +6,5 @@ public class CoreTexturePaths {
 
 	public static final String BACKGROUND_TEST = PATH + "BackgroundTest.png";
 	public static final String FOREGROUND_TEST = PATH + "ForegroundTest.png";
+	public static final String SINGLE_PIXEL_TEST = PATH + "SinglePixel.png";
 }

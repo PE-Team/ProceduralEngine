@@ -44,19 +44,37 @@ public abstract class Texture extends BufferObject {
 		GL11.glBindTexture(glDim, 0);
 	}
 
+	/**
+	 * Loads a 4 byte clear 1x1 pixel texture as into memory. Note: the texture
+	 * must be bound before calling this.
+	 * 
+	 * @since 1.0
+	 */
+	private void setClearTexture() {
+		ByteBuffer bb = BufferUtils.createByteBuffer(4);
+		Color.CLEAR.putInBuffer4ByteC(bb);
+
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bb);
+
+	}
+
+	/**
+	 * Loads the texture into memory from the texture's path. Note: The texture
+	 * must first be bound before loading the texture.
+	 * <p>
+	 * If <code>path == null</code>, then the texture is given the data of a 1x1
+	 * clear black pixel, equivalent to <code>Color.CLEAR</code>, except each
+	 * part only uses a byte. Thus, this clear texture uses a total of 4 bytes.
+	 * 
+	 * @see #setClearTexture()
+	 * 
+	 * @since 1.0
+	 */
 	public void load() {
-		bind();
-		
 		if (path == null) {
 			/* Create a Clear texture */
-			FloatBuffer fb = BufferUtils.createFloatBuffer(4);
-			// Color.GREEN.putInBuffer4(fb);
-			// fb.put(0.1f).put(1.0f).put(1.0f).put(1.0f);
-			// fb.flip();
-			ByteBuffer bb = BufferUtils.createByteBuffer(4);
-			Color.GREEN.putInBuffer4Byte(bb);
-			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bb);
-			
+
+			setClearTexture();
 		} else {
 			/* Try to load the texture from the path */
 			try (MemoryStack stack = MemoryStack.stackPush()) {
@@ -73,12 +91,11 @@ public abstract class Texture extends BufferObject {
 
 				int width = widthBuffer.get();
 				int height = heightBuffer.get();
+
 				GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA,
 						GL11.GL_UNSIGNED_BYTE, image);
 			}
 		}
-		
-		unbind();
 	}
 
 	protected static int getGLMipMapFilter(int mipMapFilter) {
@@ -123,6 +140,18 @@ public abstract class Texture extends BufferObject {
 			return GL11.GL_REPEAT;
 		}
 		throw new IllegalArgumentException("The given texture wrap option is not supported");
+	}
+
+	/**
+	 * Sets the texture in memory to that of a clear 1x1 pixel. Note: The
+	 * texture must be bound before calling this.
+	 * 
+	 * @see #setClearTexture()
+	 * 
+	 * @since 1.0
+	 */
+	public void unload() {
+		setClearTexture();
 	}
 
 	public void dispose() {

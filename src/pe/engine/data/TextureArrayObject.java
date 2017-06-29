@@ -48,7 +48,17 @@ public class TextureArrayObject{
 	
 	public void load(){
 		for(Texture texture:textures){
+			texture.bind();
 			texture.load();
+			texture.unbind();
+		}
+	}
+	
+	public void unload(){
+		for(Texture texture:textures){
+			texture.bind();
+			texture.unload();
+			texture.unbind();
 		}
 	}
 	
@@ -78,6 +88,7 @@ public class TextureArrayObject{
 	}
 	
 	public void set(Texture texture, int textureLocation){
+		texture.setLocation(textureLocation);
 		textures.set(textureLocation, texture);
 	}
 	

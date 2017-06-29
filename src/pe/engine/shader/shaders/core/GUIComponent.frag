@@ -92,7 +92,7 @@ void main() {
 	colorMask = draw(colorMask);
 	
 	color = mix(borderC, fillC, colorMask.x);
-	color = mix(color, foregroundTextureColor, foregroundTextureColor.w);
+	color.xyz = mix(color.xyz, foregroundTextureColor.xyz, foregroundTextureColor.w);
 	
 	color.w *= colorMask.y;
 }

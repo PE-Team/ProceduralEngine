@@ -52,9 +52,11 @@ public class Divider extends GUIComponent {
 		// @formatter:on
 		
 		Texture backgroundTexture = new Texture2D(CoreTexturePaths.BACKGROUND_TEST);
+		Texture foregroundTexture = new Texture2D(CoreTexturePaths.FOREGROUND_TEST);
 		
 		TextureArrayObject tao = tsa.get(PE.GUI_EVENT_DEFAULT);
 		tao.set(backgroundTexture, BACKGROUND_TEXTURE_INDEX);
+		tao.set(foregroundTexture, FOREGROUND_TEXTURE_INDEX);
 		
 		tao.load();
 	}

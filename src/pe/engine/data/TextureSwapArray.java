@@ -10,9 +10,15 @@ public class TextureSwapArray {
 
 	private Map<Integer, TextureArrayObject> textureArrays;
 	private int currentTAO = PE.NULL;
+	private boolean autoUnload = false;
 
 	public TextureSwapArray() {
 		this.textureArrays = new HashMap<Integer, TextureArrayObject>();
+	}
+	
+	public TextureSwapArray(boolean autoUnload) {
+		this.textureArrays = new HashMap<Integer, TextureArrayObject>();
+		this.autoUnload = autoUnload;
 	}
 
 	/**
@@ -113,6 +119,18 @@ public class TextureSwapArray {
 			tao.load();
 		}
 	}
+	
+	/**
+	 * Unloads all of the TextureArrayObjects (and therefore their textures) held
+	 * within this TextureSwapArray.
+	 * 
+	 * @since 1.0
+	 */
+	public void unloadAll() {
+		for (TextureArrayObject tao : textureArrays.values()) {
+			tao.unload();
+		}
+	}
 
 	/**
 	 * Binds the currently swapped in <code>TextureArrayObject</code>.
@@ -149,13 +167,19 @@ public class TextureSwapArray {
 
 		TextureArrayObject currentTextureArray = textureArrays.get(currentTAO);
 		if (currentTAO != PE.NULL) {
+			if(autoUnload)
+				currentTextureArray.unload();
+			
 			currentTextureArray.unbind();
 		}
 
 		currentTAO = key;
 		currentTextureArray = textureArrays.get(currentTAO);
-
+		
 		currentTextureArray.bind();
+		
+		if(autoUnload)
+			currentTextureArray.load();
 	}
 
 	/**
