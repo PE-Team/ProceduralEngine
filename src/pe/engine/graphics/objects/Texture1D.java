@@ -13,14 +13,14 @@ public class Texture1D extends Texture {
 		this.path = path;
 		this.glDim = GL11.GL_TEXTURE_1D;
 
-		forceBind();
+		bind();
 
 		setTextureWrap(textureWrapX);
 		setTextureFilter(pixelatedFilter);
 		if (generateMipMap)
 			generateMipMap(mipMapFilter);
 
-		forceUnbind();
+		unbind();
 
 		Resources.add(this, this);
 	}

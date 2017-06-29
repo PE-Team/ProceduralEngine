@@ -7,28 +7,29 @@ import pe.engine.data.Resources;
 import pe.engine.main.PE;
 
 public class Texture2D extends Texture {
-	
+
 	public static final Texture2D CLEAR = createClear();
 
-	public static Texture2D createClear(){
-		return new Texture2D(null, PE.TEXTURE_WRAP_REPEAT, PE.TEXTURE_WRAP_REPEAT, true, false, PE.MIPMAP_FILTER_SIGLE_PIXELATED);
+	public static Texture2D createClear() {
+		return new Texture2D(null, PE.TEXTURE_WRAP_REPEAT, PE.TEXTURE_WRAP_REPEAT, true, false,
+				PE.MIPMAP_FILTER_SIGLE_PIXELATED);
 	}
-	
-	public Texture2D(String path){
+
+	public Texture2D(String path) {
 		this.id = GL11.glGenTextures();
 		this.path = path;
 		this.glDim = GL11.GL_TEXTURE_2D;
 
-		forceBind();
+		bind();
 
 		setTextureWrap(PE.TEXTURE_WRAP_BORDER, PE.TEXTURE_WRAP_BORDER);
 		setTextureFilter(true);
 
-		forceUnbind();
+		unbind();
 
 		Resources.add(this, this);
 	}
-	
+
 	public Texture2D(String path, int textureWrapX, int textureWrapY, boolean pixelatedFilter, boolean generateMipMap,
 			int mipMapFilter) {
 
@@ -36,14 +37,14 @@ public class Texture2D extends Texture {
 		this.path = path;
 		this.glDim = GL11.GL_TEXTURE_2D;
 
-		forceBind();
+		bind();
 
 		setTextureWrap(textureWrapX, textureWrapY);
 		setTextureFilter(pixelatedFilter);
-		if(generateMipMap)
+		if (generateMipMap)
 			generateMipMap(mipMapFilter);
 
-		forceUnbind();
+		unbind();
 
 		Resources.add(this, this);
 	}
@@ -67,10 +68,10 @@ public class Texture2D extends Texture {
 
 	@Override
 	public void generateMipMap(int mipMapFilter) {
-			int glMipMapFilter = getGLMipMapFilter(mipMapFilter);
+		int glMipMapFilter = getGLMipMapFilter(mipMapFilter);
 
-			GL30.glGenerateMipmap(glDim);
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glMipMapFilter);
-			GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glMipMapFilter);
+		GL30.glGenerateMipmap(glDim);
+		GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MIN_FILTER, glMipMapFilter);
+		GL11.glTexParameteri(glDim, GL11.GL_TEXTURE_MAG_FILTER, glMipMapFilter);
 	}
 }

@@ -39,6 +39,7 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	private long id;
 	private GUI gui = null;
 	private Mat4f orthoProjection = null;
+	private boolean inputEventFired = false;
 
 	public Window(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center, int[] centerUnits, String title, boolean vsync,
 			boolean resizeable, boolean border) {
@@ -209,6 +210,7 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	}
 	
 	public void fireInputEvent(WindowInputEvent e){
+		this.inputEventFired = true;
 		gui.invokeInputEvent(e);
 	}
 	
@@ -314,10 +316,14 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	}
 
 	public void update() {
+		this.inputEventFired = false;
 		GLFW.glfwSwapBuffers(id);
 		GLFW.glfwPollEvents();
 		if(windowHandler != null)
 			windowHandler.update();
+		
+		if(!inputEventFired && gui != null && windowHandler != null)
+			fireInputEvent(new WindowInputEvent(windowHandler, PE.NULL, PE.NULL));
 	}
 
 	/**

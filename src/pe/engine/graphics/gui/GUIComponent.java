@@ -3,6 +3,7 @@ package pe.engine.graphics.gui;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ListIterator;
 
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
@@ -31,10 +32,10 @@ import pe.util.shapes.Polygon;
 public abstract class GUIComponent {
 
 	protected static final String[] TAO_UNIFORM_NAMES = { "foregroundTexture", "backgroundTexture" };
-	
+
 	protected static final int FOREGROUND_TEXTURE_INDEX = 0;
 	protected static final int BACKGROUND_TEXTURE_INDEX = 1;
-	
+
 	protected static ShaderProgram shaderProgram = null;
 
 	// @formatter:off
@@ -139,7 +140,7 @@ public abstract class GUIComponent {
 		TextureArrayObject taoHover = TextureArrayObject.fillStaticTexture2DClear(2);
 		TextureArrayObject taoType = TextureArrayObject.fillStaticTexture2DClear(2);
 		TextureArrayObject taoScroll = TextureArrayObject.fillStaticTexture2DClear(2);
-		
+
 		tsa.add(taoDefault, PE.GUI_EVENT_DEFAULT);
 		tsa.add(taoPress, PE.GUI_EVENT_ON_PRESS);
 		tsa.add(taoRelease, PE.GUI_EVENT_ON_RELEASE);
@@ -148,8 +149,7 @@ public abstract class GUIComponent {
 		tsa.add(taoHover, PE.GUI_EVENT_ON_HOVER);
 		tsa.add(taoType, PE.GUI_EVENT_ON_TYPE);
 		tsa.add(taoScroll, PE.GUI_EVENT_ON_SCROLL);
-		
-		tsa.autoUnload(true);
+		tsa.loadAll();
 		tsa.swap(PE.GUI_EVENT_DEFAULT);
 	}
 
@@ -257,6 +257,23 @@ public abstract class GUIComponent {
 		return false;
 	}
 
+	/**
+	 * This event is fired whenever a mouse button is released when not over
+	 * this widget.
+	 * 
+	 * @param e
+	 *            The <code>WindowInputEvent</code> object which contains
+	 *            information specific to this event as well as the
+	 *            <code>WindowHandler</code> which fired the event.
+	 * 
+	 * @return Whether this event handler did anything with the event
+	 */
+	protected boolean onOutsideRelease(WindowInputEvent e) {
+		System.out.println("RELEASING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_DEFAULT);
+		return false;
+	}
+
 	protected boolean invokeInputEvent(WindowInputEvent e, boolean disposed) {
 		boolean isDisposed = invokeChildrenInputEvent(e, disposed);
 
@@ -265,8 +282,10 @@ public abstract class GUIComponent {
 
 	protected boolean invokeChildrenInputEvent(WindowInputEvent e, boolean disposed) {
 		boolean isDisposed = disposed;
-		for (GUIComponent child : children) {
-			isDisposed = child.invokeInputEvent(e, isDisposed);
+
+		ListIterator<GUIComponent> iterator = children.listIterator(children.size());
+		while (iterator.hasPrevious()) {
+			isDisposed = iterator.previous().invokeInputEvent(e, isDisposed);
 		}
 		return isDisposed;
 	}
@@ -281,9 +300,9 @@ public abstract class GUIComponent {
 		if (disposed)
 			return true;
 
+		int action = e.getAction();
+		boolean isDisposed = false;
 		if (Util.isInRectangle(positionPix, sizePix, centerPix, rotationDeg, e.getPosition())) {
-			int action = e.getAction();
-			boolean isDisposed = false;
 
 			if (action == PE.MOUSE_ACTION_PRESS)
 				isDisposed = isDisposed | onPress(e);
@@ -305,9 +324,12 @@ public abstract class GUIComponent {
 				isDisposed = isDisposed | onHover(e);
 
 			return isDisposed;
+		} else {
+			if (action == PE.MOUSE_ACTION_RELEASE)
+				isDisposed = isDisposed | onOutsideRelease(e);
 		}
 
-		return false;
+		return isDisposed;
 	}
 
 	public void setRotation(float degrees) {

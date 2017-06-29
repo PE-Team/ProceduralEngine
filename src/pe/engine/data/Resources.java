@@ -20,16 +20,17 @@ public class Resources {
 		printOnDispose = print;
 	}
 
-	public static synchronized void add(DisposableResourceI resource) {
-		add(currentKey, resource);
+	public static synchronized Object add(DisposableResourceI resource) {
+		return add(currentKey, resource);
 	}
 
-	public static synchronized void add(Object key, DisposableResourceI resource) {
+	public static synchronized Object add(Object key, DisposableResourceI resource) {
 		if (!resources.containsKey(key)) {
 			Set<DisposableResourceI> resourceList = new HashSet<DisposableResourceI>();
 			resources.put(key, resourceList);
 		}
 		resources.get(key).add(resource);
+		return key;
 	}
 
 	public static synchronized void dispose() {
@@ -37,7 +38,11 @@ public class Resources {
 	}
 
 	public static synchronized void dispose(Object key) {
-		for (DisposableResourceI dr : resources.get(key)) {
+		Set<DisposableResourceI> res = resources.get(key);
+		if(res == null)
+			return;
+		
+		for (DisposableResourceI dr : res) {
 			disposeResource(dr);
 		}
 		resources.remove(key);

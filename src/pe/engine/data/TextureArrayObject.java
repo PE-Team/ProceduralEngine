@@ -36,13 +36,13 @@ public class TextureArrayObject{
 	
 	public void bind(){
 		for(Texture texture:textures){
-			texture.forceBind();
+			texture.bind();
 		}
 	}
 	
 	public void unbind(){
 		for(Texture texture:textures){
-			texture.forceUnbind();
+			texture.unbind();
 		}
 	}
 	
@@ -52,31 +52,23 @@ public class TextureArrayObject{
 		}
 	}
 	
-	public void unload(){
-		for(Texture texture:textures){
-			texture.unload();
-		}
-	}
-	
 	public void add(Texture texture){
 		texture.setLocation(textures.size());
 		textures.add(texture);
 	}
 	
-	public void remove(int textureLocation){
-		Texture texture = textures.remove(textureLocation);
-		texture.unload();
-		
+	public Texture remove(int textureLocation){
 		int location = 0;
 		for(Texture tex:textures){
 			tex.setLocation(location);
 			location++;
 		}
+		
+		return textures.remove(textureLocation);
 	}
 	
 	public void remove(Texture texture){
 		textures.remove(texture);
-		texture.unload();
 		
 		int location = 0;
 		for(Texture tex:textures){

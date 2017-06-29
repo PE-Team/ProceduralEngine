@@ -2,6 +2,7 @@ package pe.engine.graphics.gui;
 
 import pe.engine.data.TextureArrayObject;
 import pe.engine.graphics.gui.textures.core.CoreTexturePaths;
+import pe.engine.graphics.main.handlers.WindowInputEvent;
 import pe.engine.graphics.objects.Texture;
 import pe.engine.graphics.objects.Texture2D;
 import pe.engine.main.PE;
@@ -51,11 +52,53 @@ public class Divider extends GUIComponent {
 		// @formatter:on
 		
 		Texture backgroundTexture = new Texture2D(CoreTexturePaths.BACKGROUND_TEST);
-		backgroundTexture.bind();
-		backgroundTexture.load();
-		backgroundTexture.unbind();
 		
 		TextureArrayObject tao = tsa.get(PE.GUI_EVENT_DEFAULT);
 		tao.set(backgroundTexture, BACKGROUND_TEXTURE_INDEX);
+		
+		tao.load();
+	}
+	
+	protected boolean onPress(WindowInputEvent e) {
+		System.out.println("PRESSING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_ON_PRESS);
+		return true;
+	}
+
+	protected boolean onRelease(WindowInputEvent e) {
+		System.out.println("RELEASING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_DEFAULT);
+		return true;
+	}
+
+	protected boolean onClick(WindowInputEvent e) {
+		System.out.println("CLICKING IS WORKING!");
+		return true;
+	}
+
+	protected boolean onScroll(WindowInputEvent e) {
+		System.out.println("SCROLLING IS WORKING!");
+		return true;
+	}
+
+	protected boolean onDrag(WindowInputEvent e) {
+		System.out.println("DRAGGING IS WORKING!");
+		return false;
+	}
+
+	protected boolean onHover(WindowInputEvent e) {
+		System.out.println("HOVERING IS WORKING!");
+		return false;
+	}
+
+	protected boolean onType(WindowInputEvent e) {
+		System.out.println("TYPING WOKRING!");
+		return false;
+	}
+
+	protected boolean onOutsideRelease(WindowInputEvent e) {
+		System.out.println("RELEASING IS WORKING!");
+		tsa.swap(PE.GUI_EVENT_DEFAULT);
+		return false;
 	}
 }
