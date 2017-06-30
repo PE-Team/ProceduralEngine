@@ -14,6 +14,7 @@ import pe.engine.data.Resources;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.gui.properties.RPixSourceI;
 import pe.engine.graphics.gui.properties.Unit2Property;
+import pe.engine.graphics.main.handlers.WindowFocusHandler;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
 import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
@@ -205,7 +206,7 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	}
 
 	public void setKeyHandler(WindowKeyHandler keyHandler) {
-		keyHandler.setWindowHanlder(windowHandler);
+		keyHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetKeyCallback(id, keyHandler);
 	}
 	
@@ -220,28 +221,33 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	}
 	
 	public void setScrollHandler(WindowScrollHandler scrollHandler){
-		scrollHandler.setWindowHanlder(windowHandler);
+		scrollHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetScrollCallback(id, scrollHandler);
 	}
 	
 	public void setMouseButtonHandler(WindowMouseButtonHandler mouseButtonHandler){
-		mouseButtonHandler.setWindowHanlder(windowHandler);
+		mouseButtonHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetMouseButtonCallback(id, mouseButtonHandler);
 	}
 	
 	public void setMousePositionHandler(WindowMousePositionHandler mousePosHandler){
-		mousePosHandler.setWindowHanlder(windowHandler);
+		mousePosHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetCursorPosCallback(id, mousePosHandler);
 	}
 
 	public void setFrameSizeHandler(WindowFrameSizeHandler sizeHandler) {
-		sizeHandler.setWindowHanlder(windowHandler);
+		sizeHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetFramebufferSizeCallback(id, sizeHandler);
 	}
 
 	public void setPositionHandler(WindowPositionHandler posHandler) {
-		posHandler.setWindowHanlder(windowHandler);
+		posHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetWindowPosCallback(id, posHandler);
+	}
+	
+	public void setFocusHandler(WindowFocusHandler focusHandler){
+		focusHandler.setWindowHandler(windowHandler);
+		GLFW.glfwSetWindowFocusCallback(id, focusHandler);
 	}
 	
 	public void setCenter(Vec2f center, int[] units){

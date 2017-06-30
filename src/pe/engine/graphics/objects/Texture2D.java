@@ -8,8 +8,6 @@ import pe.engine.main.PE;
 
 public class Texture2D extends Texture {
 
-	public static final Texture2D CLEAR = createClear();
-
 	public static Texture2D createClear() {
 		return new Texture2D(null, PE.TEXTURE_WRAP_REPEAT, PE.TEXTURE_WRAP_REPEAT, true, false,
 				PE.MIPMAP_FILTER_SIGLE_PIXELATED);

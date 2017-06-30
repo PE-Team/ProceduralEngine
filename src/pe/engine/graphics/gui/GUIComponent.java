@@ -41,7 +41,8 @@ public abstract class GUIComponent {
 	// @formatter:off
 	protected Unit2Property size = Unit2Property.createFullPercent();
 	protected Unit2Property position = Unit2Property.createZeroPixel();
-	protected Unit2Property center = Unit2Property.createHalfPercent();
+	protected Unit2Property positionOffset = Unit2Property.createZeroPercent();
+	protected Unit2Property rotationOffset = Unit2Property.createHalfPercent();
 	protected RotationProperty rotation = new RotationProperty();
 	protected Color backgroundColor = Color.CLEAR;
 	protected Unit4Property borderWidth = Unit4Property.createZeroPixel();		// {TOP, RIGHT, BOTTOM, LEFT}
@@ -58,13 +59,14 @@ public abstract class GUIComponent {
 	protected List<GUIComponent> children = new ArrayList<GUIComponent>();
 	// @formatter:on
 
-	public GUIComponent(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center,
-			int[] centerUnits, float rotation, Color backgroundColor, Vec4f borderWidth, int[] borderWidthUnits,
-			Color borderColor, Vec4f borderRadius, int[] borderRadiusUnits, String text, Color textColor,
-			Polygon shape) {
+	public GUIComponent(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f positionOffset,
+			int[] positionOffsetUnits, Vec2f rotationOffset, int[] rotationOffsetUnits, float rotation,
+			Color backgroundColor, Vec4f borderWidth, int[] borderWidthUnits, Color borderColor, Vec4f borderRadius,
+			int[] borderRadiusUnits, String text, Color textColor, Polygon shape) {
 		this.size.set(size, sizeUnits);
 		this.position.set(position, positionUnits);
-		this.center.set(center, centerUnits);
+		this.positionOffset.set(positionOffset, positionOffsetUnits);
+		this.rotationOffset.set(rotationOffset, rotationOffsetUnits);
 		this.rotation = new RotationProperty(rotation, PE.ANGLE_UNIT_DEGREES);
 		this.backgroundColor = backgroundColor;
 		this.borderWidth.set(borderWidth, borderWidthUnits);
@@ -132,14 +134,14 @@ public abstract class GUIComponent {
 	}
 
 	protected void initTextures() {
-		TextureArrayObject taoDefault = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoPress = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoRelease = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoClick = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoDrag = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoHover = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoType = TextureArrayObject.fillStaticTexture2DClear(2);
-		TextureArrayObject taoScroll = TextureArrayObject.fillStaticTexture2DClear(2);
+		TextureArrayObject taoDefault = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoPress = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoRelease = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoClick = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoDrag = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoHover = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoType = TextureArrayObject.fillTexture2DClear(2);
+		TextureArrayObject taoScroll = TextureArrayObject.fillTexture2DClear(2);
 
 		tsa.add(taoDefault, PE.GUI_EVENT_DEFAULT);
 		tsa.add(taoPress, PE.GUI_EVENT_ON_PRESS);
@@ -168,7 +170,8 @@ public abstract class GUIComponent {
 
 		this.size.setMaxValue(parent.getSize()).setRPixSource(window);
 		this.position.setMaxValue(parent.getSize()).setRPixSource(window);
-		this.center.setMaxValue(size).setRPixSource(window);
+		this.positionOffset.setMaxValue(size).setRPixSource(window);
+		this.rotationOffset.setMaxValue(size).setRPixSource(window);
 		this.borderWidth.setMaxValue(size).setRPixSource(window);
 		this.borderRadius.setMaxValue(size).setRPixSource(window);
 	}
@@ -269,7 +272,7 @@ public abstract class GUIComponent {
 	 * @return Whether this event handler did anything with the event
 	 */
 	protected boolean onOutsideRelease(WindowInputEvent e) {
-		System.out.println("RELEASING IS WORKING!");
+		System.out.println("OUTSIDE RELEASING IS WORKING!");
 		tsa.swap(PE.GUI_EVENT_DEFAULT);
 		return false;
 	}
@@ -293,16 +296,17 @@ public abstract class GUIComponent {
 	protected boolean invokeSelfInputEvent(WindowInputEvent e, boolean disposed) {
 
 		Vec2f sizePix = size.pixels();
-		Vec2f centerPix = center.pixels();
+		Vec2f rotationOffsetPix = rotationOffset.pixels();
 		float rotationDeg = rotation.degrees();
 		Vec2f positionPix = position.pixels();
+		Vec2f positionOffsetPix = positionOffset.pixels();
 
 		if (disposed)
 			return true;
 
 		int action = e.getAction();
 		boolean isDisposed = false;
-		if (Util.isInRectangle(positionPix, sizePix, centerPix, rotationDeg, e.getPosition())) {
+		if (Util.isInRectangle(positionPix, positionOffsetPix, sizePix, rotationOffsetPix, rotationDeg, e.getPosition())) {
 
 			if (action == PE.MOUSE_ACTION_PRESS)
 				isDisposed = isDisposed | onPress(e);
@@ -311,7 +315,7 @@ public abstract class GUIComponent {
 				isDisposed = isDisposed | onRelease(e);
 
 			if (action == PE.MOUSE_ACTION_RELEASE
-					&& Util.isInRectangle(positionPix, sizePix, centerPix, rotationDeg, e.getDelta()))
+					&& Util.isInRectangle(positionPix, positionOffsetPix, sizePix, rotationOffsetPix, rotationDeg, e.getDelta()))
 				isDisposed = isDisposed | onClick(e);
 
 			if (action == PE.MOUSE_ACTION_SCROLL)
@@ -361,9 +365,13 @@ public abstract class GUIComponent {
 	public Unit2Property getSize() {
 		return size;
 	}
+	
+	public Unit2Property getPositionOffset(){
+		return positionOffset;
+	}
 
-	public Unit2Property getCenter() {
-		return center;
+	public Unit2Property getRotationOffset() {
+		return rotationOffset;
 	}
 
 	public Unit2Property getPosition() {
@@ -383,15 +391,16 @@ public abstract class GUIComponent {
 		tsa.bind();
 
 		Vec2f sizePix = size.pixels();
-		Vec2f centerPix = center.pixels();
+		Vec2f rotationOffsetPix = rotationOffset.pixels();
 		float rotationDeg = rotation.degrees();
 		Vec2f positionPix = position.pixels();
+		Vec2f positionOffsetPix = positionOffset.pixels().negation();
 		Vec4f borderWidthPix = borderWidth.pixels();
 		Vec4f borderRadiusPix = borderRadius.pixels();
 
 		Vec2f scale = new Vec2f(sizePix.x / shape.getWidth(), sizePix.y / shape.getHeight());
-		Mat3f transformation = new Mat3f().scale(scale).translate(centerPix.mul(-1)).rotate(rotationDeg)
-				.translate(centerPix.mul(-1)).translate(positionPix);
+		Mat3f transformation = new Mat3f().scale(scale).translate(rotationOffsetPix.negation()).rotate(rotationDeg)
+				.translate(rotationOffsetPix).translate(positionPix).translate(positionOffsetPix);
 		Mat4f projection = gui.getWindow().getOrthoProjection();
 
 		shaderProgram.setUniformMat3f("transformation", transformation);

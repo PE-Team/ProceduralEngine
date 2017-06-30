@@ -22,7 +22,7 @@ public class Root extends Divider{
 		
 		this.size.setMaxValue(window.getSize()).setRPixSource(window);
 		this.position.setMaxValue(window.getSize()).setRPixSource(window);
-		this.center.setMaxValue(size).setRPixSource(window);
+		this.rotationOffset.setMaxValue(size).setRPixSource(window);
 		this.borderWidth.setMaxValue(size).setRPixSource(window);
 		this.borderRadius.setMaxValue(size).setRPixSource(window);
 	}

@@ -20,16 +20,6 @@ public class TextureArrayObject{
 		return tao;
 	}
 	
-	public static TextureArrayObject fillStaticTexture2DClear(int textureCount){
-		TextureArrayObject tao = new TextureArrayObject();
-		
-		for(int i = 0; i < textureCount; i++){
-			tao.add(Texture2D.CLEAR);
-		}
-		
-		return tao;
-	}
-	
 	public TextureArrayObject(){
 		textures = new ArrayList<Texture>();
 	}

@@ -7,6 +7,7 @@ import pe.engine.data.VertexArrayObject;
 import pe.engine.graphics.gui.Divider;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.main.Window;
+import pe.engine.graphics.main.handlers.WindowFocusHandler;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
 import pe.engine.graphics.main.handlers.WindowHandler;
 import pe.engine.graphics.main.handlers.WindowKeyHandler;
@@ -59,13 +60,17 @@ public class RenderingThread implements Runnable {
 			
 			WindowScrollHandler scrollHandler = new WindowScrollHandler();
 			
+			WindowFocusHandler focusHandler = new WindowFocusHandler();
+			
 			window.setWindowHandler(windowHandler);
+			
 			window.setKeyHandler(keyHandler);
 			window.setFrameSizeHandler(sizeHandler);
 			window.setPositionHandler(posHandler);
 			window.setMouseButtonHandler(mouseButtonHandler);
 			window.setMousePositionHandler(mousePosHandler);
 			window.setScrollHandler(scrollHandler);
+			window.setFocusHandler(focusHandler);
 			
 			window.show();
 			

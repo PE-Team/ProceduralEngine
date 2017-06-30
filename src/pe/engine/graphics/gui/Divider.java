@@ -20,13 +20,14 @@ public class Divider extends GUIComponent {
 
 	}
 
-	public Divider(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center, int[] centerUnits,
-			float rotation, Color backgroundColor, Vec4f borderWidth, int[] borderWidthUnits,
-			Color borderColor, Vec4f borderRadius, int[] borderRadiusUnits, String text, Color textColor,
-			Polygon shape) {
+	public Divider(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f positionOffset,
+			int[] positionOffsetUnits, Vec2f rotationOffset, int[] rotationOffsetUnits, float rotation,
+			Color backgroundColor, Vec4f borderWidth, int[] borderWidthUnits, Color borderColor, Vec4f borderRadius,
+			int[] borderRadiusUnits, String text, Color textColor) {
 
-		super(size, sizeUnits, position, positionUnits, center, centerUnits, rotation, backgroundColor,
-				borderWidth, borderWidthUnits, borderColor, borderRadius, borderRadiusUnits, text, textColor, shape);
+		super(size, sizeUnits, position, positionUnits, positionOffset, positionOffsetUnits, rotationOffset,
+				rotationOffsetUnits, rotation, backgroundColor, borderWidth, borderWidthUnits, borderColor,
+				borderRadius, borderRadiusUnits, text, textColor, new Rectangle(1, 1));
 	}
 
 	public Divider(float width, float height, float posX, float posY, Color backgroundColor, Color borderColor) {
@@ -36,31 +37,33 @@ public class Divider extends GUIComponent {
 				new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT},
 				new Vec2f(posX, posY),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
+				new Vec2f(0.0f, 0.0f),
+				new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT},
 				new Vec2f(0.5f, 0.5f),
 				new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT},
 				0f,
 				backgroundColor,
-				new Vec4f(10f, 75f, 50f, 25f),
+				new Vec4f(25f, 25f, 25f, 25f),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				borderColor,
-				new Vec4f(100f, 20f, 40f, 80f),
+				new Vec4f(50f, 50f, 50f, 50f),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				"NULL",
 				Color.GREEN,
 				new Rectangle(1, 1)
 				);
 		// @formatter:on
-		
+
 		Texture backgroundTexture = new Texture2D(CoreTexturePaths.BACKGROUND_TEST);
 		Texture foregroundTexture = new Texture2D(CoreTexturePaths.FOREGROUND_TEST);
-		
+
 		TextureArrayObject tao = tsa.get(PE.GUI_EVENT_DEFAULT);
-		tao.set(backgroundTexture, BACKGROUND_TEXTURE_INDEX);
-		tao.set(foregroundTexture, FOREGROUND_TEXTURE_INDEX);
-		
+		// tao.set(backgroundTexture, BACKGROUND_TEXTURE_INDEX);
+		// tao.set(foregroundTexture, FOREGROUND_TEXTURE_INDEX);
+
 		tao.load();
 	}
-	
+
 	protected boolean onPress(WindowInputEvent e) {
 		System.out.println("PRESSING IS WORKING!");
 		tsa.swap(PE.GUI_EVENT_ON_PRESS);
@@ -99,7 +102,7 @@ public class Divider extends GUIComponent {
 	}
 
 	protected boolean onOutsideRelease(WindowInputEvent e) {
-		System.out.println("RELEASING IS WORKING!");
+		System.out.println("OUTSIDE RELEASING IS WORKING!");
 		tsa.swap(PE.GUI_EVENT_DEFAULT);
 		return false;
 	}

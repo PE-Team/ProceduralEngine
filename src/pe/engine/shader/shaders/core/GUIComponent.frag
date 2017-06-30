@@ -68,8 +68,9 @@ vec2 draw(vec2 mask){
 	return mask;
 }
 
-float calcDimTexCoord(float texCoord, float width, float borderR, float borderL){
-	return (texCoord * (width - borderR - borderL) + borderR) / width;
+float calcDimTexCoord(float texCoord, float width, float borderL, float borderR){
+	float texWidth = width - borderL - borderR;
+	return texCoord * width / texWidth - borderL / texWidth;
 }
 
 vec2 calcBackgroundTexCoords(vec2 texCoord, float width, float height, vec4 border){

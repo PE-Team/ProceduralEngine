@@ -1,5 +1,10 @@
 package pe.engine.graphics.main.handlers;
 
+import java.nio.DoubleBuffer;
+
+import org.lwjgl.BufferUtils;
+import org.lwjgl.glfw.GLFW;
+
 import pe.engine.graphics.main.Window;
 import pe.engine.main.PE;
 import pe.util.Timer;
@@ -13,6 +18,8 @@ public class WindowHandler {
 
 	// @formatter:off
 	private Window window;
+	private DoubleBuffer mousePosXBuffer = BufferUtils.createDoubleBuffer(1);
+	private DoubleBuffer mousePosYBuffer = BufferUtils.createDoubleBuffer(1);
 	private Vec2f mousePosition = Vec2f.zero();
 	private boolean[] keys = new boolean[65536];		// Pressed = true, Released = false
 	private boolean[] mouseButtons = new boolean[8]; 	// Pressed = true, Released = false
@@ -25,6 +32,12 @@ public class WindowHandler {
 	
 	public void setWindow(Window window){
 		this.window = window;
+	}
+	
+	public void windowFocusLost(){
+		this.mousePressPosition = null;
+		this.dragTimer.stop();
+		this.hoverTimer.stop();
 	}
 	
 	public void fireMouseButtonEvent(int button, boolean pressed){
@@ -48,7 +61,7 @@ public class WindowHandler {
 	}
 	
 	public void fireMousePositionEvent(){
-		if(mousePressPosition != null && (Vec2f.subtract(mousePressPosition, mousePosition).length() >= MIN_DRAG_DISTANCE || dragTimer.delayPassedNoReset())){
+		if(mousePressPosition != null && (dragTimer.delayPassedNoReset() || Vec2f.subtract(mousePressPosition, mousePosition).length() >= MIN_DRAG_DISTANCE)){
 			window.fireInputEvent(
 					new WindowInputEvent(this, PE.NULL, PE.MOUSE_ACTION_DRAG)
 					);
@@ -60,11 +73,15 @@ public class WindowHandler {
 	}
 	
 	public void update(){
+		GLFW.glfwGetCursorPos(window.getID(), mousePosXBuffer, mousePosYBuffer);
+		this.mousePosition.x = (float) mousePosXBuffer.get(0);
+		this.mousePosition.y = (float) mousePosYBuffer.get(0);
 		fireMousePositionEvent();
 	}
 
 	public void setKeyState(int key, boolean state) {
-		keys[key] = state;
+		if(key >= 0)
+			keys[key] = state;
 	}
 
 	public boolean getKeyState(int key) {

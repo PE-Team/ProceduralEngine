@@ -72,7 +72,7 @@ public class WindowKeyHandler extends GLFWKeyCallback implements WindowEventHand
 	}
 
 	@Override
-	public void setWindowHanlder(WindowHandler windowHandler) {
+	public void setWindowHandler(WindowHandler windowHandler) {
 		this.windowHandler = windowHandler;
 	}
 }

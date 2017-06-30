@@ -26,7 +26,7 @@ public class WindowMousePositionHandler extends GLFWCursorPosCallback implements
 	}
 
 	@Override
-	public void setWindowHanlder(WindowHandler windowHandler) {
+	public void setWindowHandler(WindowHandler windowHandler) {
 		this.windowHandler = windowHandler;
 	}
 }

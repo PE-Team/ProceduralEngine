@@ -21,7 +21,7 @@ public class WindowMouseButtonHandler extends GLFWMouseButtonCallback implements
 	}
 
 	@Override
-	public void setWindowHanlder(WindowHandler windowHandler) {
+	public void setWindowHandler(WindowHandler windowHandler) {
 		this.windowHandler = windowHandler;
 	}
 
