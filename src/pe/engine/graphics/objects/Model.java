@@ -2,7 +2,7 @@ package pe.engine.graphics.objects;
 
 import pe.engine.shader.main.ShaderProgram;
 
-public class Model {
+public class Model implements RenderableI{
 
 	protected Mesh mesh;
 	protected ShaderProgram shaderProgram;

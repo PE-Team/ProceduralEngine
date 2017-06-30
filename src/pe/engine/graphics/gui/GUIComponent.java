@@ -16,6 +16,7 @@ import pe.engine.graphics.gui.properties.Unit4Property;
 import pe.engine.graphics.main.Window;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
 import pe.engine.graphics.objects.Mesh;
+import pe.engine.graphics.objects.RenderableI;
 import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
 import pe.engine.shader.main.Shader;
@@ -29,7 +30,7 @@ import pe.util.math.Vec2f;
 import pe.util.math.Vec4f;
 import pe.util.shapes.Polygon;
 
-public abstract class GUIComponent {
+public abstract class GUIComponent implements RenderableI {
 
 	protected static final String[] TAO_UNIFORM_NAMES = { "foregroundTexture", "backgroundTexture" };
 
@@ -306,7 +307,8 @@ public abstract class GUIComponent {
 
 		int action = e.getAction();
 		boolean isDisposed = false;
-		if (Util.isInRectangle(positionPix, positionOffsetPix, sizePix, rotationOffsetPix, rotationDeg, e.getPosition())) {
+		if (Util.isInRectangle(positionPix, positionOffsetPix, sizePix, rotationOffsetPix, rotationDeg,
+				e.getPosition())) {
 
 			if (action == PE.MOUSE_ACTION_PRESS)
 				isDisposed = isDisposed | onPress(e);
@@ -314,8 +316,8 @@ public abstract class GUIComponent {
 			if (action == PE.MOUSE_ACTION_RELEASE)
 				isDisposed = isDisposed | onRelease(e);
 
-			if (action == PE.MOUSE_ACTION_RELEASE
-					&& Util.isInRectangle(positionPix, positionOffsetPix, sizePix, rotationOffsetPix, rotationDeg, e.getDelta()))
+			if (action == PE.MOUSE_ACTION_RELEASE && Util.isInRectangle(positionPix, positionOffsetPix, sizePix,
+					rotationOffsetPix, rotationDeg, e.getDelta()))
 				isDisposed = isDisposed | onClick(e);
 
 			if (action == PE.MOUSE_ACTION_SCROLL)
@@ -365,8 +367,8 @@ public abstract class GUIComponent {
 	public Unit2Property getSize() {
 		return size;
 	}
-	
-	public Unit2Property getPositionOffset(){
+
+	public Unit2Property getPositionOffset() {
 		return positionOffset;
 	}
 

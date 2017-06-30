@@ -8,7 +8,7 @@ import org.lwjgl.system.MemoryStack;
 import pe.engine.data.VertexArrayObject;
 import pe.util.math.Vec2f;
 
-public abstract class Mesh {
+public abstract class Mesh implements RenderableI{
 	
 	protected VertexArrayObject vao;
 	protected int meshDataLocation = -1;

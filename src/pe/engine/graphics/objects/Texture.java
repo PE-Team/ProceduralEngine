@@ -11,6 +11,7 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL14;
 import org.lwjgl.stb.STBImage;
 import org.lwjgl.system.MemoryStack;
+import org.lwjgl.system.MemoryUtil;
 
 import pe.engine.data.BufferObject;
 import pe.engine.main.PE;
@@ -51,11 +52,12 @@ public abstract class Texture extends BufferObject {
 	 * @since 1.0
 	 */
 	private void setClearTexture() {
-		ByteBuffer bb = BufferUtils.createByteBuffer(4);
+		ByteBuffer bb = MemoryUtil.memAlloc(4);
 		Color.CLEAR.putInBuffer4ByteC(bb);
 
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bb);
-
+		
+		MemoryUtil.memFree(bb);
 	}
 
 	/**
@@ -92,10 +94,16 @@ public abstract class Texture extends BufferObject {
 				int width = widthBuffer.get();
 				int height = heightBuffer.get();
 
-				GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA,
-						GL11.GL_UNSIGNED_BYTE, image);
+				loadByteBufferIntoTexture(image, width, height);
+				
 			}
 		}
+	}
+	
+	protected void loadByteBufferIntoTexture(ByteBuffer bb, int width, int height){
+		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, width, height, 0, GL11.GL_RGBA,
+				GL11.GL_UNSIGNED_BYTE, bb);
+		
 	}
 
 	protected static int getGLMipMapFilter(int mipMapFilter) {
