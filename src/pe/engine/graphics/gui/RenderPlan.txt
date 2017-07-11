@@ -1,0 +1,8 @@
+Rendering plane:
+
+1: Render ROOT with the background color, Alpha must be 1
+2: Render GUIComponents by:
+	a: draw a black, alpha = 0 area where the content may go
+	b: draw all content (such as text and children), starting with the "highest" one, blending with ONE_MINUS_ALPHA_DEST
+	c: draw the background, blending with ONE_MINUS_ALPHA_DEST
+	d: draw the border, blending with ONE_MINUS_ALPHA_SRC

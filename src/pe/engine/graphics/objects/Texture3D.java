@@ -5,8 +5,14 @@ import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL30;
 
 import pe.engine.data.Resources;
+import pe.engine.main.PE;
 
 public class Texture3D extends Texture {
+	
+	public Texture3D(String path) {
+		this(path, PE.TEXTURE_WRAP_BORDER, PE.TEXTURE_WRAP_BORDER, PE.TEXTURE_WRAP_BORDER, true, false, PE.NULL);
+
+	}
 
 	public Texture3D(String path, int textureWrapX, int textureWrapY, int textureWrapZ, boolean pixelatedFilter,
 			boolean generateMipMap, int mipMapFilter) {

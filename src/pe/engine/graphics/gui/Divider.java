@@ -1,7 +1,7 @@
 package pe.engine.graphics.gui;
 
 import pe.engine.data.TextureArrayObject;
-import pe.engine.graphics.gui.textures.core.CoreTexturePaths;
+import pe.engine.graphics.gui.textures.core.CoreTextures;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
 import pe.engine.graphics.objects.Texture;
 import pe.engine.graphics.objects.Texture2D;
@@ -33,8 +33,8 @@ public class Divider extends GUIComponent {
 	public Divider(float width, float height, float posX, float posY, Color backgroundColor, Color borderColor) {
 		// @formatter:off
 		super(
-				new Vec2f(0.5f, 0.25f),
-				new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT},
+				new Vec2f(width, height),
+				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				new Vec2f(posX, posY),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				new Vec2f(0.0f, 0.0f),
@@ -46,7 +46,7 @@ public class Divider extends GUIComponent {
 				new Vec4f(25f, 25f, 25f, 25f),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				borderColor,
-				new Vec4f(50f, 50f, 50f, 50f),
+				new Vec4f(0f, 0f, 0f, 0f),
 				new int[]{PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS},
 				"NULL",
 				Color.GREEN,
@@ -54,8 +54,8 @@ public class Divider extends GUIComponent {
 				);
 		// @formatter:on
 
-		Texture backgroundTexture = new Texture2D(CoreTexturePaths.BACKGROUND_TEST);
-		Texture foregroundTexture = new Texture2D(CoreTexturePaths.FOREGROUND_TEST);
+		Texture backgroundTexture = CoreTextures.getTexture(CoreTextures.BACKGROUND_TEST);
+		Texture foregroundTexture = CoreTextures.getTexture(CoreTextures.FOREGROUND_TEST);
 
 		TextureArrayObject tao = tsa.get(PE.GUI_EVENT_DEFAULT);
 		// tao.set(backgroundTexture, BACKGROUND_TEXTURE_INDEX);

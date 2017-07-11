@@ -3,8 +3,6 @@
 
 in vec2 texCoord;
 
-flat in vec2 borderWidthMod;
-
 out vec4 color;
 
 uniform float width;

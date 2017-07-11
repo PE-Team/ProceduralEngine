@@ -21,7 +21,7 @@ import pe.engine.graphics.objects.StaticMesh2D;
 import pe.engine.main.PE;
 import pe.engine.shader.main.Shader;
 import pe.engine.shader.main.ShaderProgram;
-import pe.engine.shader.shaders.core.CoreShaderPaths;
+import pe.engine.shader.shaders.core.CoreShaders;
 import pe.util.Util;
 import pe.util.color.Color;
 import pe.util.math.Mat3f;
@@ -38,6 +38,7 @@ public abstract class GUIComponent implements RenderableI {
 	protected static final int BACKGROUND_TEXTURE_INDEX = 1;
 
 	protected static ShaderProgram shaderProgram = null;
+	//protected static Mesh mesh = new StaticMesh2D();
 
 	// @formatter:off
 	protected Unit2Property size = Unit2Property.createFullPercent();
@@ -106,27 +107,22 @@ public abstract class GUIComponent implements RenderableI {
 		if (shaderProgram != null)
 			return;
 
-		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, CoreShaderPaths.GUI_COMPONENT_VERTEX);
+		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, CoreShaders.GUI_COMPONENT_VERTEX);
 		vertexShader.compile();
 		vertexShader.compileStatus();
 
-		Shader geometryShader = new Shader(PE.SHADER_TYPE_GEOMETRY, CoreShaderPaths.GUI_COMPONENT_GEOMETRY);
-		geometryShader.compile();
-		geometryShader.compileStatus();
-
-		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT, CoreShaderPaths.GUI_COMPONENT_FRAGMENT);
+		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT, CoreShaders.GUI_COMPONENT_FRAGMENT);
 		fragmentShader.compile();
 		fragmentShader.compileStatus();
 
 		ShaderProgram program = new ShaderProgram();
 		program.addShader(vertexShader);
-		program.addShader(geometryShader);
 		program.addShader(fragmentShader);
 
 		program.setDefaultFragOutValue("color", 0);
 
 		program.setAttribIndex(0, "position");
-		program.setAttribIndex(1, "texCoord");
+		program.setAttribIndex(1, "textureCoord");
 
 		program.compile();
 		program.compileStatus();

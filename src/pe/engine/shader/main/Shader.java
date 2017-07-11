@@ -81,8 +81,7 @@ public class Shader implements DisposableResourceI{
 			StringBuilder sb = new StringBuilder();
 			sb.append("An error occured in compiling a ").append(getShaderTypeName()).append('\n');
 			if(!compiled) sb.append("The ").append(getShaderTypeName()).append(" for the file: '").append(path).append("' was not compiled.\nPlease call '.compile()' before checking the compile status.\nYou will need to compile each time the shader is modified at runtime or when the path is changed.");
-			sb.append(GL20.glGetShaderInfoLog(id)).append('\n');
-			sb.append(Thread.currentThread().getStackTrace());
+			sb.append(GL20.glGetShaderInfoLog(id));
 		    throw new RuntimeException(sb.toString());
 		}
 	}

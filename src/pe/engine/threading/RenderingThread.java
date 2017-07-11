@@ -15,6 +15,7 @@ import pe.engine.graphics.main.handlers.WindowMouseButtonHandler;
 import pe.engine.graphics.main.handlers.WindowMousePositionHandler;
 import pe.engine.graphics.main.handlers.WindowPositionHandler;
 import pe.engine.graphics.main.handlers.WindowScrollHandler;
+import pe.engine.graphics.objects.TextRenderer;
 import pe.engine.main.InitializationProcesses;
 import pe.engine.main.PE;
 import pe.util.Timer;
@@ -79,10 +80,12 @@ public class RenderingThread implements Runnable {
 
 			GUI gui = new GUI();
 			gui.setWindow(window);
-			Divider div1 = new Divider(800, 400, 0, 0, Color.BLUE, Color.ORANGE);
-			Divider div2 = new Divider(25, 400, 100, 100, Color.GRAY, Color.DARK_GRAY);
+			Divider div1 = new Divider(400, 400, 0, 0, Color.BLUE, Color.ORANGE);
+			Divider div2 = new Divider(400, 400, 100, 100, Color.GRAY, Color.DARK_GRAY);
 			gui.addComponent(div1);
 			gui.addComponent(div2);
+			
+			TextRenderer tr = new TextRenderer();
 			
 			GL11.glClearColor(0, 0, 0, 1);
 			while (MasterThread.isRunning()) {
@@ -91,6 +94,7 @@ public class RenderingThread implements Runnable {
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 					
 					gui.render();
+					tr.render("Hello There!", window, new Vec2f(400,0), new Vec2f(1000, 100), Color.LIGHT_GRAY);
 
 					window.update();
 				}

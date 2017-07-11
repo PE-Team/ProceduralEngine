@@ -14,18 +14,8 @@ public class Texture2D extends Texture {
 	}
 
 	public Texture2D(String path) {
-		this.id = GL11.glGenTextures();
-		this.path = path;
-		this.glDim = GL11.GL_TEXTURE_2D;
+		this(path, PE.TEXTURE_WRAP_BORDER, PE.TEXTURE_WRAP_BORDER, true, false, PE.NULL);
 
-		bind();
-
-		setTextureWrap(PE.TEXTURE_WRAP_BORDER, PE.TEXTURE_WRAP_BORDER);
-		setTextureFilter(true);
-
-		unbind();
-
-		Resources.add(this, this);
 	}
 
 	public Texture2D(String path, int textureWrapX, int textureWrapY, boolean pixelatedFilter, boolean generateMipMap,

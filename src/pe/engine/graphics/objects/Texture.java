@@ -23,6 +23,8 @@ public abstract class Texture extends BufferObject {
 	protected int glDim;
 	protected String path;
 	protected int location;
+	protected int width = 1;
+	protected int height = 1;
 
 	public int getLocation() {
 		return location;
@@ -46,7 +48,7 @@ public abstract class Texture extends BufferObject {
 	}
 
 	/**
-	 * Loads a 4 byte clear 1x1 pixel texture as into memory. Note: the texture
+	 * Loads a 4 byte clear 1x1 pixel texture into memory. Note: the texture
 	 * must be bound before calling this.
 	 * 
 	 * @since 1.0
@@ -58,6 +60,12 @@ public abstract class Texture extends BufferObject {
 		GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA8, 1, 1, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bb);
 		
 		MemoryUtil.memFree(bb);
+	}
+	
+	public ByteBuffer getTexture(){
+		ByteBuffer bb = BufferUtils.createByteBuffer(0);
+		GL11.glGetTexImage(glDim, 0, GL11.GL_RGBA, GL11.GL_UNSIGNED_BYTE, bb);
+		return bb;
 	}
 
 	/**
@@ -75,7 +83,6 @@ public abstract class Texture extends BufferObject {
 	public void load() {
 		if (path == null) {
 			/* Create a Clear texture */
-
 			setClearTexture();
 		} else {
 			/* Try to load the texture from the path */
@@ -91,11 +98,10 @@ public abstract class Texture extends BufferObject {
 							"Failed to load a texture file!" + System.lineSeparator() + STBImage.stbi_failure_reason());
 				}
 
-				int width = widthBuffer.get();
-				int height = heightBuffer.get();
+				this.width = widthBuffer.get();
+				this.height = heightBuffer.get();
 
 				loadByteBufferIntoTexture(image, width, height);
-				
 			}
 		}
 	}
@@ -128,6 +134,18 @@ public abstract class Texture extends BufferObject {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public String getPath(){
+		return path;
+	}
+	
+	public int getWidth(){
+		return width;
+	}
+	
+	public int getHeight(){
+		return height;
 	}
 
 	public abstract void setTextureWrap(int... textureWrapVars);

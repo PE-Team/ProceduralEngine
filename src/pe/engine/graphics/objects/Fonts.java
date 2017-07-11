@@ -6,22 +6,29 @@ import java.awt.FontMetrics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
+
 import org.lwjgl.system.MemoryUtil;
+
+import pe.engine.graphics.gui.textures.core.CoreTextures;
 
 public class Fonts {
 
-	public static final int DEFAULT_BASE_HEIGHT = 32;
+	public static final int BASE_HEIGHT_DEFAULT = 32;
+	public static final int BASE_HEIGHT_ANY = -1;
 
 	public static final String FAMILY_MONOSPACED = Font.MONOSPACED;
 
 	private static Map<FontAtlas, FontAtlas> fonts = new HashMap<FontAtlas, FontAtlas>();
 
 	public static synchronized FontAtlas loadFont() {
-		return loadFont(DEFAULT_BASE_HEIGHT);
+		return loadFont(BASE_HEIGHT_ANY);
 	}
 
 	public static synchronized FontAtlas loadFont(int baseHeight) {
@@ -31,17 +38,21 @@ public class Fonts {
 	public static synchronized FontAtlas loadFont(boolean bold, boolean italics) {
 		return loadFont(FAMILY_MONOSPACED, bold, italics);
 	}
+	
+	public static synchronized FontAtlas loadFont(String textFamily) {
+		return loadFont(textFamily, BASE_HEIGHT_ANY);
+	}
 
 	public static synchronized FontAtlas loadFont(String textFamily, int baseHeight) {
 		return loadFont(textFamily, false, false, baseHeight);
 	}
 
 	public static synchronized FontAtlas loadFont(String textFamily, boolean bold, boolean italics) {
-		return loadFont(textFamily, bold, italics, DEFAULT_BASE_HEIGHT);
+		return loadFont(textFamily, bold, italics, BASE_HEIGHT_ANY);
 	}
 	
 	public static synchronized FontAtlas loadFont(String textFamily, boolean bold, boolean italics, boolean antiAilize) {
-		return loadFont(textFamily, bold, italics, antiAilize, DEFAULT_BASE_HEIGHT);
+		return loadFont(textFamily, bold, italics, antiAilize, BASE_HEIGHT_ANY);
 	}
 
 	public static synchronized FontAtlas loadFont(String textFamily, boolean bold, boolean italics, int baseHeight) {
@@ -49,6 +60,32 @@ public class Fonts {
 	}
 
 	public static synchronized FontAtlas loadFont(String textFamily, boolean bold, boolean italics, boolean antiAilize, int baseHeight) {
+		
+		/* Check to see if a satisfactory font atlas already exits */
+		FontAtlas atlas = new FontAtlas(textFamily, bold, italics, antiAilize);
+		
+		String namePattern = "font_" + textFamily + "_(\\d+).*";
+		
+		if(baseHeight == BASE_HEIGHT_ANY)
+			baseHeight = BASE_HEIGHT_DEFAULT;
+		
+		Texture2D fontTexture = null;
+		
+		/* Check to see if a satisfactory texture exits in CustomTextures */
+		//TODO
+		
+		/* Check to see if a satisfactory texture exists in CoreTextures */
+		fontTexture = CoreTextures.getTexture(CoreTextures.PATH_DEFAULT, namePattern, baseHeight);
+		if(fontTexture != null){
+			fontTexture.bind();
+			fontTexture.load();
+			fontTexture.unbind();
+			atlas.setTextGlyphTexture(fontTexture);
+			fonts.put(atlas, atlas);
+		}
+		
+		/* Create a new texture and save it in CoreTextures */
+		
 		int style = (bold ? Font.BOLD : 0) + (italics ? Font.ITALIC : 0);
 		Font font = new Font(textFamily, style, baseHeight);
 
@@ -56,20 +93,18 @@ public class Fonts {
 		int imageHeight = 0;
 
 		for (int i = 32; i < 256; i++) {
-			if (i == 127) {
+			if (i == 127)
 				continue;
-			}
+			
 			char c = (char) i;
 			BufferedImage ch = generateCharImage(font, c, antiAilize);
-			if (ch == null)
-				continue;
 
 			imageWidth += ch.getWidth();
 			imageHeight = Math.max(imageHeight, ch.getHeight());
 		}
 
 		BufferedImage image = new BufferedImage(imageWidth, imageHeight, BufferedImage.TYPE_INT_ARGB);
-		FontAtlas atlas = new FontAtlas(textFamily, antiAilize, antiAilize, antiAilize);
+		Graphics2D g = image.createGraphics();
 
 		int glyphOffset = 0;
 
@@ -79,36 +114,33 @@ public class Fonts {
 
 			char c = (char) i;
 			BufferedImage ch = generateCharImage(font, c, antiAilize);
-			if (ch == null)
-				continue;
 
 			int charWidth = ch.getWidth();
+			
+			if(charWidth == 0)
+				continue;
 
 			TextGlyph glyph = new TextGlyph(glyphOffset, charWidth);
-			atlas.addTextGlyph(c, glyph);
+			g.drawImage(ch, glyphOffset, 0, null);
 
 			glyphOffset += ch.getWidth();
-		}
-
-		int[] pixels = new int[imageWidth * imageHeight];
-		image.getRGB(0, 0, imageWidth, imageHeight, pixels, 0, imageWidth);
-
-		ByteBuffer buffer = MemoryUtil.memAlloc(imageWidth * imageHeight * 4);
-		for (int i = 0; i < imageHeight; i++) {
-			for (int j = 0; j < imageWidth; j++) {
-				int pixel = pixels[i * imageWidth + j];
-				buffer.put((byte) ((pixel >> 16) & 0xFF)).put((byte) ((pixel >> 8) & 0xFF)).put((byte) (pixel & 0xFF))
-						.put((byte) ((pixel >> 24) & 0xFF));
-			}
+			atlas.addTextGlyph(c, glyph);
 		}
 		
-		buffer.flip();
-
-		Texture2D fontTexture = new BufferedTexture2D(buffer, imageWidth, imageHeight);
+		g.dispose();
+		
+		String fileName = "font_" + textFamily + "_" + baseHeight;
+		CoreTextures.saveTexture(image, CoreTextures.PATH_DEFAULT, fileName);
+		
+		fontTexture = CoreTextures.getTexture(CoreTextures.PATH_DEFAULT, namePattern, baseHeight);
+		if(fontTexture == null)
+			throw new IllegalArgumentException("Texture could not be loaded from core texture directory after being written to it.");
+		
+		fontTexture.bind();
+		fontTexture.load();
+		fontTexture.unbind();
 		atlas.setTextGlyphTexture(fontTexture);
 		fonts.put(atlas, atlas);
-		
-		MemoryUtil.memFree(buffer);
 		
 		return atlas;
 	}
@@ -121,6 +153,7 @@ public class Fonts {
 
 		g.setFont(font);
 		FontMetrics fontMetrics = g.getFontMetrics();
+		g.dispose();
 
 		image = new BufferedImage(fontMetrics.charWidth(c), fontMetrics.getHeight(), BufferedImage.TYPE_INT_ARGB);
 		g = image.createGraphics();
@@ -128,7 +161,7 @@ public class Fonts {
 			g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		g.setFont(font);
-		g.setPaint(Color.BLACK);
+		g.setPaint(Color.WHITE);
 		g.drawString(String.valueOf(c), 0, fontMetrics.getAscent());
 		g.dispose();
 
@@ -159,7 +192,7 @@ public class Fonts {
 		return getFont(textFamily, bold, italics, true);
 	}
 
-	private synchronized static FontAtlas getFont(String textFamily, boolean bold, boolean italics, boolean antiAilize) {
+	public synchronized static FontAtlas getFont(String textFamily, boolean bold, boolean italics, boolean antiAilize) {
 		FontAtlas atlas = new FontAtlas(textFamily, bold, italics, antiAilize);
 		atlas = fonts.get(atlas);
 		if(atlas == null)

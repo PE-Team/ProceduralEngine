@@ -79,8 +79,7 @@ public class ShaderProgram implements DisposableResourceI {
 			if (!compiled)
 				sb.append(
 						"The Shader Program was not compiled.\nPlease call '.compile()' before checking the compile status.");
-			sb.append(GL20.glGetShaderInfoLog(id)).append('\n');
-			sb.append(Thread.currentThread().getStackTrace());
+			sb.append(GL20.glGetShaderInfoLog(id));
 			throw new RuntimeException(sb.toString());
 		}
 	}
