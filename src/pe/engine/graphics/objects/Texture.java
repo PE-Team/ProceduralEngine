@@ -86,23 +86,27 @@ public abstract class Texture extends BufferObject {
 			setClearTexture();
 		} else {
 			/* Try to load the texture from the path */
-			try (MemoryStack stack = MemoryStack.stackPush()) {
-				IntBuffer widthBuffer = stack.mallocInt(1);
-				IntBuffer heightBuffer = stack.mallocInt(1);
-				IntBuffer compBuffer = stack.mallocInt(1);
+			loadTexture();
+		}
+	}
+	
+	protected void loadTexture(){
+		try (MemoryStack stack = MemoryStack.stackPush()) {
+			IntBuffer widthBuffer = stack.mallocInt(1);
+			IntBuffer heightBuffer = stack.mallocInt(1);
+			IntBuffer compBuffer = stack.mallocInt(1);
 
-				STBImage.stbi_set_flip_vertically_on_load(true);
-				ByteBuffer image = STBImage.stbi_load(path, widthBuffer, heightBuffer, compBuffer, 4);
-				if (image == null) {
-					throw new RuntimeException(
-							"Failed to load a texture file!" + System.lineSeparator() + STBImage.stbi_failure_reason());
-				}
-
-				this.width = widthBuffer.get();
-				this.height = heightBuffer.get();
-
-				loadByteBufferIntoTexture(image, width, height);
+			STBImage.stbi_set_flip_vertically_on_load(true);
+			ByteBuffer image = STBImage.stbi_load(path, widthBuffer, heightBuffer, compBuffer, 4);
+			if (image == null) {
+				throw new RuntimeException(
+						"Failed to load a texture file!" + System.lineSeparator() + STBImage.stbi_failure_reason());
 			}
+
+			this.width = widthBuffer.get();
+			this.height = heightBuffer.get();
+
+			loadByteBufferIntoTexture(image, width, height);
 		}
 	}
 	

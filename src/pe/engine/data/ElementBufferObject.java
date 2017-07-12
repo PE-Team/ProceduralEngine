@@ -74,4 +74,14 @@ public class ElementBufferObject extends BufferObject {
 
 		GL15.glBufferData(GL15.GL_ELEMENT_ARRAY_BUFFER, data, usage);
 	}
+
+	@Override
+	public void unbind() {
+		GL15.glBindBuffer(GL15.GL_ELEMENT_ARRAY_BUFFER, 0);
+	}
+
+	@Override
+	public void dispose() {
+		GL15.glDeleteBuffers(id);
+	}
 }

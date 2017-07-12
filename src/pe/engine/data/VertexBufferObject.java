@@ -88,4 +88,14 @@ public class VertexBufferObject extends BufferObject {
 	public int getDimension() {
 		return dimension;
 	}
+
+	@Override
+	public void unbind() {
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+	}
+
+	@Override
+	public void dispose() {
+		GL15.glDeleteBuffers(id);
+	}
 }

@@ -128,6 +128,7 @@ public class Window implements RPixSourceI, DisposableResourceI{
 		Vec2f sizePix = size.pixels();
 				
 		this.orthoProjection = Mat4f.getOrthographicMatrix(0, sizePix.x, sizePix.y, 0, -1, 1);
+		//this.orthoProjection = Mat4f.getOrthographicMatrix(0, 300, 300, 0, -1, 1);
 	}
 
 	public Unit2Property getSize() {
