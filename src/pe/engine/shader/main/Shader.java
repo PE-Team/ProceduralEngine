@@ -59,7 +59,7 @@ public class Shader implements DisposableResourceI{
 	
 	private void testVersion(int shaderType){
 		if(GLVersion.isBefore(PE.GL_VERSION_20))
-			throw new IllegalStateException("You cannot create a Shader with  an OpenGL version before 2.0.\nTry updating your graphics drivers.");
+			throw new IllegalStateException("You cannot create a Shader with an OpenGL version before 2.0.\nTry updating your graphics drivers.");
 		if(GLVersion.isBefore(PE.GL_VERSION_32) && shaderType == PE.SHADER_TYPE_GEOMETRY)
 			throw new IllegalArgumentException("You cannot create a geometry shader with an OpenGL version before 3.2.\nTry updating your graphics drivers.");
 	}

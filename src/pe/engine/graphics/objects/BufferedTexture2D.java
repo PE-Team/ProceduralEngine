@@ -34,9 +34,9 @@ public class BufferedTexture2D extends Texture2D {
 	/**
 	 * The texture is automatically loaded in at runtime and there is no source
 	 * location. If the texture is ever unloaded, the texture data is lost, thus
-	 * there is never a need to call <code>load()<code> as this function has
+	 * there is never a need to call <code>load()</code> as this function has
 	 * been replaced by <code>load(width, height)</code> and <code>load(Buffer,
-	 * width, height)<code>.
+	 * width, height)</code>.
 	 * 
 	 * @see #load(ByteBuffer, int, int)
 	 * 
@@ -67,8 +67,8 @@ public class BufferedTexture2D extends Texture2D {
 	}
 
 	/**
-	 * Loads a <code>ByteBuffer<code> object into memory. Each byte represents a
-	 * single color channel (RGBA), and the formate of the buffer must be in
+	 * Loads a <code>ByteBuffer</code> object into memory. Each byte represents a
+	 * single color channel (RGBA), and the format of the buffer must be in
 	 * RGBA. Thus, the buffer must have a size equal to <code>4 * width * height</code>.
 	 * 
 	 * @param buffer

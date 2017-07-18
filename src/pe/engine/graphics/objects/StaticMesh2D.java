@@ -7,6 +7,7 @@ import org.lwjgl.system.MemoryStack;
 
 import pe.engine.main.PE;
 import pe.util.math.Vec2f;
+import pe.util.shapes.Polygon;
 
 public class StaticMesh2D extends Mesh {
 
@@ -32,5 +33,9 @@ public class StaticMesh2D extends Mesh {
 
 			vao.unbind();
 		}
+	}
+	
+	public static StaticMesh2D fromPolygon(Polygon shape){
+		return new StaticMesh2D(shape.getVertices(), shape.getIndices());
 	}
 }

@@ -70,11 +70,11 @@ public class GlyphModel implements RenderableI{
 		if (shaderProgram != null)
 			return;
 
-		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, CoreShaders.TEXT_GLYPH_VERTEX);
+		Shader vertexShader = new Shader(PE.SHADER_TYPE_VERTEX, CoreShaders.PATH_TEXT_GLYPH_VERTEX);
 		vertexShader.compile();
 		vertexShader.compileStatus();
 
-		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT, CoreShaders.TEXT_GLYPH_FRAGMENT);
+		Shader fragmentShader = new Shader(PE.SHADER_TYPE_FRAGMENT, CoreShaders.PATH_TEXT_GLYPH_FRAGMENT);
 		fragmentShader.compile();
 		fragmentShader.compileStatus();
 
@@ -132,8 +132,6 @@ public class GlyphModel implements RenderableI{
 		shaderProgram.setUniformInt("atlasWidth", atlas.getWidth());
 		shaderProgram.setUniformColor("textColor", textColor);
 		shaderProgram.setUniformTexture("texture", atlas.getFontTexture());
-		
-		System.out.println((textChar.getWidth() + " | " + atlas.getWidth()));
 
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);

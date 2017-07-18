@@ -12,6 +12,7 @@ import org.lwjgl.system.MemoryUtil;
 import pe.engine.data.DisposableResourceI;
 import pe.engine.data.Resources;
 import pe.engine.graphics.gui.GUI;
+import pe.engine.graphics.gui.GUINew;
 import pe.engine.graphics.gui.properties.RPixSourceI;
 import pe.engine.graphics.gui.properties.Unit2Property;
 import pe.engine.graphics.main.handlers.WindowFocusHandler;
@@ -28,10 +29,12 @@ import pe.engine.main.PE;
 import pe.util.math.Mat4f;
 import pe.util.math.Vec2f;
 
-public class Window implements RPixSourceI, DisposableResourceI{
+public class Window implements RPixSourceI, DisposableResourceI {
 
 	private WindowHandler windowHandler;
-	private Unit2Property monitorSize = Unit2Property.createZeroPixel(); // Always in pixels
+	private Unit2Property monitorSize = Unit2Property.createZeroPixel(); // Always
+																			// in
+																			// pixels
 	private Unit2Property mousePosition = Unit2Property.createZeroPixel();
 	private float rpixRatio = 1;
 	private Unit2Property size = Unit2Property.createHalfPercent();
@@ -39,11 +42,18 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	private Unit2Property center = Unit2Property.createHalfPercent();
 	private long id;
 	private GUI gui = null;
+	private GUINew guiNew = null;
 	private Mat4f orthoProjection = null;
 	private boolean inputEventFired = false;
 
-	public Window(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center, int[] centerUnits, String title, boolean vsync,
-			boolean resizeable, boolean border) {
+	public Window() {
+		this(new Vec2f(1.0f, 1.0f), new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS }, new Vec2f(0.0f, 0.0f),
+				new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS }, new Vec2f(0.5f, 0.5f),
+				new int[] { PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT }, "NULL", true, false, false);
+	}
+
+	public Window(Vec2f size, int[] sizeUnits, Vec2f position, int[] positionUnits, Vec2f center, int[] centerUnits,
+			String title, boolean vsync, boolean resizeable, boolean border) {
 
 		GLFW.glfwDefaultWindowHints();
 		GLFW.glfwWindowHint(GLFW.GLFW_DOUBLEBUFFER, GLFW.GLFW_TRUE);
@@ -90,15 +100,19 @@ public class Window implements RPixSourceI, DisposableResourceI{
 
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
-		
+
 		update();
 	}
-	
-	public void setGUI(GUI gui){
+
+	public void setGUI(GUI gui) {
 		this.gui = gui;
 	}
-	
-	public void updateProperties(){
+
+	public void setGUINew(GUINew gui) {
+		this.guiNew = gui;
+	}
+
+	public void updateProperties() {
 		mousePosition.setMaxValue(monitorSize).setRPixSource(this);
 		size.setMaxValue(monitorSize).setRPixSource(this);
 		position.setMaxValue(monitorSize).setRPixSource(this);
@@ -126,9 +140,10 @@ public class Window implements RPixSourceI, DisposableResourceI{
 
 	public void generateOrthoProjection() {
 		Vec2f sizePix = size.pixels();
-				
+
 		this.orthoProjection = Mat4f.getOrthographicMatrix(0, sizePix.x, sizePix.y, 0, -1, 1);
-		//this.orthoProjection = Mat4f.getOrthographicMatrix(0, 300, 300, 0, -1, 1);
+		// this.orthoProjection = Mat4f.getOrthographicMatrix(0, 300, 300, 0,
+		// -1, 1);
 	}
 
 	public Unit2Property getSize() {
@@ -175,8 +190,8 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	public float getRPixRatio() {
 		return rpixRatio;
 	}
-	
-	public Unit2Property getCenter(){
+
+	public Unit2Property getCenter() {
 		return center;
 	}
 
@@ -200,8 +215,8 @@ public class Window implements RPixSourceI, DisposableResourceI{
 
 		updateSize();
 	}
-	
-	public void setWindowHandler(WindowHandler windowHandler){
+
+	public void setWindowHandler(WindowHandler windowHandler) {
 		this.windowHandler = windowHandler;
 		windowHandler.setWindow(this);
 	}
@@ -210,28 +225,28 @@ public class Window implements RPixSourceI, DisposableResourceI{
 		keyHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetKeyCallback(id, keyHandler);
 	}
-	
-	public void fireInputEvent(WindowInputEvent e){
+
+	public void fireInputEvent(WindowInputEvent e) {
 		this.inputEventFired = true;
 		gui.invokeInputEvent(e);
 	}
-	
-	public void setMousePositionValues(float posX, float posY){
+
+	public void setMousePositionValues(float posX, float posY) {
 		this.mousePosition.getValue().x = posX;
 		this.mousePosition.getValue().y = posY;
 	}
-	
-	public void setScrollHandler(WindowScrollHandler scrollHandler){
+
+	public void setScrollHandler(WindowScrollHandler scrollHandler) {
 		scrollHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetScrollCallback(id, scrollHandler);
 	}
-	
-	public void setMouseButtonHandler(WindowMouseButtonHandler mouseButtonHandler){
+
+	public void setMouseButtonHandler(WindowMouseButtonHandler mouseButtonHandler) {
 		mouseButtonHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetMouseButtonCallback(id, mouseButtonHandler);
 	}
-	
-	public void setMousePositionHandler(WindowMousePositionHandler mousePosHandler){
+
+	public void setMousePositionHandler(WindowMousePositionHandler mousePosHandler) {
 		mousePosHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetCursorPosCallback(id, mousePosHandler);
 	}
@@ -245,34 +260,38 @@ public class Window implements RPixSourceI, DisposableResourceI{
 		posHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetWindowPosCallback(id, posHandler);
 	}
-	
-	public void setFocusHandler(WindowFocusHandler focusHandler){
+
+	public void setFocusHandler(WindowFocusHandler focusHandler) {
 		focusHandler.setWindowHandler(windowHandler);
 		GLFW.glfwSetWindowFocusCallback(id, focusHandler);
 	}
-	
-	public void setCenter(Vec2f center, int[] units){
+
+	public void setCenter(Vec2f center, int[] units) {
 		this.center.set(center, units);
-		
+
 		updatePosition();
 	}
-	
+
 	public void setPosition(Vec2f position, int[] units) {
 		this.position.set(position, units);
-		
+
 		updatePosition();
 	}
-	
+
 	public void setPosition(float posX, float posY, int[] units) {
 		this.position.set(new Vec2f(posX, posY), units);
 
 		updatePosition();
 	}
-	
+
 	public void setSize(Vec2f size, int[] units) {
 		this.size.set(size, units);
 
 		updateSize();
+	}
+	
+	public void hide(){
+		GLFW.glfwMakeContextCurrent(0);
 	}
 
 	public void setSize(float width, float height, int[] units) {
@@ -292,7 +311,7 @@ public class Window implements RPixSourceI, DisposableResourceI{
 			GLFW.glfwSwapInterval(0);
 		}
 	}
-	
+
 	/**
 	 * Sets the width of the Window. Overrides both the old width and the old
 	 * units for the width.
@@ -326,10 +345,10 @@ public class Window implements RPixSourceI, DisposableResourceI{
 		this.inputEventFired = false;
 		GLFW.glfwSwapBuffers(id);
 		GLFW.glfwPollEvents();
-		if(windowHandler != null)
+		if (windowHandler != null)
 			windowHandler.update();
-		
-		if(!inputEventFired && gui != null && windowHandler != null)
+
+		if (!inputEventFired && gui != null && windowHandler != null)
 			fireInputEvent(new WindowInputEvent(windowHandler, PE.NULL, PE.NULL));
 	}
 
@@ -343,15 +362,15 @@ public class Window implements RPixSourceI, DisposableResourceI{
 	public void updatePosition() {
 		Vec2f posPix = position.pixels();
 		Vec2f centerPix = center.pixels();
-		
+
 		GLFW.glfwSetWindowPos(id, (int) (posPix.x - centerPix.x), (int) (posPix.y - centerPix.y));
 		generateMonitorStats();
 	}
 
 	/**
-	 * Updates the size of the Window. Generally only used internally, but
-	 * may be necessary if the position is changed without the use of methods
-	 * such as <code>setSize</code>.
+	 * Updates the size of the Window. Generally only used internally, but may
+	 * be necessary if the position is changed without the use of methods such
+	 * as <code>setSize</code>.
 	 * 
 	 * @since 1.0
 	 */

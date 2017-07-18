@@ -3,6 +3,9 @@ package pe.engine.main;
 import org.lwjgl.glfw.GLFW;
 
 import pe.engine.data.Resources;
+import pe.engine.graphics.main.Window;
+import pe.engine.shader.main.Shader;
+import pe.engine.shader.shaders.core.CoreShaders;
 import pe.engine.threading.AudioThread;
 import pe.engine.threading.MasterThread;
 import pe.engine.threading.NetworkingThread;
@@ -64,8 +67,12 @@ public class InitializationProcesses {
 	/**
 	 * The method to be called to initialize OpenGL for use in a thread. This is
 	 * used for threads like Rendering Threads which
-	 * 
-	 * @see #glInit(String)
+	 *
+	 * @param source
+	 *            A name of the thread or process which called it. Will output
+	 *            to <code>MasterThread.println</code> with the parameter of
+	 *            that function, source, equal to "Init: [source]", where the
+	 *            second source was the input for this function.
 	 * @see MasterThread
 	 * 
 	 * @since 1.0
@@ -86,6 +93,12 @@ public class InitializationProcesses {
 	/**
 	 * The method to be called to stop and dispose of the resources used by
 	 * Procedural Engine. Should be the last method called in the Master Thread.
+	 * 
+	 * @param source
+	 *            A name of the thread or process which called it. Will output
+	 *            to <code>MasterThread.println</code> with the parameter of
+	 *            that function, source, equal to "Deinit: [source]", where the
+	 *            second source was the input for this function.
 	 * 
 	 * @see MasterThread
 	 * 

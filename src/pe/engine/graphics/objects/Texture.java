@@ -14,6 +14,7 @@ import org.lwjgl.system.MemoryStack;
 import org.lwjgl.system.MemoryUtil;
 
 import pe.engine.data.BufferObject;
+import pe.engine.data.Resources;
 import pe.engine.main.PE;
 import pe.util.color.Color;
 
@@ -29,6 +30,7 @@ public abstract class Texture extends BufferObject {
 	public int getLocation() {
 		return location;
 	}
+	
 
 	public void setLocation(int location) {
 		if (location < 0 || location > 30)

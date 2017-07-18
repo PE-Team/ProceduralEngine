@@ -7,9 +7,11 @@ import java.util.Map;
 import java.util.Set;
 
 public class Resources {
+	
+	public static final int DEFAULT_KEY = 0;
 
 	private static Map<Object, Set<DisposableResourceI>> resources = new HashMap<Object, Set<DisposableResourceI>>();
-	private static Object currentKey = 0;
+	private static Object currentKey = DEFAULT_KEY;
 	private static boolean printOnDispose = false;
 
 	public static synchronized void setCurrentKey(Object key) {

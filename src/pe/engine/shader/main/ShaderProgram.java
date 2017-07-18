@@ -75,11 +75,11 @@ public class ShaderProgram implements DisposableResourceI {
 		int status = GL20.glGetProgrami(id, GL20.GL_LINK_STATUS);
 		if (status != GL11.GL_TRUE) {
 			StringBuilder sb = new StringBuilder();
-			sb.append("An error occured while compiling a Shader Program");
+			sb.append("An error occured while compiling a Shader Program\n");
 			if (!compiled)
 				sb.append(
-						"The Shader Program was not compiled.\nPlease call '.compile()' before checking the compile status.");
-			sb.append(GL20.glGetShaderInfoLog(id));
+						"The Shader Program was not compiled.\nPlease call '.compile()' before checking the compile status.\n");
+			sb.append(GL20.glGetProgramInfoLog(id));
 			throw new RuntimeException(sb.toString());
 		}
 	}

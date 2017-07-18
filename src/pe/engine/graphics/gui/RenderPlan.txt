@@ -6,3 +6,29 @@ Rendering plane:
 	b: draw all content (such as text and children), starting with the "highest" one, blending with ONE_MINUS_ALPHA_DEST
 	c: draw the background, blending with ONE_MINUS_ALPHA_DEST
 	d: draw the border, blending with ONE_MINUS_ALPHA_SRC
+	
+New Rendering plan:
+
+1: Render GUIComponents starting with ROOT by:
+	-If child clipping is NOT enabled:
+		a: Using the ROOT's FBO, draw the background renderable which includes (in order):
+			*background color
+			*background image
+		b: Draw the Component's foreground which includes (in order):
+			*border
+			*foreground image
+		c: Draw each texture returned by the child's rendering method
+	-If child clipping IS enabled:
+		a: Using the Component's FBO, draw the background renderable which includes (in order):
+			*background color
+			*background image
+		b: Draw each texture returned by the child's rendering method
+		c: Draw the Component's foreground which includes (in order):
+			*border
+			*foreground image
+		
+	a: Using the Component's FBO, draw the background renderable which includes (in order):
+		-background color
+		-background image
+	b: If child clipping is NOT enabled, render the border
+	c: Render the texture returned by each child's render method
