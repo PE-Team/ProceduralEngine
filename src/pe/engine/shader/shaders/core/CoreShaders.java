@@ -35,17 +35,17 @@ public class CoreShaders {
 	public static final String PATH_GUI_CONTENT_VERTEX = PATH_BASIC_VERTEX_MP;
 	public static final String PATH_GUI_CONTENT_FRAGMENT = PATH + PATH_GUI_CONTENT_FILE_BASE + SHADER_FRAGMENT_EXT;
 	
-	private static Shader basicVertexMP;
-	
 	private static Shader guiBackgroundVertex;
 	private static Shader guiBackgroundFragment;
 	private static ShaderProgram guiBackgroundProgram;
 	
 	private static Shader guiForegroundVertex;
 	private static Shader guiForegroundFragment;
+	private static ShaderProgram guiForegroundProgram;
 	
 	private static Shader guiContentVertex;
 	private static Shader guiContentFragment;
+	private static ShaderProgram guiContentProgram;
 	
 	public static Shader guiBackgroundVertex(){
 		if(guiBackgroundVertex == null){
@@ -80,5 +80,75 @@ public class CoreShaders {
 		}
 		
 		return guiBackgroundProgram;
+	}
+	
+	public static Shader guiForegroundVertex(){
+		if(guiForegroundVertex == null){
+			guiForegroundVertex = new Shader(PE.SHADER_TYPE_VERTEX, PATH_GUI_FOREGROUND_VERTEX);
+			guiForegroundVertex.compile();
+			guiForegroundVertex.compileStatus();
+		}
+		
+		return guiForegroundVertex;
+	}
+	
+	public static Shader guiForegroundFragment(){
+		if(guiForegroundFragment == null){
+			guiForegroundFragment = new Shader(PE.SHADER_TYPE_FRAGMENT, PATH_GUI_FOREGROUND_FRAGMENT);
+			guiForegroundFragment.compile();
+			guiForegroundFragment.compileStatus();
+		}
+		
+		return guiForegroundFragment;
+	}
+	
+	public static ShaderProgram guiForegroundProgram(){
+		if(guiForegroundProgram == null){
+			guiForegroundProgram = new ShaderProgram();
+			guiForegroundProgram.addShader(guiForegroundVertex());
+			guiForegroundProgram.addShader(guiForegroundFragment());
+			guiForegroundProgram.setDefaultFragOutValue("color", 0);
+			guiForegroundProgram.setAttribIndex(0, "position");
+			guiForegroundProgram.setAttribIndex(0, "textureCoord");
+			guiForegroundProgram.compile();
+			guiForegroundProgram.compileStatus();
+		}
+		
+		return guiForegroundProgram;
+	}
+	
+	public static Shader guiContentVertex(){
+		if(guiContentVertex == null){
+			guiContentVertex = new Shader(PE.SHADER_TYPE_VERTEX, PATH_GUI_FOREGROUND_VERTEX);
+			guiContentVertex.compile();
+			guiContentVertex.compileStatus();
+		}
+		
+		return guiContentVertex;
+	}
+	
+	public static Shader guiContentFragment(){
+		if(guiContentFragment == null){
+			guiContentFragment = new Shader(PE.SHADER_TYPE_FRAGMENT, PATH_GUI_FOREGROUND_FRAGMENT);
+			guiContentFragment.compile();
+			guiContentFragment.compileStatus();
+		}
+		
+		return guiContentFragment;
+	}
+	
+	public static ShaderProgram guiContentProgram(){
+		if(guiContentProgram == null){
+			guiContentProgram = new ShaderProgram();
+			guiContentProgram.addShader(guiContentVertex());
+			guiContentProgram.addShader(guiContentFragment());
+			guiContentProgram.setDefaultFragOutValue("color", 0);
+			guiContentProgram.setAttribIndex(0, "position");
+			guiContentProgram.setAttribIndex(0, "textureCoord");
+			guiContentProgram.compile();
+			guiContentProgram.compileStatus();
+		}
+		
+		return guiContentProgram;
 	}
 }

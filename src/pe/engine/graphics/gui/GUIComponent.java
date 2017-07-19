@@ -164,9 +164,11 @@ public abstract class GUIComponent implements RenderableI {
 
 	protected void updateSelfProperties() {
 		Window window = gui.getWindow();
+		
+		Unit2Property parentSize = parent == null ? window.getSize() : parent.getSize();
 
-		this.size.setMaxValue(parent.getSize()).setRPixSource(window);
-		this.position.setMaxValue(parent.getSize()).setRPixSource(window);
+		this.size.setMaxValue(parentSize).setRPixSource(window);
+		this.position.setMaxValue(parentSize).setRPixSource(window);
 		this.positionOffset.setMaxValue(size).setRPixSource(window);
 		this.rotationOffset.setMaxValue(size).setRPixSource(window);
 		this.borderWidth.setMaxValue(size).setRPixSource(window);

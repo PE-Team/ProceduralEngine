@@ -58,7 +58,7 @@ public class GUIComponentNew extends GUIRenderable {
 	protected List<GUIRenderable> children;
 	protected boolean clipChildren;
 
-	protected float zIndex;
+	
 
 	public GUIComponentNew(Color backgroundColor, Color borderColor, Vec4f borderRadius, Vec4f borderWidth,
 			boolean clipChildren, Vec4f margin, Vec4f padding, Vec2f position, Vec2f positionOffset, float rotation,
@@ -68,32 +68,29 @@ public class GUIComponentNew extends GUIRenderable {
 		this.borderColor = borderColor;
 		this.borderRadius = new Unit4Property(borderRadius,
 				new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
-		 this.borderWidth = new Unit4Property(borderWidth, new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
-		 this.children = new ArrayList<GUIRenderable>();
-		 this.clipChildren = clipChildren;
-		 this.fbo = new FrameBufferObject();
-		 this.gui = null;
-		 this.margin = new Unit4Property(margin,
-					new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
-		 this.padding = new Unit4Property(padding,
-					new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
-		 this.parent = null;
-		 this.position = new Unit2Property(position,
-					new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS});
-		 this.positionOffset = new Unit2Property(positionOffset,
-					new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS});
-		 this.rotation = new RotationProperty(rotation, PE.ANGLE_UNIT_DEGREES);
-		 this.rotationOffset = new Unit2Property(rotationOffset,
-					new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS});
-		 this.size = new Unit2Property(size,
-					new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS});
-		 this.treeTier = -1;
-		 this.tsa = null;
-		 this.zIndex = 0;
-		 
-		 initShaderPrograms();
-		 initMeshProperties();
-		 initTextures();
+		this.borderWidth = new Unit4Property(borderWidth,
+				new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.children = new ArrayList<GUIRenderable>();
+		this.clipChildren = clipChildren;
+		this.fbo = new FrameBufferObject();
+		this.gui = null;
+		this.margin = new Unit4Property(margin,
+				new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.padding = new Unit4Property(padding,
+				new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.parent = null;
+		this.position = new Unit2Property(position, new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.positionOffset = new Unit2Property(positionOffset, new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.rotation = new RotationProperty(rotation, PE.ANGLE_UNIT_DEGREES);
+		this.rotationOffset = new Unit2Property(rotationOffset, new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.size = new Unit2Property(size, new int[] { PE.GUI_UNIT_PIXELS, PE.GUI_UNIT_PIXELS });
+		this.treeTier = -1;
+		this.tsa = null;
+		this.zIndex = 0;
+
+		initShaderPrograms();
+		initMeshProperties();
+		initTextures();
 	}
 
 	protected void initShaderPrograms() {
@@ -103,27 +100,18 @@ public class GUIComponentNew extends GUIRenderable {
 
 		backgroundProgram = CoreShaders.guiBackgroundProgram();
 
-//		ShaderProgram programC = new ShaderProgram();
-//		programC.addShader(CoreShaders.GUI_CONTENT_VERTEX);
-//		programC.addShader(CoreShaders.GUI_CONTENT_FRAGMENT);
-//		programC.setDefaultFragOutValue("color", 0);
-//		programC.setAttribIndex(0, "position");
-//		programC.setAttribIndex(0, "textureCoord");
-//		programC.compile();
-//		programC.compileStatus();
-//
-//		foregroundProgram = programC;
-//
-//		ShaderProgram programF = new ShaderProgram();
-//		programF.addShader(CoreShaders.GUI_FOREGROUND_VERTEX);
-//		programF.addShader(CoreShaders.GUI_FOREGROUND_FRAGMENT);
-//		programF.setDefaultFragOutValue("color", 0);
-//		programF.setAttribIndex(0, "position");
-//		programF.setAttribIndex(0, "textureCoord");
-//		programF.compile();
-//		programF.compileStatus();
-//
-//		contentProgram = programF;
+		foregroundProgram = CoreShaders.guiForegroundProgram();
+
+		// ShaderProgram programF = new ShaderProgram();
+		// programF.addShader(CoreShaders.GUI_FOREGROUND_VERTEX);
+		// programF.addShader(CoreShaders.GUI_FOREGROUND_FRAGMENT);
+		// programF.setDefaultFragOutValue("color", 0);
+		// programF.setAttribIndex(0, "position");
+		// programF.setAttribIndex(0, "textureCoord");
+		// programF.compile();
+		// programF.compileStatus();
+		//
+		// contentProgram = programF;
 	}
 
 	protected void initTextures() {
@@ -152,10 +140,13 @@ public class GUIComponentNew extends GUIRenderable {
 
 	@Override
 	protected void updateSelfProperties() {
-		Window window = gui.getWindow();
+		Window window = gui == null ? null : gui.getWindow();
 
-		this.size.setMaxValue(parent.getSize()).setRPixSource(window);
-		this.position.setMaxValue(parent.getSize()).setRPixSource(window);
+		Unit2Property parentSize = gui == null ? null
+				: (parent == null ? (window == null ? null : window.getSize()) : parent.getSize());
+
+		this.size.setMaxValue(parentSize).setRPixSource(window);
+		this.position.setMaxValue(parentSize).setRPixSource(window);
 		this.positionOffset.setMaxValue(size).setRPixSource(window);
 		this.rotationOffset.setMaxValue(size).setRPixSource(window);
 		this.borderWidth.setMaxValue(size).setRPixSource(window);
@@ -276,7 +267,7 @@ public class GUIComponentNew extends GUIRenderable {
 		ListIterator<GUIRenderable> iterator = children.listIterator(children.size());
 		while (iterator.hasPrevious()) {
 			GUIRenderable comp = iterator.previous();
-			if(comp instanceof GUIComponentNew){
+			if (comp instanceof GUIComponentNew) {
 				isDisposed = ((GUIComponentNew) comp).invokeInputEvent(e, isDisposed);
 			}
 		}
@@ -351,12 +342,12 @@ public class GUIComponentNew extends GUIRenderable {
 		child.setTreeTier(-1);
 	}
 
-	public float getZIndex() {
-		return zIndex;
-	}
-
 	public void setZIndex(float index) {
 		this.zIndex = index;
+	}
+	
+	public boolean clipChildren(){
+		return clipChildren;
 	}
 
 	public Unit2Property getRotationOffset() {
@@ -376,9 +367,12 @@ public class GUIComponentNew extends GUIRenderable {
 	}
 
 	@Override
-	public Texture2D render(Vec2f projectedPosition, FrameBufferObject fbo) {
+	public Texture2D render(FrameBufferObject fbo) {
 
 		Vec2f sizePix = size.pixels();
+		
+		fbo.setColorBufferTexture(DEFAULT_RENDER_LOCATION, (int) sizePix.x, (int) sizePix.y);
+		
 		Vec2f rotationOffsetPix = rotationOffset.pixels();
 		float rotationDeg = rotation.degrees();
 		Vec2f positionPix = position.pixels();
@@ -388,46 +382,58 @@ public class GUIComponentNew extends GUIRenderable {
 
 		Mat3f transformation = new Mat3f().scale(sizePix).translate(rotationOffsetPix.negation()).rotate(rotationDeg)
 				.translate(rotationOffsetPix).translate(positionPix).translate(positionOffsetPix);
-		Mat4f projection = gui.getWindow().getOrthoProjection();
+		Mat4f projection = fbo.getOrthographicMatrix(DEFAULT_RENDER_LOCATION);
 
 		if (clipChildren) {
-			this.fbo.bind();
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 			tsa.bind();
 
 			renderBackground(transformation, projection, sizePix, tsa.get().getTexture(BACKGROUND_TEXTURE_INDEX),
 					borderWidthPix, borderRadiusPix);
-			// renderChildren
+			
+			renderChildren(fbo, transformation, projection);
+			
 			renderForeground(transformation, projection, sizePix, tsa.get().getTexture(FOREGROUND_TEXTURE_INDEX),
 					borderWidthPix, borderRadiusPix);
 
 			tsa.unbind();
-			GL11.glDisable(GL11.GL_BLEND);
-			this.fbo.bind();
 
-			return this.fbo.getColorBufferTexture(DEFAULT_RENDER_LOCATION);
+			return fbo.getColorBufferTexture(DEFAULT_RENDER_LOCATION);
 		} else {
-			fbo.bind();
-			GL11.glEnable(GL11.GL_BLEND);
-			GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+			
 			tsa.bind();
 
 			renderBackground(transformation, projection, sizePix, tsa.get().getTexture(BACKGROUND_TEXTURE_INDEX),
 					borderWidthPix, borderRadiusPix);
 			renderForeground(transformation, projection, sizePix, tsa.get().getTexture(FOREGROUND_TEXTURE_INDEX),
 					borderWidthPix, borderRadiusPix);
-			// renderChildren
 
 			tsa.unbind();
-			GL11.glDisable(GL11.GL_BLEND);
-			fbo.unbind();
 
 			return fbo.getColorBufferTexture(DEFAULT_RENDER_LOCATION);
 		}
 	}
 	
-	public void render(){
+	private void renderChildren(FrameBufferObject fbo, Mat3f transformation, Mat4f projection){
+		tsa.unbind();
+		fbo.unbind();
+		
+		Texture2D clippedResult = GUIRenderingOrder.renderChildComponents(this);
+		
+		fbo.bind();
+		tsa.bind();
+		
+		contentProgram.start();
+		
+		contentProgram.setUniformMat3f("transformation", transformation);
+		contentProgram.setUniformMat4f("projection", projection);
+		contentProgram.setUniformTexture("texture", clippedResult);
+		
+		mesh.render();
+		
+		contentProgram.stop();
+	}
+
+	public void render() {
 		Vec2f sizePix = size.pixels();
 		Vec2f rotationOffsetPix = rotationOffset.pixels();
 		float rotationDeg = rotation.degrees();
@@ -447,14 +453,14 @@ public class GUIComponentNew extends GUIRenderable {
 		renderBackground(transformation, projection, sizePix, tsa.get().getTexture(BACKGROUND_TEXTURE_INDEX),
 				borderWidthPix, borderRadiusPix);
 		// renderChildren
-//		renderForeground(transformation, projection, sizePix, tsa.get().getTexture(FOREGROUND_TEXTURE_INDEX),
-//				borderWidthPix, borderRadiusPix);
+		renderForeground(transformation, projection, sizePix, tsa.get().getTexture(FOREGROUND_TEXTURE_INDEX),
+				borderWidthPix, borderRadiusPix);
 
 		tsa.unbind();
 		GL11.glDisable(GL11.GL_BLEND);
 	}
 
-	public void renderBackground(Mat3f transformation, Mat4f projection, Vec2f size, Texture backgroundTexture,
+	private void renderBackground(Mat3f transformation, Mat4f projection, Vec2f size, Texture backgroundTexture,
 			Vec4f borderWidth, Vec4f borderRadius) {
 
 		backgroundProgram.start();

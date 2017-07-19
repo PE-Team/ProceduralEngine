@@ -28,6 +28,7 @@ public abstract class GUIRenderable {
 	protected GUIRenderable parent;
 	
 	protected int treeTier = -1;
+	protected float zIndex = 0;
 
 	public GUIRenderable() {
 		this.fbo = new FrameBufferObject();
@@ -60,7 +61,7 @@ public abstract class GUIRenderable {
 		mesh = m;
 	}
 	
-	public abstract Texture2D render(Vec2f projectedPosition, FrameBufferObject fbo);
+	public abstract Texture2D render(FrameBufferObject fbo);
 
 	public GUIRenderable getParent() {
 		return parent;
@@ -127,5 +128,9 @@ public abstract class GUIRenderable {
 
 	public GUINew getGui() {
 		return gui;
+	}
+	
+	public float getZIndex() {
+		return zIndex;
 	}
 }

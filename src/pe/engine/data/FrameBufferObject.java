@@ -10,9 +10,10 @@ import org.lwjgl.opengl.GL32;
 import pe.engine.graphics.objects.BufferedTexture2D;
 import pe.engine.graphics.objects.Texture;
 import pe.engine.graphics.objects.Texture2D;
+import pe.util.math.Mat4f;
 
 public class FrameBufferObject extends BufferObject {
-	
+
 	private Map<Integer, Texture2D> attatchedTextures;
 
 	public FrameBufferObject() {
@@ -25,27 +26,36 @@ public class FrameBufferObject extends BufferObject {
 
 		Resources.add(this);
 	}
-	
-	public void addColorBufferTexture(int bufferIndex, int texWidth, int texHeight){
-		Texture currTex = attatchedTextures.get(bufferIndex);
-		if(currTex != null && (currTex.getWidth() == texWidth || currTex.getHeight() == texHeight))
-			return;
+
+	public Mat4f getOrthographicMatrix(int bufferIndex) {
+		Texture2D tex = attatchedTextures.get(bufferIndex);
+		if (tex == null)
+			throw new IllegalArgumentException("No texture has been bound to the color buffer index of: " + bufferIndex
+					+ " in the FBO, therefore it is not possible to produce an orthographic matrix.\n Please attatch a texture to that index next time.");
 		
+		return Mat4f.getOrthographicMatrix2D(tex.getWidth(), tex.getHeight());
+	}
+
+	public void setColorBufferTexture(int bufferIndex, int texWidth, int texHeight) {
+		Texture2D currTex = attatchedTextures.get(bufferIndex);
+		if (currTex != null && (currTex.getWidth() == texWidth || currTex.getHeight() == texHeight))
+			return;
+
 		BufferedTexture2D texture = new BufferedTexture2D();
 		texture.bind();
 		texture.load(texWidth, texHeight);
 		texture.unbind();
-		
+
 		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0 + bufferIndex, texture.getID(), 0);
 		Resources.dispose(attatchedTextures.replace(bufferIndex, texture));
 	}
 
-	public void addColorBufferTexture(int bufferIndex, Texture2D texture) {
+	public void setColorBufferTexture(int bufferIndex, Texture2D texture) {
 		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0 + bufferIndex, texture.getID(), 0);
 		attatchedTextures.replace(bufferIndex, texture);
 	}
-	
-	public Texture2D getColorBufferTexture(int bufferIndex){
+
+	public Texture2D getColorBufferTexture(int bufferIndex) {
 		return attatchedTextures.get(bufferIndex);
 	}
 
@@ -60,8 +70,8 @@ public class FrameBufferObject extends BufferObject {
 	public void bind() {
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, id);
 	}
-	
-	public static void bindDefault(){
+
+	public static void bindDefault() {
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
 	}
 

@@ -109,6 +109,9 @@ public class Window implements RPixSourceI, DisposableResourceI {
 	}
 
 	public void setGUINew(GUINew gui) {
+		if(this.guiNew == gui)
+			return;
+		
 		this.guiNew = gui;
 	}
 
@@ -142,8 +145,6 @@ public class Window implements RPixSourceI, DisposableResourceI {
 		Vec2f sizePix = size.pixels();
 
 		this.orthoProjection = Mat4f.getOrthographicMatrix(0, sizePix.x, sizePix.y, 0, -1, 1);
-		// this.orthoProjection = Mat4f.getOrthographicMatrix(0, 300, 300, 0,
-		// -1, 1);
 	}
 
 	public Unit2Property getSize() {
@@ -228,7 +229,7 @@ public class Window implements RPixSourceI, DisposableResourceI {
 
 	public void fireInputEvent(WindowInputEvent e) {
 		this.inputEventFired = true;
-		gui.invokeInputEvent(e);
+		guiNew.invokeInputEvent(e);
 	}
 
 	public void setMousePositionValues(float posX, float posY) {

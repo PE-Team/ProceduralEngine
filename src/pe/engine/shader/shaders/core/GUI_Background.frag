@@ -32,10 +32,10 @@ float draw(){
 	vec2 bottomRightBorder = vec2(border.x, height - border.y);
 	vec2 bottomLeftBorder = vec2(width - border.x, height - border.y);
 	
-	float top = step(borderWidth.x + aWidth, border.y);
-	float right = step(borderWidth.y + aWidth, border.x);
-	float bottom = step(borderWidth.z + aWidth, height - border.y);
-	float left = step(borderWidth.w + aWidth, width - border.x);
+	float top = step(borderWidth.x - aWidth, border.y);
+	float right = step(borderWidth.y - aWidth, border.x);
+	float bottom = step(borderWidth.z - aWidth, height - border.y);
+	float left = step(borderWidth.w - aWidth, width - border.x);
 	
 	float mask = min(min(min(top, right), bottom), left);
 	

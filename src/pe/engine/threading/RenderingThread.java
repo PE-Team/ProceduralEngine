@@ -7,6 +7,7 @@ import pe.engine.data.VertexArrayObject;
 import pe.engine.graphics.gui.Divider;
 import pe.engine.graphics.gui.GUI;
 import pe.engine.graphics.gui.GUIComponentNew;
+import pe.engine.graphics.gui.GUINew;
 import pe.engine.graphics.main.Window;
 import pe.engine.graphics.main.handlers.WindowFocusHandler;
 import pe.engine.graphics.main.handlers.WindowFrameSizeHandler;
@@ -81,18 +82,22 @@ public class RenderingThread implements Runnable {
 			VertexArrayObject vertexArrayObject = new VertexArrayObject();
 			vertexArrayObject.bind();
 
-			GUI gui = new GUI();
-			gui.setWindow(window);
-			Divider div1 = new Divider(400, 400, 0, 0, Color.BLUE, Color.ORANGE);
-			Divider div2 = new Divider(400, 400, 100, 100, Color.GRAY, Color.DARK_GRAY);
-			gui.addComponent(div1);
-			gui.addComponent(div2);
+//			GUI gui = new GUI();
+//			gui.setWindow(window);
+//			Divider div1 = new Divider(400, 400, 0, 0, Color.BLUE, Color.ORANGE);
+//			Divider div2 = new Divider(400, 400, 100, 100, Color.GRAY, Color.DARK_GRAY);
+//			gui.addComponent(div1);
+//			gui.addComponent(div2);
+			
+			GUINew guin = new GUINew();
+			guin.setWindow(window);
+			GUIComponentNew comp = new GUIComponentNew(Color.LIGHT_GRAY, Color.DARK_GRAY, new Vec4f(20, 20, 20, 20), new Vec4f(2, 2, 2, 2),
+					false, Vec4f.zero(), Vec4f.zero(), new Vec2f(50, 50), Vec2f.zero(), 0, new Vec2f(200, 200),
+					new Vec2f(400, 400), 0);
+			guin.addComponent(comp);
 
 			TextRenderer tr = new TextRenderer();
-
-			GUIComponentNew comp = new GUIComponentNew(Color.LIGHT_GRAY, Color.DARK_GRAY, Vec4f.zero(), Vec4f.zero(),
-					false, Vec4f.zero(), Vec4f.zero(), new Vec2f(100, 100), Vec2f.zero(), 0, new Vec2f(200, 200),
-					new Vec2f(400, 400), 0);
+			
 
 			GL11.glClearColor(0, 0, 0, 1);
 			while (MasterThread.isRunning()) {
@@ -101,9 +106,9 @@ public class RenderingThread implements Runnable {
 					// some stuff. Look at me!");
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
-					gui.render();
+					//gui.render();
 					tr.render("Hello There!", window, new Vec2f(400, 0), new Vec2f(1000, 100), Color.LIGHT_GRAY);
-					comp.render();
+					guin.render();
 
 					window.update();
 				}
