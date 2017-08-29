@@ -82,6 +82,8 @@ public class BufferedTexture2D extends Texture2D {
 	 */
 	public void load(ByteBuffer buffer, int width, int height) {
 		loadByteBufferIntoTexture(buffer, width, height);
+		this.width = width;
+		this.height = height;
 	}
 
 	/**

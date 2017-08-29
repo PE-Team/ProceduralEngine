@@ -31,14 +31,16 @@ public class FrameBufferObject extends BufferObject {
 		Texture2D tex = attatchedTextures.get(bufferIndex);
 		if (tex == null)
 			throw new IllegalArgumentException("No texture has been bound to the color buffer index of: " + bufferIndex
-					+ " in the FBO, therefore it is not possible to produce an orthographic matrix.\n Please attatch a texture to that index next time.");
+					+ " in the FBO, therefore it is not possible to produce an orthographic matrix."
+					+ "\n Please attatch a texture to that index next time.");
 		
 		return Mat4f.getOrthographicMatrix2D(tex.getWidth(), tex.getHeight());
 	}
 
 	public void setColorBufferTexture(int bufferIndex, int texWidth, int texHeight) {
+		checkBound();
 		Texture2D currTex = attatchedTextures.get(bufferIndex);
-		if (currTex != null && (currTex.getWidth() == texWidth || currTex.getHeight() == texHeight))
+		if (currTex != null && (currTex.getWidth() == texWidth && currTex.getHeight() == texHeight))
 			return;
 
 		BufferedTexture2D texture = new BufferedTexture2D();
@@ -47,12 +49,13 @@ public class FrameBufferObject extends BufferObject {
 		texture.unbind();
 
 		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0 + bufferIndex, texture.getID(), 0);
-		Resources.dispose(attatchedTextures.replace(bufferIndex, texture));
+		Resources.dispose(attatchedTextures.put(bufferIndex, texture));
 	}
 
 	public void setColorBufferTexture(int bufferIndex, Texture2D texture) {
+		checkBound();
 		GL32.glFramebufferTexture(GL30.GL_FRAMEBUFFER, GL30.GL_COLOR_ATTACHMENT0 + bufferIndex, texture.getID(), 0);
-		attatchedTextures.replace(bufferIndex, texture);
+		attatchedTextures.put(bufferIndex, texture);
 	}
 
 	public Texture2D getColorBufferTexture(int bufferIndex) {
@@ -60,6 +63,7 @@ public class FrameBufferObject extends BufferObject {
 	}
 
 	public void useColorBuffer(int bufferIndex) {
+		checkBound();
 		if (bufferIndex < 0 || bufferIndex > 30)
 			throw new IllegalArgumentException("You must use a Color Buffer of index at least 0 and at most 30");
 
@@ -69,6 +73,7 @@ public class FrameBufferObject extends BufferObject {
 	@Override
 	public void bind() {
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, id);
+		this.bound = true;
 	}
 
 	public static void bindDefault() {
@@ -78,6 +83,7 @@ public class FrameBufferObject extends BufferObject {
 	@Override
 	public void unbind() {
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		this.bound = false;
 	}
 
 	@Override

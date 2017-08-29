@@ -2,29 +2,19 @@ package pe.engine.graphics.gui;
 
 import pe.engine.graphics.main.Window;
 import pe.engine.graphics.main.handlers.WindowInputEvent;
-import pe.engine.main.PE;
-import pe.util.color.Color;
-import pe.util.math.Vec2f;
-import pe.util.math.Vec4f;
 
 public class GUINew {
 
 	private Window window = null;
-	private GUIComponentNew root;
+	private Root root;
 	
 	public GUINew(){
-		root =  new GUIComponentNew(Color.CLEAR, Color.CLEAR, Vec4f.zero(), Vec4f.zero(),
-				false, Vec4f.zero(), Vec4f.zero(), Vec2f.zero(), Vec2f.zero(), 0, Vec2f.zero(),
-				new Vec2f(1.0f, 1.0f), 0);
-		root.size.set(new Vec2f(1.0f, 1.0f), new int[]{PE.GUI_UNIT_PERCENT, PE.GUI_UNIT_PERCENT}); 
-		root.clipChildren = true;
+		root = new Root();
 		root.setGUI(this);
 	}
 	
 	public void render(){
-		Vec2f size = window.getSize().pixels();
-		root.getFBO().setColorBufferTexture(GUIComponentNew.DEFAULT_RENDER_LOCATION, (int) size.x, (int) size.y);
-		root.render(root.getFBO());
+		root.render(null);
 	}
 	
 	public void addComponent(GUIComponentNew component){

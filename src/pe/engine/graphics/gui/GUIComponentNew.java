@@ -101,17 +101,8 @@ public class GUIComponentNew extends GUIRenderable {
 		backgroundProgram = CoreShaders.guiBackgroundProgram();
 
 		foregroundProgram = CoreShaders.guiForegroundProgram();
-
-		// ShaderProgram programF = new ShaderProgram();
-		// programF.addShader(CoreShaders.GUI_FOREGROUND_VERTEX);
-		// programF.addShader(CoreShaders.GUI_FOREGROUND_FRAGMENT);
-		// programF.setDefaultFragOutValue("color", 0);
-		// programF.setAttribIndex(0, "position");
-		// programF.setAttribIndex(0, "textureCoord");
-		// programF.compile();
-		// programF.compileStatus();
-		//
-		// contentProgram = programF;
+		
+		contentProgram = CoreShaders.guiContentProgram();
 	}
 
 	protected void initTextures() {
@@ -372,6 +363,7 @@ public class GUIComponentNew extends GUIRenderable {
 		Vec2f sizePix = size.pixels();
 		
 		fbo.setColorBufferTexture(DEFAULT_RENDER_LOCATION, (int) sizePix.x, (int) sizePix.y);
+		fbo.useColorBuffer(DEFAULT_RENDER_LOCATION);
 		
 		Vec2f rotationOffsetPix = rotationOffset.pixels();
 		float rotationDeg = rotation.degrees();
@@ -413,7 +405,7 @@ public class GUIComponentNew extends GUIRenderable {
 		}
 	}
 	
-	private void renderChildren(FrameBufferObject fbo, Mat3f transformation, Mat4f projection){
+	protected void renderChildren(FrameBufferObject fbo, Mat3f transformation, Mat4f projection){
 		tsa.unbind();
 		fbo.unbind();
 		
@@ -433,34 +425,7 @@ public class GUIComponentNew extends GUIRenderable {
 		contentProgram.stop();
 	}
 
-	public void render() {
-		Vec2f sizePix = size.pixels();
-		Vec2f rotationOffsetPix = rotationOffset.pixels();
-		float rotationDeg = rotation.degrees();
-		Vec2f positionPix = position.pixels();
-		Vec2f positionOffsetPix = positionOffset.pixels().negation();
-		Vec4f borderWidthPix = borderWidth.pixels();
-		Vec4f borderRadiusPix = borderRadius.pixels();
-
-		Mat3f transformation = new Mat3f().scale(sizePix).translate(rotationOffsetPix.negation()).rotate(rotationDeg)
-				.translate(rotationOffsetPix).translate(positionPix).translate(positionOffsetPix);
-		Mat4f projection = gui.getWindow().getOrthoProjection();
-
-		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
-		tsa.bind();
-
-		renderBackground(transformation, projection, sizePix, tsa.get().getTexture(BACKGROUND_TEXTURE_INDEX),
-				borderWidthPix, borderRadiusPix);
-		// renderChildren
-		renderForeground(transformation, projection, sizePix, tsa.get().getTexture(FOREGROUND_TEXTURE_INDEX),
-				borderWidthPix, borderRadiusPix);
-
-		tsa.unbind();
-		GL11.glDisable(GL11.GL_BLEND);
-	}
-
-	private void renderBackground(Mat3f transformation, Mat4f projection, Vec2f size, Texture backgroundTexture,
+	protected void renderBackground(Mat3f transformation, Mat4f projection, Vec2f size, Texture backgroundTexture,
 			Vec4f borderWidth, Vec4f borderRadius) {
 
 		backgroundProgram.start();
@@ -479,7 +444,7 @@ public class GUIComponentNew extends GUIRenderable {
 		backgroundProgram.stop();
 	}
 
-	private void renderForeground(Mat3f transformation, Mat4f projection, Vec2f size, Texture foregroundTexture,
+	protected void renderForeground(Mat3f transformation, Mat4f projection, Vec2f size, Texture foregroundTexture,
 			Vec4f borderWidth, Vec4f borderRadius) {
 
 		foregroundProgram.start();

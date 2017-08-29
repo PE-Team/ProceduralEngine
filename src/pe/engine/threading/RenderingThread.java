@@ -107,8 +107,9 @@ public class RenderingThread implements Runnable {
 					GL11.glClear(GL11.GL_COLOR_BUFFER_BIT);
 
 					//gui.render();
-					tr.render("Hello There!", window, new Vec2f(400, 0), new Vec2f(1000, 100), Color.LIGHT_GRAY);
 					guin.render();
+					tr.render("Hello There!", window, new Vec2f(400, 0), new Vec2f(1000, 100), Color.LIGHT_GRAY);
+					//guin.render();
 
 					window.update();
 				}
